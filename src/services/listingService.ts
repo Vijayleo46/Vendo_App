@@ -304,7 +304,7 @@ export const listingService = {
                 {
                     title: 'Ultimate Gaming Build',
                     description: 'Full custom gaming setup. RTX 4090, i9-14900K, 64GB DDR5. Perfect for content creation and 4K gaming.',
-                    price: '₹ 3500',
+                    price: '3500',
                     category: 'Electronics',
                     images: [
                         'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&q=80&w=1000',
@@ -327,7 +327,7 @@ export const listingService = {
                 {
                     title: 'Senior Mobile Architect',
                     description: 'We are looking for a visionary Mobile Architect to lead our engineering team. You will be responsible for defining the technical roadmap and mentoring senior developers.',
-                    price: '₹ 45L - 60L',
+                    price: '45L - 60L',
                     category: 'Jobs',
                     images: ['https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=1000'],
                     sellerId: 'admin',
@@ -337,7 +337,7 @@ export const listingService = {
                     location: 'Bangalore, India',
                     condition: 'New',
                     jobType: 'Full Time',
-                    salaryRange: '₹ 45L - 60L',
+                    salaryRange: '45L - 60L',
                     skills: ['React Native', 'Swift', 'Kotlin', 'System Design', 'Team Leadership'],
                     experienceLevel: 'Senior (8+ years)',
                     companyName: user?.displayName || 'Leo',
@@ -350,7 +350,7 @@ export const listingService = {
                 {
                     title: 'UX/UI Designer',
                     description: 'We need a creative designer for our new startup. Remote friendly.',
-                    price: '₹ 80k/yr',
+                    price: '80k/yr',
                     category: 'Jobs',
                     images: ['https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&q=80&w=1000'],
                     sellerId,
@@ -384,7 +384,7 @@ export const listingService = {
                 {
                     title: 'Professional Home Cleaning',
                     description: 'Top rated cleaning service in Seattle. We use eco-friendly products.',
-                    price: '₹ 50/hr',
+                    price: '50/hr',
                     category: 'Services',
                     images: ['https://images.unsplash.com/photo-1581579186913-45ac3e6e3dd2?auto=format&fit=crop&q=80&w=1000'],
                     sellerId,

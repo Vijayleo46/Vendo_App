@@ -124,7 +124,7 @@ export const HomeScreen = ({ navigation }: any) => {
   }, [isFocused, fetchListings]);
 
   const sections = useMemo(() => {
-    const myProducts = listings.filter(l => l.sellerId === auth.currentUser?.uid);
+    const myProducts = listings.filter(l => l.sellerId === auth.currentUser?.uid && l.type !== 'job');
     const otherProducts = listings.filter(l => l.sellerId !== auth.currentUser?.uid && l.type !== 'job');
     const jobs = listings.filter(l => l.type === 'job');
 
@@ -275,7 +275,7 @@ export const HomeScreen = ({ navigation }: any) => {
 
         {sections.products.length > 0 && (activeCategory === 'All' || activeCategory !== 'Jobs') && (
           <View>
-            {renderSectionHeader('Fresh Recommendations')}
+            {renderSectionHeader('Browse All')}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16 }}>
               {sections.products.map((item) => (
                 <View key={item.id} style={{ width: '48%' }}>

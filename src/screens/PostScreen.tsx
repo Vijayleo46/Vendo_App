@@ -185,6 +185,17 @@ export const PostScreen = ({ route, navigation }: any) => {
                 >
                     <Typography style={styles.doneBtnText}>Go to My Ads</Typography>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.backHomeBtn}
+                    onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'HomeTabs', params: { screen: 'Home' } }],
+                        });
+                    }}
+                >
+                    <Typography style={styles.backHomeBtnText}>Back to Home</Typography>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -393,5 +404,7 @@ const styles = StyleSheet.create({
     successContainer: { flex: 1, backgroundColor: '#002f34', justifyContent: 'center', alignItems: 'center' },
     successIcon: { width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center' },
     doneBtn: { marginTop: 30, backgroundColor: '#FFF', paddingHorizontal: 40, paddingVertical: 15, borderRadius: 25 },
-    doneBtnText: { color: '#002f34', fontWeight: '800' }
+    doneBtnText: { color: '#002f34', fontWeight: '800' },
+    backHomeBtn: { marginTop: 15, backgroundColor: 'transparent', paddingHorizontal: 40, paddingVertical: 15, borderRadius: 25, borderWidth: 2, borderColor: '#FFF' },
+    backHomeBtnText: { color: '#FFF', fontWeight: '800' }
 });

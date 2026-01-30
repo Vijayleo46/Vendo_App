@@ -106,7 +106,7 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                             style={{ color: '#002f34', fontSize: 18, fontWeight: '900' }}
                             numberOfLines={1}
                         >
-                            {type === 'job' ? price : `₹${displayPrice}`}
+                            {type === 'job' ? price : `₹ ${displayPrice}`}
                         </Typography>
                         {type === 'job' && (
                             <View style={{ backgroundColor: '#F0F9FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
