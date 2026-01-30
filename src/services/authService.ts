@@ -4,6 +4,8 @@ import {
     signOut,
     onAuthStateChanged,
     updateProfile,
+    sendEmailVerification,
+    sendPasswordResetEmail,
     User
 } from 'firebase/auth';
 import { auth } from '../core/config/firebase';
@@ -14,12 +16,12 @@ export const authService = {
         console.log('=== REGISTER ATTEMPT ===');
         console.log('Email:', email);
         console.log('Display Name:', displayName);
-        
+
         try {
             console.log('Creating user with Firebase...');
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             console.log('✅ User created:', userCredential.user.uid);
-            
+
             // Update display name if provided
             if (displayName) {
                 console.log('Updating display name...');
@@ -28,7 +30,7 @@ export const authService = {
                 });
                 console.log('✅ Display name updated');
             }
-            
+
             return userCredential.user;
         } catch (error: any) {
             console.error('=== REGISTER ERROR ===');
@@ -43,7 +45,7 @@ export const authService = {
         console.log('=== LOGIN ATTEMPT ===');
         console.log('Email:', email);
         console.log('Password length:', password.length);
-        
+
         try {
             console.log('Calling Firebase signInWithEmailAndPassword...');
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -76,5 +78,29 @@ export const authService = {
     // Get current user
     getCurrentUser: () => {
         return auth.currentUser;
+    },
+
+    // Send verification email
+    sendVerificationEmail: async (user: User) => {
+        console.log('Sending verification email to:', user.email);
+        try {
+            await sendEmailVerification(user);
+            console.log('✅ Verification email sent');
+        } catch (error: any) {
+            console.error('Error sending verification email:', error);
+            throw error;
+        }
+    },
+
+    // Send password reset email
+    sendPasswordReset: async (email: string) => {
+        console.log('Sending password reset email to:', email);
+        try {
+            await sendPasswordResetEmail(auth, email);
+            console.log('✅ Password reset email sent');
+        } catch (error: any) {
+            console.error('Error sending password reset email:', error);
+            throw error;
+        }
     }
 };

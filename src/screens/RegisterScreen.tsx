@@ -19,6 +19,7 @@ export const RegisterScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -27,39 +28,50 @@ export const RegisterScreen = ({ navigation }: any) => {
         console.log('=== REGISTER BUTTON CLICKED ===');
         console.log('Name:', name);
         console.log('Email:', email);
-        
+        console.log('Phone:', phoneNumber);
+
         if (!name || !email || !password) {
             console.log('❌ Missing fields');
             alert('Please fill all fields');
             return;
         }
-        
+
         if (password.length < 6) {
             alert('Password must be at least 6 characters');
             return;
         }
-        
+
         setLoading(true);
         console.log('Loading set to true...');
-        
+
         try {
             console.log('Calling authService.register...');
             const user = await authService.register(email, password, name);
             console.log('✅ Registration successful! User:', user.uid);
             console.log('Display name:', user.displayName);
-            
+
             if (user) {
                 console.log('Creating user profile...');
-                await userService.updateProfile(user.uid, {
+                const profileData: any = {
                     uid: user.uid,
                     email: user.email || '',
                     displayName: name,
                     createdAt: new Date(),
                     kycStatus: 'unverified'
-                } as any);
+                };
+
+                if (phoneNumber) {
+                    profileData.phone = phoneNumber;
+                }
+
+                await userService.updateProfile(user.uid, profileData);
                 console.log('✅ User profile created');
+
+                // Send verification email
+                await authService.sendVerificationEmail(user);
+                alert('Account created! Please check your email to verify your account.');
             }
-            
+
             console.log('Navigating to Main...');
             navigation.replace('Main');
         } catch (error: any) {
@@ -67,7 +79,7 @@ export const RegisterScreen = ({ navigation }: any) => {
             console.error('Error:', error);
             console.error('Error code:', error.code);
             console.error('Error message:', error.message);
-            
+
             let errorMessage = 'Registration failed. Please try again.';
             if (error.code === 'auth/email-already-in-use') {
                 errorMessage = 'This email is already registered.';
@@ -76,7 +88,7 @@ export const RegisterScreen = ({ navigation }: any) => {
             } else if (error.code === 'auth/weak-password') {
                 errorMessage = 'Password is too weak. Use at least 6 characters.';
             }
-            
+
             alert(errorMessage);
         } finally {
             setLoading(false);
@@ -95,9 +107,9 @@ export const RegisterScreen = ({ navigation }: any) => {
             >
                 {/* Wave Pattern Overlay */}
                 <View style={styles.wavePattern} />
-                
+
                 {/* Back Button */}
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => navigation?.goBack()}
                 >
@@ -111,7 +123,7 @@ export const RegisterScreen = ({ navigation }: any) => {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.cardContainer}
             >
-                <ScrollView 
+                <ScrollView
                     style={styles.card}
                     contentContainerStyle={styles.cardContent}
                     showsVerticalScrollIndicator={false}
@@ -151,6 +163,18 @@ export const RegisterScreen = ({ navigation }: any) => {
                         />
                     </View>
 
+                    {/* Phone Number Input */}
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={[styles.input, { color: theme.text }]}
+                            placeholder="Enter phone number"
+                            placeholderTextColor="#999"
+                            value={phoneNumber}
+                            onChangeText={setPhoneNumber}
+                            keyboardType="phone-pad"
+                        />
+                    </View>
+
                     {/* Password Input */}
                     <View style={styles.inputContainer}>
                         <TextInput
@@ -161,7 +185,7 @@ export const RegisterScreen = ({ navigation }: any) => {
                             onChangeText={setPassword}
                             secureTextEntry={!showPassword}
                         />
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={styles.eyeIcon}
                             onPress={() => setShowPassword(!showPassword)}
                         >
@@ -181,7 +205,7 @@ export const RegisterScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
 
                     {/* Get Started Button */}
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.registerButton}
                         onPress={handleRegister}
                         disabled={loading}

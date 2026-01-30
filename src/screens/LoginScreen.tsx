@@ -26,20 +26,25 @@ export const LoginScreen = ({ navigation }: any) => {
         console.log('=== LOGIN BUTTON CLICKED ===');
         console.log('Email:', email);
         console.log('Password:', password ? '***' : 'empty');
-        
+
         if (!email || !password) {
             console.log('❌ Email or password empty');
             alert('Please enter email and password');
             return;
         }
-        
+
         setLoading(true);
         console.log('Loading set to true...');
-        
+
         try {
             console.log('Calling authService.login...');
             const user = await authService.login(email, password);
             console.log('✅ Login successful! User:', user.uid);
+
+            if (!user.emailVerified) {
+                alert('Please verify your email address to access all features.');
+            }
+
             console.log('Navigating to Main...');
             navigation.replace('Main');
         } catch (error: any) {
@@ -47,7 +52,7 @@ export const LoginScreen = ({ navigation }: any) => {
             console.error('Error:', error);
             console.error('Error code:', error.code);
             console.error('Error message:', error.message);
-            
+
             let errorMessage = 'Login failed. Please check your credentials.';
             if (error.code === 'auth/user-not-found') {
                 errorMessage = 'No account found with this email.';
@@ -58,7 +63,7 @@ export const LoginScreen = ({ navigation }: any) => {
             } else if (error.code === 'auth/too-many-requests') {
                 errorMessage = 'Too many failed attempts. Try again later.';
             }
-            
+
             alert(errorMessage);
         } finally {
             setLoading(false);
@@ -77,7 +82,7 @@ export const LoginScreen = ({ navigation }: any) => {
             >
                 {/* Wave Pattern Overlay */}
                 <View style={styles.wavePattern} pointerEvents="none" />
-                
+
                 {/* Back Button */}
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <ArrowLeft size={24} color="#333" strokeWidth={2} />
@@ -90,7 +95,7 @@ export const LoginScreen = ({ navigation }: any) => {
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 style={styles.cardContainer}
             >
-                <ScrollView 
+                <ScrollView
                     style={styles.card}
                     contentContainerStyle={styles.cardContent}
                     showsVerticalScrollIndicator={false}
@@ -131,7 +136,7 @@ export const LoginScreen = ({ navigation }: any) => {
                             editable={true}
                             selectTextOnFocus={true}
                         />
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={styles.eyeIcon}
                             onPress={() => setShowPassword(!showPassword)}
                         >
@@ -145,7 +150,7 @@ export const LoginScreen = ({ navigation }: any) => {
 
                     {/* Remember Me & Forgot Password */}
                     <View style={styles.optionsRow}>
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={styles.rememberRow}
                             onPress={() => setRememberMe(!rememberMe)}
                         >
@@ -156,7 +161,7 @@ export const LoginScreen = ({ navigation }: any) => {
                                 Remember me
                             </Typography>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
                             <Typography variant="bodySmall" style={styles.forgotText}>
                                 Forgot password?
                             </Typography>
@@ -164,7 +169,7 @@ export const LoginScreen = ({ navigation }: any) => {
                     </View>
 
                     {/* Login Button */}
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.loginButton}
                         onPress={handleLogin}
                         disabled={loading}

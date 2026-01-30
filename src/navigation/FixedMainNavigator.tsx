@@ -25,6 +25,7 @@ import { WishlistScreen } from '../screens/WishlistScreen';
 import { LandingScreen } from '../screens/LandingScreen';
 import { ImageViewerScreen } from '../screens/ImageViewerScreen';
 import { WalletScreen } from '../screens/WalletScreen';
+import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
 
 import { authService } from '../services/authService';
 
@@ -178,6 +179,7 @@ export const FixedMainNavigator = () => {
                         <Stack.Screen name="Landing" component={LandingScreen} />
                         <Stack.Screen name="Login" component={LoginScreen} />
                         <Stack.Screen name="Register" component={RegisterScreen} />
+                        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
                     </>
                 ) : (
                     <>
