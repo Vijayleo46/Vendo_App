@@ -1,0 +1,19 @@
+
+> mp-shop@1.0.0 web
+> expo start --web
+
+Starting project at C:\Users\vijay\OneDrive\Desktop\mp shop
+Error: error TS6053: File 'expo/tsconfig.json' not found.
+
+Error: error TS6053: File 'expo/tsconfig.json' not found.
+
+    at evaluateTsConfig (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\utils\tsconfig\evaluateTsConfig.ts:33:13)
+    at readTsconfigAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\utils\tsconfig\loadTsConfigPaths.ts:56:43)
+    at loadTsConfigPathsAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\utils\tsconfig\loadTsConfigPaths.ts:25:19)
+    at withMetroMultiPlatformAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\start\server\metro\withMetroMultiPlatform.ts:817:16)
+    at loadMetroConfigAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\start\server\metro\instantiateMetro.ts:152:12)
+    at instantiateMetroAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\start\server\metro\instantiateMetro.ts:195:53)
+    at MetroBundlerDevServer.startImplementationAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\start\server\metro\MetroBundlerDevServer.ts:940:69)
+    at MetroBundlerDevServer.startAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\start\server\BundlerDevServer.ts:160:18)
+    at DevServerManager.startAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\start\server\DevServerManager.ts:184:7)
+    at startAsync (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\cli\src\start\startAsync.ts:99:3)

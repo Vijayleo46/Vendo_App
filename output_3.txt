@@ -1,0 +1,74 @@
+Starting project at C:\Users\vijay\OneDrive\Desktop\mp shop
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  @expo/metro-runtime@4.0.1 - expected version: ~6.1.2
+  babel-preset-expo@12.0.11 - expected version: ~54.0.9
+  expo-asset@11.0.5 - expected version: ~12.0.12
+  expo-blur@14.0.3 - expected version: ~15.0.8
+  expo-font@13.0.4 - expected version: ~14.0.10
+  expo-image-picker@16.0.6 - expected version: ~17.0.10
+  expo-linear-gradient@14.0.2 - expected version: ~15.0.8
+  expo-status-bar@2.0.1 - expected version: ~3.0.9
+  react@18.3.1 - expected version: 19.1.0
+  react-dom@18.3.1 - expected version: 19.1.0
+  react-native@0.76.9 - expected version: 0.81.5
+  react-native-reanimated@3.16.7 - expected version: ~4.1.1
+  react-native-safe-area-context@4.12.0 - expected version: ~5.6.0
+  react-native-screens@4.4.0 - expected version: ~4.16.0
+  react-native-web@0.19.13 - expected version: ^0.21.0
+  @types/react@18.3.27 - expected version: ~19.1.10
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web node_modules\expo\AppEntry.js ΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ  0.0% (0/1)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 25.0% ( 7/14)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæ 98.9% (173/174)
+Web Bundling failed 8039ms node_modules\expo\AppEntry.js (176 modules)
+Unable to resolve "@react-navigation/native-stack" from "src\navigation\MainNavigator.tsx"
+[0m [90m 1 |[39m [36mimport[39m [33mReact[39m[33m,[39m { useEffect[33m,[39m useState } [36mfrom[39m [32m'react'[39m[33m;[39m
+ [90m 2 |[39m [36mimport[39m { createBottomTabNavigator } [36mfrom[39m [32m'@react-navigation/bottom-tabs'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m { createNativeStackNavigator } [36mfrom[39m [32m'@react-navigation/native-stack'[39m[33m;[39m
+ [90m   |[39m                                             [31m[1m^[22m[39m
+ [90m 4 |[39m [36mimport[39m { [33mNavigationContainer[39m } [36mfrom[39m [32m'@react-navigation/native'[39m[33m;[39m
+ [90m 5 |[39m [36mimport[39m { [33mView[39m[33m,[39m [33mStyleSheet[39m[33m,[39m [33mTouchableOpacity[39m[33m,[39m [33mPlatform[39m } [36mfrom[39m [32m'react-native'[39m[33m;[39m
+ [90m 6 |[39m [36mimport[39m { [33mHome[39m[33m,[39m [33mSearch[39m[33m,[39m [33mPlus[39m[33m,[39m [33mMessageCircle[39m[33m,[39m [33mUser[39m } [36mfrom[39m [32m'lucide-react-native'[39m[33m;[39m[0m
+
+Import stack:
+
+ src\navigation\MainNavigator.tsx
+ | import "@react-navigation/native-stack"
+
+ App.tsx
+ | import "./src/navigation/MainNavigator"
+
+ node_modules\expo\AppEntry.js
+ | import "../../App"
+
+ 
+ | import "./node_modules/expo/AppEntry"
+
+Web node_modules\expo\AppEntry.js ΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ  0.0% (0/1)
+Web Bundling failed 358ms node_modules\expo\AppEntry.js (133 modules)
+Unable to resolve "@react-navigation/native-stack" from "src\navigation\MainNavigator.tsx"
+[0m [90m 1 |[39m [36mimport[39m [33mReact[39m[33m,[39m { useEffect[33m,[39m useState } [36mfrom[39m [32m'react'[39m[33m;[39m
+ [90m 2 |[39m [36mimport[39m { createBottomTabNavigator } [36mfrom[39m [32m'@react-navigation/bottom-tabs'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m { createNativeStackNavigator } [36mfrom[39m [32m'@react-navigation/native-stack'[39m[33m;[39m
+ [90m   |[39m                                             [31m[1m^[22m[39m
+ [90m 4 |[39m [36mimport[39m { [33mNavigationContainer[39m } [36mfrom[39m [32m'@react-navigation/native'[39m[33m;[39m
+ [90m 5 |[39m [36mimport[39m { [33mView[39m[33m,[39m [33mStyleSheet[39m[33m,[39m [33mTouchableOpacity[39m[33m,[39m [33mPlatform[39m } [36mfrom[39m [32m'react-native'[39m[33m;[39m
+ [90m 6 |[39m [36mimport[39m { [33mHome[39m[33m,[39m [33mSearch[39m[33m,[39m [33mPlus[39m[33m,[39m [33mMessageCircle[39m[33m,[39m [33mUser[39m } [36mfrom[39m [32m'lucide-react-native'[39m[33m;[39m[0m
+
+Import stack:
+
+ src\navigation\MainNavigator.tsx
+ | import "@react-navigation/native-stack"
+
+ App.tsx
+ | import "./src/navigation/MainNavigator"
+
+ node_modules\expo\AppEntry.js
+ | import "../../App"
+
+ 
+ | import "./node_modules/expo/AppEntry"
+

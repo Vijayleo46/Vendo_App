@@ -1,0 +1,6 @@
+The following packages should be updated for best compatibility with the installed expo version:
+  babel-preset-expo@54.0.9 - expected version: ~54.0.10
+  expo@54.0.31 - expected version: ~54.0.32
+  expo-font@14.0.10 - expected version: ~14.0.11
+Your project may not work correctly until you install the expected versions of the packages.
+Found outdated dependencies

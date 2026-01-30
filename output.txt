@@ -1,0 +1,13 @@
+Starting project at C:\Users\vijay\OneDrive\Desktop\mp shop
+Error: The required package `expo-asset` cannot be found
+Error: The required package `expo-asset` cannot be found
+    at getAssetPlugins (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\metro-config\src\ExpoMetroConfig.ts:65:11)
+    at getDefaultConfig (C:\Users\vijay\OneDrive\Desktop\mp shop\node_modules\@expo\metro-config\src\ExpoMetroConfig.ts:373:21)
+    at Object.<anonymous> (C:\Users\vijay\OneDrive\Desktop\mp shop\metro.config.js:3:16)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)

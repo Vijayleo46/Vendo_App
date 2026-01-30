@@ -1,0 +1,57 @@
+Starting project at C:\Users\vijay\OneDrive\Desktop\mp shop
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  @expo/metro-runtime@4.0.1 - expected version: ~6.1.2
+  babel-preset-expo@12.0.11 - expected version: ~54.0.9
+  expo-asset@11.0.5 - expected version: ~12.0.12
+  expo-blur@14.0.3 - expected version: ~15.0.8
+  expo-font@13.0.4 - expected version: ~14.0.10
+  expo-image-picker@16.0.6 - expected version: ~17.0.10
+  expo-linear-gradient@14.0.2 - expected version: ~15.0.8
+  expo-status-bar@2.0.1 - expected version: ~3.0.9
+  react@18.3.1 - expected version: 19.1.0
+  react-dom@18.3.1 - expected version: 19.1.0
+  react-native@0.76.9 - expected version: 0.81.5
+  react-native-reanimated@3.16.7 - expected version: ~4.1.1
+  react-native-web@0.19.13 - expected version: ^0.21.0
+  @types/react@18.3.27 - expected version: ~19.1.10
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8085
+Logs for your project will appear below.
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæΓûæΓûæΓûæΓûæΓûæ 50.3% (100/141)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæ 82.1% (188/246)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæ 82.1% ( 326/2000)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæ 82.1% ( 582/2083)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæ 82.1% ( 870/2083)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæ 82.1% (1221/2085)
+Web node_modules\expo\AppEntry.js ΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûôΓûæΓûæΓûæ 82.1% (1825/2085)
+Web Bundling failed 25534ms node_modules\expo\AppEntry.js (2164 modules)
+Unable to resolve "../theme/ThemeContext" from "src\components\common\Typography.tsx"
+[0m [90m 1 |[39m [36mimport[39m [33mReact[39m [36mfrom[39m [32m'react'[39m[33m;[39m
+ [90m 2 |[39m [36mimport[39m { [33mText[39m[33m,[39m [33mTextProps[39m[33m,[39m [33mTextStyle[39m } [36mfrom[39m [32m'react-native'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m { useTheme } [36mfrom[39m [32m'../theme/ThemeContext'[39m[33m;[39m
+ [90m   |[39m                           [31m[1m^[22m[39m
+ [90m 4 |[39m [36mimport[39m { typography } [36mfrom[39m [32m'../theme/typography'[39m[33m;[39m
+ [90m 5 |[39m
+ [90m 6 |[39m [36minterface[39m [33mTypographyProps[39m [36mextends[39m [33mTextProps[39m {[0m
+
+Import stack:
+
+ src\components\common\Typography.tsx
+ | import "../theme/ThemeContext"
+
+ src\screens\SearchScreen.tsx
+ | import "../components/common/Typography"
+
+ src\navigation\MainNavigator.tsx
+ | import "../screens/SearchScreen"
+
+ App.tsx
+ | import "./src/navigation/MainNavigator"
+
+ node_modules\expo\AppEntry.js
+ | import "../../App"
+
+ 
+ | import "./node_modules/expo/AppEntry"
+

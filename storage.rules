@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Listings images
+    match /listings/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated(); // Removed size restriction for debug
+    }
+
+    // User avatars
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // KYC documents
+    match /kyc/{userId}/{allPaths=**} {
+      allow read: if false; // Private
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Jobs images (Missing rule fix)
+    match /jobs/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Products images (Future proofing)
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
