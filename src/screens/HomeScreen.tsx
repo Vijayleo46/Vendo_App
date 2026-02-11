@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, ScrollView, TouchableOpacity, StatusBar, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
+import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
 import { MotiView, AnimatePresence } from 'moti';
 import { Typography } from '../components/common/Typography';
 import { Search, MapPin, Bell, Home, Smartphone, Car, Briefcase, Settings, Mic, Star, Zap, ChevronLeft } from 'lucide-react-native';
@@ -64,6 +65,33 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
       Search "{texts[index].substring(0, subIndex)}"
       <Typography style={{ color: blink ? '#94A3B8' : 'transparent' }}>|</Typography>
     </Typography>
+  );
+};
+
+const AnimatedCategoryItem = ({ index, children }: { index: number; children: React.ReactNode }) => {
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(20);
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    opacity.value = withDelay(index * 100, withTiming(1, { duration: 500 }));
+    translateY.value = withDelay(index * 100, withTiming(0, { duration: 500 }));
+    // Removed scale animation to prevent "jump" effect
+    scale.value = withTiming(1, { duration: 500 });
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      { translateY: translateY.value },
+      { scale: scale.value }
+    ]
+  }));
+
+  return (
+    <Animated.View style={animatedStyle}>
+      {children}
+    </Animated.View>
   );
 };
 
@@ -230,24 +258,25 @@ export const HomeScreen = ({ navigation }: any) => {
               const isActive = activeCategory === cat.value;
               const Icon = cat.icon;
               return (
-                <TouchableOpacity
-                  key={cat.id}
-                  onPress={() => setActiveCategory(cat.value)}
-                  style={{ alignItems: 'center' }}
-                >
-                  <View style={{
-                    width: 60, height: 60, borderRadius: 30,
-                    backgroundColor: isActive ? OLX_TEAL : '#FFF',
-                    alignItems: 'center', justifyContent: 'center',
-                    borderWidth: 1, borderColor: isActive ? OLX_TEAL : '#E2E8F0',
-                    marginBottom: 8
-                  }}>
-                    <Icon size={24} color={isActive ? '#FFF' : '#334155'} />
-                  </View>
-                  <Typography style={{ fontSize: 12, fontWeight: isActive ? '700' : '500', color: isActive ? OLX_TEAL : '#64748B' }}>
-                    {cat.label}
-                  </Typography>
-                </TouchableOpacity>
+                <AnimatedCategoryItem key={cat.id} index={Number(cat.id)}>
+                  <TouchableOpacity
+                    onPress={() => setActiveCategory(cat.value)}
+                    style={{ alignItems: 'center' }}
+                  >
+                    <View style={{
+                      width: 60, height: 60, borderRadius: 30,
+                      backgroundColor: isActive ? OLX_TEAL : '#FFF',
+                      alignItems: 'center', justifyContent: 'center',
+                      borderWidth: 1, borderColor: isActive ? OLX_TEAL : '#E2E8F0',
+                      marginBottom: 8
+                    }}>
+                      <Icon size={24} color={isActive ? '#FFF' : '#334155'} />
+                    </View>
+                    <Typography style={{ fontSize: 12, fontWeight: isActive ? '700' : '500', color: isActive ? OLX_TEAL : '#64748B' }}>
+                      {cat.label}
+                    </Typography>
+                  </TouchableOpacity>
+                </AnimatedCategoryItem>
               );
             })}
           </ScrollView>

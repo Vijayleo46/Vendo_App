@@ -271,12 +271,14 @@ export const ProfileScreen = ({ navigation }: any) => {
                         label="Get Verified (KYC)"
                         onPress={() => navigation.navigate('KYC')}
                         w />
-                    <MenuItem
-                        index={5}
-                        icon={<Grid size={20} {...{ color: "#1F2937" } as any} />}
-                        label="Admin Dashboard"
-                        onPress={() => navigation.navigate('AdminDashboard')}
-                    />
+                    {userProfile?.isAdmin && (
+                        <MenuItem
+                            index={5}
+                            icon={<Grid size={20} {...{ color: "#1F2937" } as any} />}
+                            label="Admin Dashboard"
+                            onPress={() => navigation.navigate('AdminDashboard')}
+                        />
+                    )}
                     <MenuItem
                         index={6}
                         icon={<Star size={20} {...{ color: "#F59E0B" } as any} />}

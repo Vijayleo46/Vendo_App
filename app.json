@@ -1,26 +1,40 @@
 {
   "expo": {
-    "name": "Marketplace",
-    "slug": "mp-shop",
+    "name": "Trust Market",
+    "slug": "trust-market",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vijay.trustmarket",
+      "buildNumber": "1"
     },
     "android": {
+      "package": "com.vijay.marketplace",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1df1cc6d-80b8-4cb8-aa08-9aa458d79517"
+      }
+    }
   }
 }

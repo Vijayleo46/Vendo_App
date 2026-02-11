@@ -25,6 +25,7 @@ export interface UserProfile {
         marketing: boolean;
         biometric: boolean;
     };
+    isAdmin?: boolean;
 }
 
 export const userService = {
