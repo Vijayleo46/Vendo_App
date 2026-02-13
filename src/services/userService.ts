@@ -150,5 +150,32 @@ export const userService = {
         } catch (error) {
             console.error('Error recalculating trust score:', error);
         }
+    },
+
+    // Get all users (Admin only)
+    getAllUsers: async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, 'users'));
+            return querySnapshot.docs.map(doc => doc.data() as UserProfile);
+        } catch (error) {
+            console.error("Error getting all users: ", error);
+            throw error;
+        }
+    },
+
+    // Update KYC/Verification status
+    updateKycStatus: async (uid: string, status: UserProfile['kycStatus']) => {
+        try {
+            const userRef = doc(db, 'users', uid);
+            await updateDoc(userRef, {
+                kycStatus: status,
+                updatedAt: new Date()
+            });
+            console.log(`✅ KYC status for ${uid} updated to ${status}`);
+            return true;
+        } catch (error) {
+            console.error('Error updating KYC status:', error);
+            throw error;
+        }
     }
 };

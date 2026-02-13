@@ -15,6 +15,7 @@ import Animated, {
     Extrapolate,
 } from 'react-native-reanimated';
 import { hapticFeedback } from './HapticFeedback';
+import { useTheme } from '../../theme/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 90 : 70;
@@ -37,10 +38,11 @@ export const ModernTabBar: React.FC<ModernTabBarProps> = ({
     activeIndex,
     onTabPress,
 }) => {
+    const { theme, isDark } = useTheme();
     const tabWidth = SCREEN_WIDTH / tabs.length;
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.surface, borderTopColor: theme.border }]}>
             <View style={styles.tabsWrapper}>
                 {tabs.map((tab, index) => {
                     const isActive = activeIndex === index;
@@ -67,19 +69,26 @@ export const ModernTabBar: React.FC<ModernTabBarProps> = ({
                         >
                             <Animated.View style={[
                                 styles.iconContainer,
-                                isCenter && styles.centerButton,
+                                isCenter && [
+                                    styles.centerButton,
+                                    {
+                                        backgroundColor: theme.primary,
+                                        borderColor: theme.surface,
+                                        shadowColor: theme.primary
+                                    }
+                                ],
                                 animatedIconStyle
                             ]}>
                                 <Icon
                                     size={isCenter ? 28 : 24}
-                                    color={isActive ? (isCenter ? '#FFFFFF' : '#002f34') : '#94A3B8'}
+                                    color={isCenter ? '#FFFFFF' : (isActive ? theme.primary : theme.textTertiary)}
                                     strokeWidth={isActive ? 2.5 : 2}
                                 />
                             </Animated.View>
                             {!isCenter && (
                                 <Text style={[
                                     styles.label,
-                                    { color: isActive ? '#002f34' : '#94A3B8', fontWeight: isActive ? '700' : '500' }
+                                    { color: isActive ? theme.primary : theme.textTertiary, fontWeight: isActive ? '700' : '500' }
                                 ]}>
                                     {tab.label}
                                 </Text>
@@ -87,7 +96,7 @@ export const ModernTabBar: React.FC<ModernTabBarProps> = ({
                             {isCenter && (
                                 <Text style={[
                                     styles.label,
-                                    { color: isActive ? '#002f34' : '#94A3B8', fontWeight: isActive ? '700' : '500', marginTop: 32 }
+                                    { color: isActive ? theme.primary : theme.textTertiary, fontWeight: isActive ? '700' : '500', marginTop: 32 }
                                 ]}>
                                     {tab.label}
                                 </Text>
@@ -107,9 +116,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: TAB_BAR_HEIGHT,
-        backgroundColor: '#FFFFFF',
         borderTopWidth: 1,
-        borderTopColor: '#F1F5F9',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: -4 },
         shadowOpacity: 0.05,
@@ -137,7 +144,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#002f34',
+        backgroundColor: '#002f34', // Keeping the signature teal for the post button or using theme.primary
         marginTop: -35,
         shadowColor: '#002f34',
         shadowOffset: { width: 0, height: 4 },

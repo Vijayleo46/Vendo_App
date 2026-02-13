@@ -12,6 +12,7 @@ import {
     ShoppingBag,
     Heart,
     Bell,
+    Shield,
     ShieldCheck,
     LogOut,
     Moon,
@@ -90,16 +91,16 @@ export const ProfileScreen = ({ navigation }: any) => {
     const MenuItem = ({ icon, label, rightElement, onPress, index }: any) => (
         <Animated.View entering={FadeInRight.delay(500 + index * 100)}>
             <TouchableOpacity
-                style={[styles.menuItem, { backgroundColor: '#FFF' }]}
+                style={[styles.menuItem, { backgroundColor: theme.surface }]}
                 onPress={onPress}
             >
                 <View style={styles.menuLeft}>
-                    <View style={styles.iconBackground}>
+                    <View style={[styles.iconBackground, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#F9FAFB' }]}>
                         {icon}
                     </View>
-                    <Typography variant="bodyMedium" style={{ marginLeft: 16, fontWeight: '600' }}>{label}</Typography>
+                    <Typography variant="bodyMedium" style={{ marginLeft: 16, fontWeight: '600', color: theme.text }}>{label}</Typography>
                 </View>
-                {rightElement || <ChevronRight size={20} {...{ color: "#9CA3AF" } as any} />}
+                {rightElement || <ChevronRight size={20} color={theme.textTertiary} />}
             </TouchableOpacity>
         </Animated.View>
     );
@@ -115,22 +116,22 @@ export const ProfileScreen = ({ navigation }: any) => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: '#F9FAFB' }]}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 120 }}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#002f34']} />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} />
                 }
             >
                 {/* Premium Header */}
-                <View style={[styles.header, { paddingTop: 60, paddingHorizontal: 16, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#e8ebed' }]}>
-                    <Typography variant="h1" style={{ fontSize: 28, fontWeight: '700', color: '#002f34' }}>Profile</Typography>
+                <View style={[styles.header, { paddingTop: 60, paddingHorizontal: 16, backgroundColor: theme.surface, borderBottomWidth: 1, borderBottomColor: theme.border }]}>
+                    <Typography variant="h1" style={{ fontSize: 28, fontWeight: '700', color: theme.text }}>Profile</Typography>
                     <TouchableOpacity
-                        style={styles.settingsBtn}
+                        style={[styles.settingsBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#FFF' }]}
                         onPress={() => navigation.navigate('Settings')}
                     >
-                        <Settings size={22} color="#002f34" strokeWidth={2} />
+                        <Settings size={22} color={theme.text} strokeWidth={2} />
                     </TouchableOpacity>
                 </View>
 
@@ -139,7 +140,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     <TouchableOpacity
                         activeOpacity={0.9}
                         onPress={() => navigation.navigate('EditProfile')}
-                        style={styles.avatarGlow}
+                        style={[styles.avatarGlow, { backgroundColor: isDark ? theme.surface : '#FFF' }]}
                     >
                         <Image
                             key={photoURL}
@@ -156,15 +157,15 @@ export const ProfileScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
 
                     <View style={styles.userInfo}>
-                        <Typography variant="h2" style={{ textAlign: 'center' }}>{displayName}</Typography>
-                        <Typography variant="bodySmall" color="#9CA3AF" style={{ textAlign: 'center' }}>{email}</Typography>
+                        <Typography variant="h2" style={{ textAlign: 'center', color: theme.text }}>{displayName}</Typography>
+                        <Typography variant="bodySmall" color={theme.textSecondary} style={{ textAlign: 'center' }}>{email}</Typography>
                         {location && (
-                            <Typography variant="bodySmall" color="#6366F1" style={{ textAlign: 'center', marginTop: 4 }}>
+                            <Typography variant="bodySmall" style={{ textAlign: 'center', marginTop: 4, color: theme.primary }}>
                                 📍 {location}
                             </Typography>
                         )}
                         {bio && (
-                            <Typography variant="bodySmall" color="#6B7280" style={{ textAlign: 'center', marginTop: 8, paddingHorizontal: 20 }}>
+                            <Typography variant="bodySmall" style={{ textAlign: 'center', marginTop: 8, paddingHorizontal: 20, color: theme.textSecondary }}>
                                 {bio}
                             </Typography>
                         )}
@@ -172,27 +173,27 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </Animated.View>
 
                 {/* Premium Stats bar */}
-                <Animated.View entering={FadeInUp.delay(300)} style={styles.statsBar}>
+                <Animated.View entering={FadeInUp.delay(300)} style={[styles.statsBar, { backgroundColor: theme.surface }]}>
                     <View style={styles.statItem}>
-                        <Typography variant="h3">{userListingCount}</Typography>
-                        <Typography variant="bodySmall" color="#9CA3AF">Listings</Typography>
+                        <Typography variant="h3" style={{ color: theme.text }}>{userListingCount}</Typography>
+                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>Listings</Typography>
                     </View>
-                    <View style={styles.statDivider} />
+                    <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
                     <View style={styles.statItem}>
-                        <Typography variant="h3">{userProfile?.coins || 0}</Typography>
-                        <Typography variant="bodySmall" color="#F59E0B" style={{ fontWeight: '700' }}>Coins</Typography>
+                        <Typography variant="h3" style={{ color: theme.text }}>{userProfile?.coins || 0}</Typography>
+                        <Typography variant="bodySmall" style={{ color: '#F59E0B', fontWeight: '700' }}>Coins</Typography>
                     </View>
-                    <View style={styles.statDivider} />
+                    <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
                     <View style={styles.statItem}>
-                        <Typography variant="h3">{salesCount}</Typography>
-                        <Typography variant="bodySmall" color="#9CA3AF">Sales</Typography>
+                        <Typography variant="h3" style={{ color: theme.text }}>{salesCount}</Typography>
+                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>Sales</Typography>
                     </View>
                 </Animated.View>
 
                 {/* Vendo Coins Reward Card */}
-                <Animated.View entering={FadeInUp.delay(400)} style={styles.coinsCard}>
+                <Animated.View entering={FadeInUp.delay(400)} style={[styles.coinsCard, { backgroundColor: theme.surface }]}>
                     <LinearGradient
-                        colors={['#002f34', '#004d56']}
+                        colors={isDark ? [theme.surface, '#000'] : ['#002f34', '#004d56']}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={styles.coinsGradient}
@@ -216,65 +217,87 @@ export const ProfileScreen = ({ navigation }: any) => {
                             </TouchableOpacity>
                         </View>
                     </LinearGradient>
-                    <View style={styles.coinsTipRefined}>
-                        <Typography style={{ color: '#002f34', fontSize: 11, fontWeight: '600' }}>💡 TIP: 150 Coins = ₹50 discount on any product you buy!</Typography>
+                    <View style={[styles.coinsTipRefined, { backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : '#F0FDFA', borderTopColor: theme.border }]}>
+                        <Typography style={{ color: isDark ? theme.textTertiary : '#002f34', fontSize: 11, fontWeight: '600' }}>💡 TIP: 150 Coins = ₹50 discount on any product you buy!</Typography>
                     </View>
                 </Animated.View>
 
                 {/* Menu Sections */}
                 <View style={styles.menuSection}>
-                    <Typography variant="label" color="#9CA3AF" style={styles.sectionTitle}>ACCOUNT</Typography>
+                    <Typography variant="label" color={theme.textTertiary} style={styles.sectionTitle}>ACCOUNT</Typography>
                     <MenuItem
                         index={0}
-                        icon={<User size={20} {...{ color: "#1F2937" } as any} />}
+                        icon={<User size={20} color={isDark ? theme.primary : "#1F2937"} />}
                         label="Edit Profile"
                         onPress={() => navigation.navigate('EditProfile')}
                     />
                     <MenuItem
                         index={1}
-                        icon={<ShoppingBag size={20} {...{ color: "#1F2937" } as any} />}
+                        icon={<ShoppingBag size={20} color={isDark ? theme.primary : "#1F2937"} />}
                         label="My Listings"
                         onPress={() => navigation.navigate('MyListings')}
                     />
                     <MenuItem
                         index={2}
-                        icon={<Heart size={20} {...{ color: "#1F2937" } as any} />}
+                        icon={<Heart size={20} color={isDark ? theme.primary : "#1F2937"} />}
                         label="Saved Items"
                         onPress={() => navigation.navigate('Wishlist')}
                     />
                     <MenuItem
                         index={3}
-                        icon={<Wallet size={20} {...{ color: "#F59E0B" } as any} />}
+                        icon={<Wallet size={20} color="#F59E0B" />}
                         label="SuperCoin Wallet"
                         onPress={() => navigation.navigate('Wallet')}
+                    />
+                    <MenuItem
+                        index={4}
+                        icon={<Shield size={20} color={theme.primary} />}
+                        label="Admin Access"
+                        rightElement={
+                            <Switch
+                                value={userProfile?.isAdmin || false}
+                                onValueChange={async (value) => {
+                                    if (!user) return;
+                                    try {
+                                        await userService.updateProfile(user.uid, { isAdmin: value });
+                                        setUserProfile({ ...userProfile, isAdmin: value });
+                                        Alert.alert('Admin Mode', value ? 'Admin access enabled!' : 'Admin access disabled.');
+                                    } catch (e) {
+                                        Alert.alert('Error', 'Failed to update admin status.');
+                                    }
+                                }}
+                                trackColor={{ false: '#E5E7EB', true: theme.primary }}
+                                thumbColor="#FFF"
+                            />
+                        }
                     />
                 </View>
 
                 <View style={[styles.menuSection, { marginTop: 24 }]}>
-                    <Typography variant="label" color="#9CA3AF" style={styles.sectionTitle}>PREFERENCES</Typography>
+                    <Typography variant="label" color={theme.textTertiary} style={styles.sectionTitle}>PREFERENCES</Typography>
                     <MenuItem
                         index={3}
-                        icon={<Moon size={20} {...{ color: "#1F2937" } as any} />}
+                        icon={<Moon size={20} color={isDark ? theme.primary : "#1F2937"} />}
                         label="Dark Mode"
                         rightElement={
                             <Switch
                                 value={isDark}
                                 onValueChange={toggleTheme}
-                                trackColor={{ false: '#E5E7EB', true: '#1F2937' }}
+                                trackColor={{ false: '#E5E7EB', true: theme.primary }}
                                 thumbColor="#FFF"
                             />
                         }
                     />
                     <MenuItem
                         index={4}
-                        icon={<ShieldCheck size={20} {...{ color: "#1F2937" } as any} />}
+                        icon={<ShieldCheck size={20} color={isDark ? theme.primary : "#1F2937"} />}
                         label="Get Verified (KYC)"
                         onPress={() => navigation.navigate('KYC')}
-                        w />
+                    />
                     {userProfile?.isAdmin && (
                         <MenuItem
                             index={5}
-                            icon={<Grid size={20} {...{ color: "#1F2937" } as any} />}
+                            icon={<Grid size={20} color={theme.primary} />}
                             label="Admin Dashboard"
                             onPress={() => navigation.navigate('AdminDashboard')}
                         />
@@ -312,7 +335,7 @@ export const ProfileScreen = ({ navigation }: any) => {
 
                 <Animated.View entering={FadeInUp.delay(900)} style={{ paddingHorizontal: 24, marginTop: 40 }}>
                     <TouchableOpacity
-                        style={styles.logoutBtn}
+                        style={[styles.logoutBtn, { backgroundColor: theme.surface, borderColor: isDark ? theme.border : '#FEE2E2' }]}
                         onPress={async () => {
                             try {
                                 await authService.logout();
@@ -321,7 +344,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                             }
                         }}
                     >
-                        <LogOut size={20} {...{ color: "#EF4444" } as any} />
+                        <LogOut size={20} color="#EF4444" />
                         <Typography variant="bodyMedium" style={{ marginLeft: 12, fontWeight: '700', color: '#EF4444' }}>Sign Out</Typography>
                     </TouchableOpacity>
                 </Animated.View>

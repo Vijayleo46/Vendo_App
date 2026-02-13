@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProductCard } from '../components/ProductCard';
 import { auth } from '../core/config/firebase';
 import { userService, UserProfile } from '../services/userService';
+import { useTheme } from '../theme/ThemeContext';
 
 const OLX_TEAL = '#002f34';
 const PLACEHOLDERS = ['cars', 'jobs', 'mobiles', 'properties', 'everything'];
@@ -96,6 +97,7 @@ const AnimatedCategoryItem = ({ index, children }: { index: number; children: Re
 };
 
 export const HomeScreen = ({ navigation }: any) => {
+  const { theme, isDark } = useTheme();
   const isFocused = useIsFocused();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,12 +177,12 @@ export const HomeScreen = ({ navigation }: any) => {
 
   const renderSectionHeader = (title: string, onSeeAll?: () => void) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
-      <Typography style={{ color: '#002f34', fontSize: 18, fontWeight: '900', letterSpacing: 0.5 }}>
+      <Typography style={{ color: theme.text, fontSize: 18, fontWeight: '900', letterSpacing: 0.5 }}>
         {title}
       </Typography>
       {onSeeAll && (
         <TouchableOpacity onPress={onSeeAll}>
-          <Typography style={{ color: '#002f34', fontSize: 13, fontWeight: '700', opacity: 0.5 }}>See All</Typography>
+          <Typography style={{ color: theme.text, fontSize: 13, fontWeight: '700', opacity: 0.5 }}>See All</Typography>
         </TouchableOpacity>
       )}
     </View>
@@ -188,38 +190,38 @@ export const HomeScreen = ({ navigation }: any) => {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FAFAFA' }}>
-        <ActivityIndicator color={OLX_TEAL} size="large" />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.background }}>
+        <ActivityIndicator color={theme.primary} size="large" />
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: '#FAFAFA' }}>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
+      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.background }}>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 16 }}>
-          <Typography style={{ color: OLX_TEAL, fontSize: 28, fontWeight: '900', letterSpacing: -1 }}>
+          <Typography style={{ color: theme.text, fontSize: 28, fontWeight: '900', letterSpacing: -1 }}>
             VENDO
           </Typography>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F9FF', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, gap: 4 }}>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F0F9FF', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, gap: 4 }}>
               <Star size={14} color="#FBBF24" fill="#FBBF24" />
-              <Typography style={{ color: '#002f34', fontSize: 13, fontWeight: '800' }}>{userProfile?.coins || 0}</Typography>
+              <Typography style={{ color: theme.text, fontSize: 13, fontWeight: '800' }}>{userProfile?.coins || 0}</Typography>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Bell size={24} color={OLX_TEAL} />
+              <Bell size={24} color={theme.text} />
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 16, marginTop: 4, gap: 4 }}>
-          <MapPin size={16} color={OLX_TEAL} />
-          <Typography style={{ color: OLX_TEAL, fontSize: 14, fontWeight: '700' }}>
+          <MapPin size={16} color={theme.text} />
+          <Typography style={{ color: theme.text, fontSize: 14, fontWeight: '700' }}>
             {location?.split(',')[0] || 'Kochi'}
           </Typography>
-          <ChevronLeft size={14} color={OLX_TEAL} style={{ transform: [{ rotate: '-90deg' }] }} />
+          <ChevronLeft size={14} color={theme.text} style={{ transform: [{ rotate: '-90deg' }] }} />
         </View>
 
         <TouchableOpacity
@@ -228,22 +230,22 @@ export const HomeScreen = ({ navigation }: any) => {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: '#FFF',
+            backgroundColor: theme.card,
             marginHorizontal: 20,
             paddingHorizontal: 16,
             height: 52,
             borderRadius: 12,
             borderWidth: 1,
-            borderColor: '#E2E8F0',
+            borderColor: theme.border,
             marginBottom: 10
           }}
         >
-          <Search size={20} color="#64748B" />
+          <Search size={20} color={theme.textSecondary} />
           <View style={{ flex: 1, marginLeft: 12, height: 20, justifyContent: 'center' }}>
             <Typewriter texts={PLACEHOLDERS} />
           </View>
-          <View style={{ width: 1, height: 20, backgroundColor: '#E2E8F0', marginHorizontal: 10 }} />
-          <Mic size={20} color={OLX_TEAL} />
+          <View style={{ width: 1, height: 20, backgroundColor: theme.border, marginHorizontal: 10 }} />
+          <Mic size={20} color={theme.primary} />
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -265,14 +267,14 @@ export const HomeScreen = ({ navigation }: any) => {
                   >
                     <View style={{
                       width: 60, height: 60, borderRadius: 30,
-                      backgroundColor: isActive ? OLX_TEAL : '#FFF',
+                      backgroundColor: isActive ? theme.primary : (isDark ? 'rgba(255,255,255,0.05)' : '#FFF'),
                       alignItems: 'center', justifyContent: 'center',
-                      borderWidth: 1, borderColor: isActive ? OLX_TEAL : '#E2E8F0',
+                      borderWidth: 1, borderColor: isActive ? theme.primary : theme.border,
                       marginBottom: 8
                     }}>
-                      <Icon size={24} color={isActive ? '#FFF' : '#334155'} />
+                      <Icon size={24} color={isActive ? '#FFF' : theme.textSecondary} />
                     </View>
-                    <Typography style={{ fontSize: 12, fontWeight: isActive ? '700' : '500', color: isActive ? OLX_TEAL : '#64748B' }}>
+                    <Typography style={{ fontSize: 12, fontWeight: isActive ? '700' : '500', color: isActive ? theme.primary : theme.textSecondary }}>
                       {cat.label}
                     </Typography>
                   </TouchableOpacity>

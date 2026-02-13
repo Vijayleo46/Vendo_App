@@ -22,8 +22,10 @@ import { authService } from '../services/authService';
 import { userService } from '../services/userService';
 import { auth } from '../core/config/firebase';
 import { useIsFocused } from '@react-navigation/native';
+import { useTheme } from '../theme/ThemeContext';
 
 export const SettingsScreen = ({ navigation }: any) => {
+    const { theme, isDark } = useTheme();
     const isFocused = useIsFocused();
     const [notifications, setNotifications] = useState(true);
     const [marketing, setMarketing] = useState(false);
@@ -73,46 +75,46 @@ export const SettingsScreen = ({ navigation }: any) => {
         <TouchableOpacity
             activeOpacity={type === 'link' ? 0.7 : 1}
             onPress={onPress}
-            style={styles.settingItem}
+            style={[styles.settingItem, { borderBottomColor: theme.border }]}
         >
             <View style={styles.settingLeft}>
-                <View style={styles.iconBox}>
-                    <Icon size={20} color="#002f34" strokeWidth={2} />
+                <View style={[styles.iconBox, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9' }]}>
+                    <Icon size={20} color={isDark ? theme.primary : theme.text} strokeWidth={2} />
                 </View>
-                <Typography style={styles.settingLabel}>{label}</Typography>
+                <Typography style={[styles.settingLabel, { color: theme.text }]}>{label}</Typography>
             </View>
             {type === 'toggle' ? (
                 <Switch
                     value={value}
                     onValueChange={onValueChange}
-                    trackColor={{ false: '#E2E8F0', true: '#002f34' }}
+                    trackColor={{ false: '#E2E8F0', true: theme.primary }}
                     thumbColor="#FFF"
                 />
             ) : (
-                <ChevronRight size={20} color="#94A3B8" />
+                <ChevronRight size={20} color={theme.textTertiary} />
             )}
         </TouchableOpacity>
     );
 
     return (
-        <View style={styles.container}>
-            <SafeAreaView edges={['top']} style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <ChevronLeft size={24} color="#002f34" strokeWidth={2.5} />
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <SafeAreaView edges={['top']} style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9' }]}>
+                    <ChevronLeft size={24} color={theme.text} strokeWidth={2.5} />
                 </TouchableOpacity>
-                <Typography variant="h1" style={styles.title}>Settings</Typography>
+                <Typography variant="h1" style={[styles.title, { color: theme.text }]}>Settings</Typography>
             </SafeAreaView>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                <Typography style={styles.sectionTitle}>NOTIFICATIONS</Typography>
-                <View style={styles.sectionBox}>
+                <Typography style={[styles.sectionTitle, { color: theme.textSecondary }]}>NOTIFICATIONS</Typography>
+                <View style={[styles.sectionBox, { backgroundColor: theme.card, borderColor: theme.border }]}>
                     <SettingItem
                         icon={Bell}
                         label="Push Notifications"
                         value={notifications}
                         onValueChange={(v: boolean) => handleToggle('notifications', v)}
                     />
-                    <View style={styles.divider} />
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
                     <SettingItem
                         icon={Eye}
                         label="Marketing Emails"
@@ -121,15 +123,15 @@ export const SettingsScreen = ({ navigation }: any) => {
                     />
                 </View>
 
-                <Typography style={styles.sectionTitle}>PRIVACY & SECURITY</Typography>
-                <View style={styles.sectionBox}>
+                <Typography style={[styles.sectionTitle, { color: theme.textSecondary }]}>PRIVACY & SECURITY</Typography>
+                <View style={[styles.sectionBox, { backgroundColor: theme.card, borderColor: theme.border }]}>
                     <SettingItem
                         icon={Shield}
                         label="Account Privacy"
                         type="link"
                         onPress={() => { }}
                     />
-                    <View style={styles.divider} />
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
                     <SettingItem
                         icon={Lock}
                         label="Biometric Login"
@@ -138,22 +140,22 @@ export const SettingsScreen = ({ navigation }: any) => {
                     />
                 </View>
 
-                <Typography style={styles.sectionTitle}>SUPPORT</Typography>
-                <View style={styles.sectionBox}>
+                <Typography style={[styles.sectionTitle, { color: theme.textSecondary }]}>SUPPORT</Typography>
+                <View style={[styles.sectionBox, { backgroundColor: theme.card, borderColor: theme.border }]}>
                     <SettingItem
                         icon={HelpCircle}
                         label="Help Center"
                         type="link"
                         onPress={() => { }}
                     />
-                    <View style={styles.divider} />
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
                     <SettingItem
                         icon={Info}
                         label="About Vendo"
                         type="link"
                         onPress={() => { }}
                     />
-                    <View style={styles.divider} />
+                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
                     <SettingItem
                         icon={LogOut}
                         label="Sign Out"
@@ -168,9 +170,9 @@ export const SettingsScreen = ({ navigation }: any) => {
                     />
                 </View>
 
-                <Typography style={styles.sectionTitle}>ACCOUNT ACTIONS</Typography>
+                <Typography style={[styles.sectionTitle, { color: theme.textSecondary }]}>ACCOUNT ACTIONS</Typography>
                 <TouchableOpacity
-                    style={styles.deleteBtn}
+                    style={[styles.deleteBtn, { backgroundColor: theme.card, borderColor: isDark ? theme.border : '#FEE2E2' }]}
                     onPress={() => {
                         Alert.alert(
                             "Delete Account",
@@ -187,8 +189,8 @@ export const SettingsScreen = ({ navigation }: any) => {
                 </TouchableOpacity>
 
                 <View style={styles.footer}>
-                    <Typography style={styles.versionText}>Version 1.0.4 (Beta)</Typography>
-                    <Typography style={styles.footerText}>Made with ❤️ for Vendo Users</Typography>
+                    <Typography style={[styles.versionText, { color: theme.textTertiary }]}>Version 1.0.4 (Beta)</Typography>
+                    <Typography style={[styles.footerText, { color: theme.textTertiary, opacity: 0.6 }]}>Made with ❤️ for Vendo Users</Typography>
                 </View>
             </ScrollView>
         </View>

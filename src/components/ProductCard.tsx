@@ -4,6 +4,7 @@ import { Typography } from './common/Typography';
 import { Heart, MapPin, Zap } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ title, price, image, location, type, onPress, isAd }: ProductCardProps) => {
+    const { theme, isDark } = useTheme();
     const displayPrice = typeof price === 'number' ? price.toLocaleString() : price;
 
     return (
@@ -29,15 +31,15 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                 activeOpacity={0.9}
                 onPress={onPress}
                 style={{
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: theme.card,
                     borderRadius: 20,
                     marginBottom: 16,
                     borderWidth: 1,
-                    borderColor: isAd ? '#FEF08A' : '#F1F5F9',
+                    borderColor: isAd ? (isDark ? '#FBBF24' : '#FEF08A') : theme.border,
                     overflow: 'hidden',
-                    shadowColor: '#002f34',
+                    shadowColor: isDark ? '#000' : theme.primary,
                     shadowOffset: { width: 0, height: 10 },
-                    shadowOpacity: 0.08,
+                    shadowOpacity: isDark ? 0.3 : 0.08,
                     shadowRadius: 15,
                     elevation: 5
                 }}
@@ -46,12 +48,12 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                     <Image
                         source={{ uri: image || 'https://via.placeholder.com/300x200?text=No+Image' }}
                         style={{ width: '100%', height: 160 }}
-                        className="bg-[#F9FAFB]"
+                        className={isDark ? "bg-[#1F2937]" : "bg-[#F9FAFB]"}
                         resizeMode="cover"
                     />
 
                     <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.1)']}
+                        colors={['transparent', isDark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)']}
                         style={StyleSheet.absoluteFill}
                     />
 
@@ -61,7 +63,7 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                                 position: 'absolute',
                                 top: 12,
                                 left: 12,
-                                backgroundColor: '#FFF',
+                                backgroundColor: isDark ? theme.surface : '#FFF',
                                 paddingHorizontal: 10,
                                 paddingVertical: 5,
                                 borderRadius: 8,
@@ -75,7 +77,7 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                             }}
                         >
                             <Zap size={12} color="#F59E0B" fill="#F59E0B" />
-                            <Typography style={{ fontSize: 10, fontWeight: '900', color: '#002f34', letterSpacing: 0.5 }}>SPONSORED</Typography>
+                            <Typography style={{ fontSize: 10, fontWeight: '900', color: theme.text, letterSpacing: 0.5 }}>SPONSORED</Typography>
                         </View>
                     )}
 
@@ -87,7 +89,7 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                             width: 36,
                             height: 36,
                             borderRadius: 18,
-                            backgroundColor: 'rgba(255,255,255,0.9)',
+                            backgroundColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)',
                             alignItems: 'center',
                             justifyContent: 'center',
                             shadowColor: '#000',
@@ -96,27 +98,27 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                             elevation: 4
                         }}
                     >
-                        <Heart size={18} color="#002f34" strokeWidth={2.5} />
+                        <Heart size={18} color={isDark ? '#FFF' : theme.primary} strokeWidth={2.5} />
                     </TouchableOpacity>
                 </View>
 
                 <View style={{ padding: 14 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
                         <Typography
-                            style={{ color: '#002f34', fontSize: 18, fontWeight: '900' }}
+                            style={{ color: theme.text, fontSize: 18, fontWeight: '900' }}
                             numberOfLines={1}
                         >
                             {type === 'job' ? price : `₹ ${displayPrice}`}
                         </Typography>
                         {type === 'job' && (
-                            <View style={{ backgroundColor: '#F0F9FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                                <Typography style={{ fontSize: 9, fontWeight: '800', color: '#0369A1' }}>HIRING</Typography>
+                            <View style={{ backgroundColor: isDark ? 'rgba(77, 208, 225, 0.1)' : '#F0F9FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                                <Typography style={{ fontSize: 9, fontWeight: '800', color: isDark ? '#4DD0E1' : '#0369A1' }}>HIRING</Typography>
                             </View>
                         )}
                     </View>
 
                     <Typography
-                        style={{ color: '#475569', fontSize: 14, fontWeight: '500', marginBottom: 12, lineHeight: 20 }}
+                        style={{ color: theme.textSecondary, fontSize: 14, fontWeight: '500', marginBottom: 12, lineHeight: 20 }}
                         numberOfLines={1}
                     >
                         {title}
@@ -124,12 +126,12 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <MapPin size={12} color="#94A3B8" />
-                            <Typography style={{ color: '#94A3B8', fontSize: 11, fontWeight: '600' }} numberOfLines={1}>
+                            <MapPin size={12} color={theme.textTertiary} />
+                            <Typography style={{ color: theme.textTertiary, fontSize: 11, fontWeight: '600' }} numberOfLines={1}>
                                 {location?.split(',')[0] || 'Kochi'}
                             </Typography>
                         </View>
-                        <Typography style={{ color: '#94A3B8', fontSize: 10, fontWeight: '700' }}>
+                        <Typography style={{ color: theme.textTertiary, fontSize: 10, fontWeight: '700' }}>
                             JUST NOW
                         </Typography>
                     </View>

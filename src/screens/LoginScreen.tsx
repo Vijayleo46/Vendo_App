@@ -11,6 +11,7 @@ import {
 import { useTheme } from '../theme/ThemeContext';
 import { Typography } from '../components/common/Typography';
 import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 
@@ -38,10 +39,22 @@ export const LoginScreen = ({ navigation }: any) => {
 
         try {
             console.log('Calling authService.login...');
-            const user = await authService.login(email, password);
-            console.log('✅ Login successful! User:', user.uid);
+            const firebaseUser = await authService.login(email, password);
+            console.log('✅ Login successful! User:', firebaseUser.uid);
 
-            if (!user.emailVerified) {
+            // Fetch extra profile data to check verification status
+            const profile = await userService.getProfile(firebaseUser.uid);
+
+            // Allow login only if verified OR if the user is an admin
+            if (profile?.kycStatus !== 'verified' && !profile?.isAdmin) {
+                console.log('❌ User not verified by admin');
+                await authService.logout();
+                alert('Your account is pending verification by the Admin. Please try again once verified.');
+                setLoading(false);
+                return;
+            }
+
+            if (!firebaseUser.emailVerified) {
                 alert('Please verify your email address to access all features.');
             }
 

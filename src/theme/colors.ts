@@ -69,16 +69,16 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
-    background: palette.trueBlack,
-    surface: '#121212',
-    text: palette.gray50,
-    textSecondary: palette.gray400,
-    textTertiary: palette.gray600,
-    primary: '#47d8ff',
-    secondary: '#03DAC6',
-    accent: '#03DAC6',
-    error: '#CF6679',
-    border: '#262626',
-    card: '#1A1A1A',
-    shadow: shadows.medium,
+    background: '#050505', // Deep Black 
+    surface: '#121212',    // Darker surface
+    text: '#FEFFFC',       // Blanche White
+    textSecondary: '#A0A0A0',
+    textTertiary: '#6B7280',
+    primary: '#FFEF4D',    // Sandy Yellow
+    secondary: '#D0FF00',  // Banana Yellow
+    accent: '#84102D',     // Grey Black (Maroon)
+    error: '#84102D',
+    border: '#1E1E1E',
+    card: '#121212',
+    shadow: shadows.premium,
 };

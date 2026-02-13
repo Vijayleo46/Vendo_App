@@ -23,7 +23,10 @@ import {
     Bell,
     ArrowUpRight,
     Database,
-    ChevronLeft
+    ChevronLeft,
+    CheckCircle,
+    XCircle,
+    UserCircle
 } from 'lucide-react-native';
 
 import { listingService } from '../services/listingService';
@@ -32,37 +35,59 @@ import { userService } from '../services/userService';
 const { width } = Dimensions.get('window');
 
 export const AdminDashboardScreen = ({ navigation }: any) => {
-    const { theme, spacing, borderRadius } = useTheme();
+    const { theme, spacing, borderRadius, isDark } = useTheme();
     const [stats, setStats] = React.useState({
         users: 0,
         ads: 0,
         revenue: '₹ 12,480',
         reports: 14
     });
+    const [users, setUsers] = React.useState<any[]>([]);
+    const [loadingUsers, setLoadingUsers] = React.useState(false);
 
-    React.useEffect(() => {
-        const fetchStats = async () => {
-            const userCount = await userService.getUserCount();
+    const fetchData = async () => {
+        setLoadingUsers(true);
+        try {
+            const userData = await userService.getAllUsers();
             const adCount = await listingService.getListingCount();
+            setUsers(userData);
             setStats(prev => ({
                 ...prev,
-                users: userCount,
+                users: userData.length,
                 ads: adCount
             }));
-        };
-        fetchStats();
+        } catch (error) {
+            console.error("Error fetching admin data:", error);
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchData();
     }, []);
 
+    const handleToggleVerification = async (uid: string, currentStatus: string) => {
+        const newStatus = currentStatus === 'verified' ? 'unverified' : 'verified';
+        try {
+            await userService.updateKycStatus(uid, newStatus as any);
+            // Update local state
+            setUsers(prev => prev.map(u => u.uid === uid ? { ...u, kycStatus: newStatus } : u));
+        } catch (error) {
+            alert('Failed to update verification status');
+        }
+    };
+
     const StatCard = ({ title, value, icon, color, trend, index }: any) => (
-        <Animated.View entering={ZoomIn.delay(index * 100)} style={[styles.statCard, { width: (width - 60) / 2 }]}>
+        <Animated.View entering={ZoomIn.delay(index * 100)} style={[styles.statCard, { width: (width - 60) / 2, backgroundColor: theme.card }]}>
             <View style={[styles.iconCircle, { backgroundColor: color + '15' }]}>
                 {icon}
             </View>
-            <Typography variant="h2" style={{ marginTop: 16, fontSize: 24, fontWeight: '800' }}>{value}</Typography>
-            <Typography variant="bodySmall" color="#9CA3AF" style={{ marginTop: 4 }}>{title}</Typography>
+            <Typography variant="h2" style={{ marginTop: 16, fontSize: 24, fontWeight: '800', color: theme.text }}>{value}</Typography>
+            <Typography variant="bodySmall" style={{ marginTop: 4, color: theme.textSecondary }}>{title}</Typography>
             {trend && (
                 <View style={styles.trendRow}>
-                    <ArrowUpRight size={14} {...{ color: "#10B981" } as any} />
+                    <ArrowUpRight size={14} color="#10B981" />
                     <Typography variant="bodySmall" style={{ color: '#10B981', marginLeft: 4, fontWeight: '700' }}>{trend}</Typography>
                 </View>
             )}
@@ -70,22 +95,22 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
     );
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: '#F9FAFB' }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
             <View style={[styles.header, { paddingHorizontal: 24, paddingTop: 30 }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
-                        style={styles.backBtn}
+                        style={[styles.backBtn, { backgroundColor: theme.surface }]}
                     >
-                        <ChevronLeft size={24} color="#002f34" strokeWidth={2.5} />
+                        <ChevronLeft size={24} color={theme.text} strokeWidth={2.5} />
                     </TouchableOpacity>
                     <View>
-                        <Typography variant="h1" style={{ fontSize: 28, fontWeight: '800' }}>Admin Console</Typography>
-                        <Typography variant="bodySmall" color="#9CA3AF">System health & Overview</Typography>
+                        <Typography variant="h1" style={{ fontSize: 28, fontWeight: '800', color: theme.text }}>Admin Console</Typography>
+                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>System health & Overview</Typography>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.notifBtn}>
-                    <Bell size={20} {...{ color: "#1F2937" } as any} />
+                <TouchableOpacity style={[styles.notifBtn, { backgroundColor: theme.surface }]}>
+                    <Bell size={20} color={theme.text} />
                     <View style={styles.dot} />
                 </TouchableOpacity>
             </View>
@@ -126,10 +151,10 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
                 </View>
 
                 {/* System Status Banner */}
-                <Animated.View entering={FadeInUp.delay(500)} style={styles.statusBanner}>
+                <Animated.View entering={FadeInUp.delay(500)} style={[styles.statusBanner, { backgroundColor: isDark ? theme.surface : '#1F2937' }]}>
                     <View style={styles.bannerLeft}>
                         <View style={styles.shieldCircle}>
-                            <Shield size={24} {...{ color: "#FFF" } as any} />
+                            <Shield size={24} color="#FFF" />
                         </View>
                         <View style={{ marginLeft: 16 }}>
                             <Typography variant="bodyLarge" style={{ color: '#FFF', fontWeight: '800' }}>System Status: Operational</Typography>
@@ -138,24 +163,71 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
                     </View>
                 </Animated.View>
 
-                <Typography variant="h3" style={{ marginTop: 32, marginBottom: 16, fontWeight: '800' }}>Recent Activity</Typography>
+                {/* User Management Section */}
+                <Typography variant="h3" style={{ marginTop: 32, marginBottom: 16, fontWeight: '800', color: theme.text }}>User Verification</Typography>
+                <View style={[styles.userListContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                    {users.length === 0 ? (
+                        <Typography style={{ padding: 20, color: theme.textSecondary, textAlign: 'center' }}>No users found</Typography>
+                    ) : (
+                        users.map((item, idx) => (
+                            <View key={item.uid} style={[styles.userItem, { borderBottomColor: theme.border, borderBottomWidth: idx === users.length - 1 ? 0 : 1 }]}>
+                                <View style={styles.userMain}>
+                                    <View style={[styles.userAvatar, { backgroundColor: theme.background }]}>
+                                        <UserCircle size={24} color={theme.textSecondary} />
+                                    </View>
+                                    <View style={{ marginLeft: 12, flex: 1 }}>
+                                        <Typography variant="bodyMedium" style={{ fontWeight: '700', color: theme.text }}>{item.displayName || 'Anonymous User'}</Typography>
+                                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>{item.email}</Typography>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                                            <View style={[styles.statusBadge, { backgroundColor: item.kycStatus === 'verified' ? '#10B98120' : '#F59E0B20' }]}>
+                                                <Typography style={{ fontSize: 10, fontWeight: '800', color: item.kycStatus === 'verified' ? '#10B981' : '#F59E0B' }}>
+                                                    {item.kycStatus?.toUpperCase() || 'UNVERIFIED'}
+                                                </Typography>
+                                            </View>
+                                            {item.isAdmin && (
+                                                <View style={[styles.statusBadge, { backgroundColor: '#3B82F620', marginLeft: 8 }]}>
+                                                    <Typography style={{ fontSize: 10, fontWeight: '800', color: '#3B82F6' }}>ADMIN</Typography>
+                                                </View>
+                                            )}
+                                        </View>
+                                    </View>
+                                </View>
+                                <TouchableOpacity
+                                    onPress={() => handleToggleVerification(item.uid, item.kycStatus)}
+                                    style={[styles.verifyBtn, { backgroundColor: item.kycStatus === 'verified' ? '#EF4444' : '#10B981' }]}
+                                >
+                                    {item.kycStatus === 'verified' ? (
+                                        <XCircle size={18} color="#FFF" />
+                                    ) : (
+                                        <CheckCircle size={18} color="#FFF" />
+                                    )}
+                                    <Typography style={{ color: '#FFF', fontSize: 12, fontWeight: '700', marginLeft: 8 }}>
+                                        {item.kycStatus === 'verified' ? 'Revoke' : 'Verify'}
+                                    </Typography>
+                                </TouchableOpacity>
+                            </View>
+                        ))
+                    )}
+                </View>
+
+                <Typography variant="h3" style={{ marginTop: 32, marginBottom: 16, fontWeight: '800', color: theme.text }}>Recent Activity</Typography>
                 {[1, 2, 3].map((i, idx) => (
                     <Animated.View key={i} entering={FadeInRight.delay(600 + idx * 100)}>
-                        <TouchableOpacity style={styles.activityItem}>
+                        <TouchableOpacity style={[styles.activityItem, { backgroundColor: theme.card }]}>
                             <View style={[styles.activityDot, { backgroundColor: i === 1 ? '#3B82F6' : i === 2 ? '#EF4444' : '#10B981' }]} />
                             <View style={{ flex: 1, marginLeft: 16 }}>
-                                <Typography variant="bodyMedium" style={{ fontWeight: '700' }}>
+                                <Typography variant="bodyMedium" style={{ fontWeight: '700', color: theme.text }}>
                                     {i === 1 ? 'New user registered' : i === 2 ? 'Ad reported for spam' : 'Product successfully sold'}
                                 </Typography>
-                                <Typography variant="bodySmall" color="#9CA3AF">2 minutes ago</Typography>
+                                <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>2 minutes ago</Typography>
                             </View>
-                            <ChevronRight size={18} {...{ color: "#D1D5DB" } as any} />
+                            <ChevronRight size={18} color={theme.textTertiary} />
                         </TouchableOpacity>
                     </Animated.View>
                 ))}
 
                 <TouchableOpacity
-                    style={[styles.analyticsBtn, { marginTop: 12, borderColor: '#10B981', backgroundColor: '#ECFDF5' }]}
+                    style={[styles.analyticsBtn, { marginTop: 12, borderColor: '#10B981', backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : '#ECFDF5' }]}
                     onPress={async () => {
                         try {
                             await listingService.seedDemoData();
@@ -168,13 +240,13 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
                         }
                     }}
                 >
-                    <Database size={20} {...{ color: "#10B981" } as any} />
+                    <Database size={20} color="#10B981" />
                     <Typography variant="bodyMedium" style={{ marginLeft: 12, fontWeight: '700', color: '#10B981' }}>Seed Database with Demo Data</Typography>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.analyticsBtn}>
-                    <BarChart3 size={20} {...{ color: "#1F2937" } as any} />
-                    <Typography variant="bodyMedium" style={{ marginLeft: 12, fontWeight: '700' }}>View Detailed Analytics</Typography>
+                <TouchableOpacity style={[styles.analyticsBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                    <BarChart3 size={20} color={theme.text} />
+                    <Typography variant="bodyMedium" style={{ marginLeft: 12, fontWeight: '700', color: theme.text }}>View Detailed Analytics</Typography>
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
@@ -296,5 +368,41 @@ const styles = StyleSheet.create({
         marginTop: 24,
         borderWidth: 1,
         borderColor: '#F3F4F6',
+    },
+    userListContainer: {
+        borderRadius: 24,
+        overflow: 'hidden',
+        borderWidth: 1,
+    },
+    userItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 16,
+    },
+    userMain: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    userAvatar: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    statusBadge: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    verifyBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 12,
+        marginLeft: 12,
     }
 });
