@@ -182,8 +182,8 @@ export const MyListingsScreen = ({ navigation }: any) => {
                     style={styles.productImage}
                 />
                 <View style={styles.cardInfo}>
-                    <Typography variant="h3" style={{ marginBottom: 4, color: '#002f34' }}>{item.title}</Typography>
-                    <Typography variant="h2" style={{ color: '#002f34', marginBottom: 8, fontWeight: '900' }}>₹{item.price}</Typography>
+                    <Typography variant="h3" style={{ marginBottom: 4, color: theme.text }}>{item.title}</Typography>
+                    <Typography variant="h2" style={{ color: theme.text, marginBottom: 8, fontWeight: '900' }}>₹{item.price}</Typography>
 
                     <View style={styles.stats}>
                         <View style={styles.statItem}>
@@ -205,9 +205,9 @@ export const MyListingsScreen = ({ navigation }: any) => {
                 </View>
             </View>
 
-            <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('PostItem', { listing: item })}>
-                    <Edit size={18} color="#002f34" />
+            <View style={[styles.actions, { borderTopColor: theme.border }]}>
+                <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface }]} onPress={() => navigation.navigate('PostItem', { listing: item })}>
+                    <Edit size={18} color={theme.text} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.actionBtn} onPress={() => handleMarkSold(item.id!, item.type)}>
                     <CheckCircle size={18} color="#10B981" />
@@ -225,11 +225,11 @@ export const MyListingsScreen = ({ navigation }: any) => {
     const JobCard = ({ item }: { item: Listing }) => (
         <Animated.View entering={FadeInUp} style={styles.card}>
             <View style={styles.cardContent}>
-                <View style={styles.jobIcon}>
-                    <Briefcase size={24} color="#002f34" />
+                <View style={[styles.jobIcon, { backgroundColor: theme.surface }]}>
+                    <Briefcase size={24} color={theme.text} />
                 </View>
                 <View style={styles.cardInfo}>
-                    <Typography variant="h3" style={{ marginBottom: 4, color: '#002f34' }}>{item.title}</Typography>
+                    <Typography variant="h3" style={{ marginBottom: 4, color: theme.text }}>{item.title}</Typography>
                     <Typography variant="bodySmall" color="#6B7280" style={{ marginBottom: 8 }}>
                         {item.companyName || 'Company'}
                     </Typography>
@@ -258,9 +258,9 @@ export const MyListingsScreen = ({ navigation }: any) => {
                 </View>
             </View>
 
-            <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('PostJob', { listing: item })}>
-                    <Edit size={18} color="#002f34" />
+            <View style={[styles.actions, { borderTopColor: theme.border }]}>
+                <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface }]} onPress={() => navigation.navigate('PostJob', { listing: item })}>
+                    <Edit size={18} color={theme.text} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.actionBtn} onPress={() => handleMarkSold(item.id!, item.type)}>
                     <X size={18} color="#EF4444" />
@@ -278,10 +278,10 @@ export const MyListingsScreen = ({ navigation }: any) => {
     const EmptyState = () => (
         <View style={styles.emptyState}>
             <TouchableOpacity onPress={() => navigation.navigate('Main')} activeOpacity={0.7}>
-                <Package size={80} color="#D1D5DB" />
+                <Package size={80} color={theme.textTertiary} />
             </TouchableOpacity>
-            <Typography variant="h2" style={{ marginTop: 20, marginBottom: 8 }}>No Listings Yet</Typography>
-            <Typography variant="bodyMedium" color="#6B7280" style={{ marginBottom: 24, textAlign: 'center' }}>
+            <Typography variant="h2" style={{ marginTop: 20, marginBottom: 8, color: theme.text }}>No Listings Yet</Typography>
+            <Typography variant="bodyMedium" style={{ marginBottom: 24, textAlign: 'center', color: theme.textSecondary }}>
                 Start selling products or posting jobs to see them here
             </Typography>
 
@@ -291,7 +291,7 @@ export const MyListingsScreen = ({ navigation }: any) => {
                     onPress={() => navigation.navigate('Main')}
                 >
                     <LinearGradient
-                        colors={['#002f34', '#004a52']}
+                        colors={[theme.primary, theme.primary]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={StyleSheet.absoluteFill}
@@ -300,7 +300,7 @@ export const MyListingsScreen = ({ navigation }: any) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.createBtn, { width: width * 0.7, backgroundColor: '#f1f4f5' }]}
+                    style={[styles.createBtn, { width: width * 0.7, backgroundColor: theme.surface }]}
                     onPress={async () => {
                         try {
                             setLoading(true);
@@ -314,15 +314,15 @@ export const MyListingsScreen = ({ navigation }: any) => {
                         }
                     }}
                 >
-                    <Typography style={{ color: '#002f34', fontWeight: '800' }}>Seed Demo Data</Typography>
+                    <Typography style={{ color: theme.text, fontWeight: '800' }}>Seed Demo Data</Typography>
                 </TouchableOpacity>
             </View>
         </View>
     );
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             {/* Header with Gradient Background */}
-            <View style={styles.headerContainer}>
+            <View style={[styles.headerContainer, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
                 <View style={styles.headerContent}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -335,36 +335,36 @@ export const MyListingsScreen = ({ navigation }: any) => {
                                     borderRadius: 20,
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    backgroundColor: '#f1f4f5'
+                                    backgroundColor: theme.surface
                                 }}
                             >
-                                <ChevronLeft size={24} color="#002f34" strokeWidth={2.5} />
+                                <ChevronLeft size={24} color={theme.text} strokeWidth={2.5} />
                             </TouchableOpacity>
-                            <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: '#002f34' }}>My Listings</Typography>
+                            <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: theme.text }}>My Listings</Typography>
                         </View>
-                        <TouchableOpacity style={styles.filterBtn}>
-                            <Filter size={20} color="#002f34" strokeWidth={2} />
+                        <TouchableOpacity style={[styles.filterBtn, { backgroundColor: theme.surface }]}>
+                            <Filter size={20} color={theme.text} strokeWidth={2} />
                         </TouchableOpacity>
                     </View>
 
                     {/* Search Bar */}
-                    <Animated.View entering={FadeInRight.delay(200)} style={styles.searchBar}>
-                        <Search size={20} color="#7f9799" strokeWidth={2} />
+                    <Animated.View entering={FadeInRight.delay(200)} style={[styles.searchBar, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                        <Search size={20} color={theme.textTertiary} strokeWidth={2} />
                         <TextInput
-                            style={styles.searchInput}
+                            style={[styles.searchInput, { color: theme.text }]}
                             placeholder="Search your listings..."
                             value={searchQuery}
                             onChangeText={setSearchQuery}
-                            placeholderTextColor="#7f9799"
+                            placeholderTextColor={theme.textTertiary}
                         />
                     </Animated.View>
                 </View>
             </View>
 
             {/* Segment Control */}
-            <Animated.View entering={FadeInUp.delay(300)} style={styles.segmentControl}>
+            <Animated.View entering={FadeInUp.delay(300)} style={[styles.segmentControl, { backgroundColor: theme.card }]}>
                 <TouchableOpacity
-                    style={[styles.segmentBtn, activeTab === 'all' && styles.activeSegment]}
+                    style={[styles.segmentBtn, activeTab === 'all' && [styles.activeSegment, { backgroundColor: theme.primary }]]}
                     onPress={() => setActiveTab('all')}
                 >
                     <Typography style={[styles.segmentText, activeTab === 'all' && styles.activeSegmentText]}>
@@ -372,7 +372,7 @@ export const MyListingsScreen = ({ navigation }: any) => {
                     </Typography>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.segmentBtn, activeTab === 'products' && styles.activeSegment]}
+                    style={[styles.segmentBtn, activeTab === 'products' && [styles.activeSegment, { backgroundColor: theme.primary }]]}
                     onPress={() => setActiveTab('products')}
                 >
                     <Typography style={[styles.segmentText, activeTab === 'products' && styles.activeSegmentText]}>
@@ -380,7 +380,7 @@ export const MyListingsScreen = ({ navigation }: any) => {
                     </Typography>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.segmentBtn, activeTab === 'jobs' && styles.activeSegment]}
+                    style={[styles.segmentBtn, activeTab === 'jobs' && [styles.activeSegment, { backgroundColor: theme.primary }]]}
                     onPress={() => setActiveTab('jobs')}
                 >
                     <Typography style={[styles.segmentText, activeTab === 'jobs' && styles.activeSegmentText]}>
@@ -393,7 +393,7 @@ export const MyListingsScreen = ({ navigation }: any) => {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#002f34" />}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
             >
                 {filteredListings.length === 0 ? (
                     <EmptyState />
@@ -412,12 +412,9 @@ export const MyListingsScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F9FAFB',
     },
     headerContainer: {
-        backgroundColor: '#FFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#e8ebed',
         paddingBottom: 16,
     },
     headerContent: {
@@ -427,32 +424,24 @@ const styles = StyleSheet.create({
     searchBar: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
         borderRadius: 4,
         paddingHorizontal: 16,
         paddingVertical: 12,
         marginTop: 16,
         borderWidth: 2,
-        borderColor: '#002f34',
     },
     searchInput: {
         flex: 1,
         marginLeft: 12,
         fontSize: 15,
-        color: '#1F2937',
     },
     segmentControl: {
         flexDirection: 'row',
-        backgroundColor: '#FFF',
         marginHorizontal: 24,
         borderRadius: 16,
         padding: 4,
         marginTop: 16,
         marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
         elevation: 5,
     },
     segmentBtn: {
@@ -462,7 +451,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     activeSegment: {
-        backgroundColor: '#002f34',
     },
     segmentText: {
         fontSize: 14,
@@ -478,7 +466,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F8FAFC',
     },
     scrollContent: {
         paddingHorizontal: 24,
@@ -486,16 +473,10 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
     },
     card: {
-        backgroundColor: '#FFF',
         borderRadius: 18,
         padding: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#F3F4F6',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
         elevation: 2,
     },
     cardContent: {
@@ -506,13 +487,11 @@ const styles = StyleSheet.create({
         width: 90,
         height: 90,
         borderRadius: 12,
-        backgroundColor: '#F3F4F6',
     },
     jobIcon: {
         width: 90,
         height: 90,
         borderRadius: 12,
-        backgroundColor: '#f1f4f5',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -546,13 +525,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         paddingTop: 12,
         borderTopWidth: 1,
-        borderTopColor: '#F3F4F6',
     },
     actionBtn: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: '#F9FAFB',
         justifyContent: 'center',
         alignItems: 'center',
     },

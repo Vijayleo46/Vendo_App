@@ -26,6 +26,7 @@ const CATEGORIES = [
 ];
 
 const Typewriter = ({ texts }: { texts: string[] }) => {
+  const { theme } = useTheme();
   const [index, setIndex] = useState(0);
   const [subIndex, setSubIndex] = useState(0);
   const [reverse, setReverse] = useState(false);
@@ -62,9 +63,9 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
   }, [subIndex, index, reverse, texts]);
 
   return (
-    <Typography style={{ color: '#94A3B8', fontSize: 15 }}>
+    <Typography style={{ color: theme.textSecondary, fontSize: 15 }}>
       Search "{texts[index].substring(0, subIndex)}"
-      <Typography style={{ color: blink ? '#94A3B8' : 'transparent' }}>|</Typography>
+      <Typography style={{ color: blink ? theme.textSecondary : 'transparent' }}>|</Typography>
     </Typography>
   );
 };
@@ -206,7 +207,7 @@ export const HomeScreen = ({ navigation }: any) => {
             VENDO
           </Typography>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F0F9FF', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, gap: 4 }}>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, gap: 4 }}>
               <Star size={14} color="#FBBF24" fill="#FBBF24" />
               <Typography style={{ color: theme.text, fontSize: 13, fontWeight: '800' }}>{userProfile?.coins || 0}</Typography>
             </TouchableOpacity>
@@ -267,7 +268,7 @@ export const HomeScreen = ({ navigation }: any) => {
                   >
                     <View style={{
                       width: 60, height: 60, borderRadius: 30,
-                      backgroundColor: isActive ? theme.primary : (isDark ? 'rgba(255,255,255,0.05)' : '#FFF'),
+                      backgroundColor: isActive ? theme.primary : theme.surface,
                       alignItems: 'center', justifyContent: 'center',
                       borderWidth: 1, borderColor: isActive ? theme.primary : theme.border,
                       marginBottom: 8

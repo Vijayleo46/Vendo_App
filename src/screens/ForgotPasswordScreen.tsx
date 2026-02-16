@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, Mail } from 'lucide-react-native';
 
 export const ForgotPasswordScreen = ({ navigation }: any) => {
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -52,7 +52,7 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDark ? theme.background : '#FFB6D9' }]}>
             {/* Gradient Background */}
             <LinearGradient
                 colors={['#FFB6D9', '#D8B5FF', '#B8B5FF']}
@@ -65,8 +65,8 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
 
                 {/* Back Button */}
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <ArrowLeft size={24} color="#333" strokeWidth={2} />
-                    <Typography variant="bodyLarge" style={styles.backText}>Back</Typography>
+                    <ArrowLeft size={24} color={isDark ? theme.text : "#333"} strokeWidth={2} />
+                    <Typography variant="bodyLarge" style={[styles.backText, { color: isDark ? theme.text : "#333" }]}>Back</Typography>
                 </TouchableOpacity>
             </LinearGradient>
 
@@ -76,18 +76,18 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
                 style={styles.cardContainer}
             >
                 <ScrollView
-                    style={styles.card}
+                    style={[styles.card, { backgroundColor: theme.background }]}
                     contentContainerStyle={styles.cardContent}
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
                     {/* Header */}
                     <View style={styles.header}>
-                        <View style={styles.iconContainer}>
-                            <Mail size={32} color="#8B5CF6" />
+                        <View style={[styles.iconContainer, { backgroundColor: theme.surface }]}>
+                            <Mail size={32} color={theme.primary} />
                         </View>
-                        <Typography variant="h1" style={styles.title}>Forgot Password?</Typography>
-                        <Typography variant="bodyMedium" style={styles.subtitle}>
+                        <Typography variant="h1" style={[styles.title, { color: theme.text }]}>Forgot Password?</Typography>
+                        <Typography variant="bodyMedium" style={[styles.subtitle, { color: theme.textSecondary }]}>
                             Don't worry! It happens. Please enter the address associated with your account.
                         </Typography>
                     </View>
@@ -95,9 +95,9 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
                     {/* Email Input */}
                     <View style={styles.inputContainer}>
                         <TextInput
-                            style={[styles.input, { color: '#1F2937' }]}
+                            style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                             placeholder="Enter your email"
-                            placeholderTextColor="#999"
+                            placeholderTextColor={theme.textTertiary}
                             value={email}
                             onChangeText={setEmail}
                             keyboardType="email-address"
@@ -107,12 +107,12 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
 
                     {/* Reset Button */}
                     <TouchableOpacity
-                        style={styles.resetButton}
+                        style={[styles.resetButton, { shadowColor: theme.primary }]}
                         onPress={handleResetPassword}
                         disabled={loading}
                     >
                         <LinearGradient
-                            colors={['#FFB6D9', '#B8B5FF']}
+                            colors={isDark ? [theme.primary, theme.primary] : ['#FFB6D9', '#B8B5FF']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={styles.resetGradient}
@@ -132,7 +132,6 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFB6D9',
     },
     gradientBackground: {
         height: '40%',
@@ -159,13 +158,8 @@ const styles = StyleSheet.create({
     },
     card: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
         borderTopLeftRadius: 32,
         borderTopRightRadius: 32,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
         elevation: 8,
     },
     cardContent: {

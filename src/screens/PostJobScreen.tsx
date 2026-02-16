@@ -22,7 +22,7 @@ const WORK_MODES = ['Onsite', 'Remote', 'Hybrid'];
 const EXPERIENCE_LEVELS = ['Entry Level', 'Mid Level', 'Senior', 'Lead', 'Executive'];
 
 export const PostJobScreen = ({ navigation }: any) => {
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [statusText, setStatusText] = useState('');
@@ -185,9 +185,28 @@ export const PostJobScreen = ({ navigation }: any) => {
                 <Animated.View entering={ZoomIn} style={styles.successIcon}>
                     <Check size={60} color="#FFF" />
                 </Animated.View>
-                <Animated.View entering={FadeInUp.delay(300)}>
+                <Animated.View entering={FadeInUp.delay(300)} style={{ alignItems: 'center' }}>
                     <Typography variant="h1" style={{ color: '#FFF', marginTop: 20 }}>Job Posted!</Typography>
                     <Typography style={{ color: 'rgba(255,255,255,0.8)', textAlign: 'center', marginTop: 8 }}>Candidates can now apply.</Typography>
+
+                    <TouchableOpacity
+                        style={styles.doneBtn}
+                        onPress={() => navigation.navigate('MyListings')}
+                    >
+                        <Typography style={styles.doneBtnText}>Go to My Ads</Typography>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.backHomeBtn}
+                        onPress={() => {
+                            navigation.reset({
+                                index: 0,
+                                routes: [{ name: 'Main', params: { screen: 'HomeTab' } }],
+                            });
+                        }}
+                    >
+                        <Typography style={styles.backHomeBtnText}>Back to Home</Typography>
+                    </TouchableOpacity>
                 </Animated.View>
             </View>
         );
@@ -196,20 +215,20 @@ export const PostJobScreen = ({ navigation }: any) => {
     return (
         <View style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
-                    <ArrowLeft size={24} color="#002f34" strokeWidth={2} />
+            <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.iconBtn, { backgroundColor: theme.surface }]}>
+                    <ArrowLeft size={24} color={theme.text} strokeWidth={2} />
                 </TouchableOpacity>
                 <View>
-                    <Typography variant="h2" style={{ color: '#002f34', fontWeight: '700', fontSize: 20 }}>Post a Job</Typography>
-                    <Typography variant="bodySmall" style={{ color: '#7f9799' }}>Reach thousands of candidates</Typography>
+                    <Typography variant="h2" style={{ color: theme.text, fontWeight: '700', fontSize: 20 }}>Post a Job</Typography>
+                    <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>Reach thousands of candidates</Typography>
                 </View>
                 <TouchableOpacity
-                    style={[styles.textBtn, loading && { opacity: 0.5 }]}
+                    style={[styles.textBtn, { backgroundColor: theme.surface }, loading && { opacity: 0.5 }]}
                     onPress={handlePostJob}
                     disabled={loading}
                 >
-                    <Typography style={{ color: '#002f34', fontWeight: '700' }}>
+                    <Typography style={{ color: theme.text, fontWeight: '700' }}>
                         {loading ? '...' : 'Save'}
                     </Typography>
                 </TouchableOpacity>
@@ -219,30 +238,31 @@ export const PostJobScreen = ({ navigation }: any) => {
 
                 {/* Company Info */}
                 <Animated.View entering={FadeInUp.delay(200)}>
-                    <BlurView intensity={80} tint="light" style={styles.card}>
+                    <BlurView intensity={80} tint={isDark ? "dark" : "light"} style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
                         <View style={styles.cardHeader}>
-                            <Briefcase size={20} color="#002f34" />
-                            <Typography variant="h3" style={{ marginLeft: 10 }}>Company Info</Typography>
+                            <Briefcase size={20} color={theme.text} />
+                            <Typography variant="h3" style={{ marginLeft: 10, color: theme.text }}>Company Info</Typography>
                         </View>
 
                         <View style={styles.logoRow}>
-                            <TouchableOpacity onPress={pickLogo} style={styles.logoUpload}>
+                            <TouchableOpacity onPress={pickLogo} style={[styles.logoUpload, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                                 {companyLogo ? (
                                     <Image source={{ uri: companyLogo }} style={styles.logoImage} />
                                 ) : (
                                     <View style={{ alignItems: 'center' }}>
-                                        <Upload size={24} color="#6B7280" />
-                                        <Typography variant="bodySmall" color="#6B7280" style={{ marginTop: 4 }}>Logo</Typography>
+                                        <Upload size={24} color={theme.textTertiary} />
+                                        <Typography variant="bodySmall" color={theme.textTertiary} style={{ marginTop: 4 }}>Logo</Typography>
                                     </View>
                                 )}
                             </TouchableOpacity>
                             <View style={{ flex: 1, marginLeft: 16 }}>
-                                <Typography variant="label" style={styles.label}>COMPANY NAME</Typography>
+                                <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>COMPANY NAME</Typography>
                                 <TextInput
-                                    style={styles.input}
+                                    style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                                     placeholder="e.g. Acme Corp"
                                     value={companyName}
                                     onChangeText={setCompanyName}
+                                    placeholderTextColor={theme.textTertiary}
                                 />
                             </View>
                         </View>
@@ -251,86 +271,90 @@ export const PostJobScreen = ({ navigation }: any) => {
 
                 {/* Job Details */}
                 <Animated.View entering={FadeInUp.delay(300)}>
-                    <View style={styles.cardWhite}>
+                    <View style={[styles.cardWhite, { backgroundColor: theme.card, borderColor: theme.border }]}>
                         <View style={styles.cardHeader}>
-                            <Check size={20} color="#002f34" />
-                            <Typography variant="h3" style={{ marginLeft: 10 }}>Job Details</Typography>
+                            <Check size={20} color={theme.text} />
+                            <Typography variant="h3" style={{ marginLeft: 10, color: theme.text }}>Job Details</Typography>
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>JOB TITLE</Typography>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>JOB TITLE</Typography>
                             <TextInput
-                                style={styles.input}
+                                style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                                 placeholder="e.g. Senior React Native Developer"
                                 value={jobTitle}
                                 onChangeText={setJobTitle}
+                                placeholderTextColor={theme.textTertiary}
                             />
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>JOB TYPE</Typography>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>JOB TYPE</Typography>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
                                 {JOB_TYPES.map(type => (
                                     <TouchableOpacity
                                         key={type}
-                                        style={[styles.chip, jobType === type && styles.activeChip]}
+                                        style={[styles.chip, { backgroundColor: theme.surface, borderColor: theme.border }, jobType === type && [styles.activeChip, { backgroundColor: theme.primary, borderColor: theme.primary }]]}
                                         onPress={() => {
                                             triggerHaptic();
                                             setJobType(type);
                                         }}
                                     >
-                                        <Typography style={[styles.chipText, jobType === type && styles.activeChipText]}>{type}</Typography>
+                                        <Typography style={[styles.chipText, { color: theme.textSecondary }, jobType === type && styles.activeChipText]}>{type}</Typography>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>SALARY RANGE (YEARLY)</Typography>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>SALARY RANGE (YEARLY)</Typography>
                             <View style={styles.salaryRow}>
-                                <View style={styles.salaryInput}>
-                                    <IndianRupee size={16} color="#6B7280" />
+                                <View style={[styles.salaryInput, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                                    <IndianRupee size={16} color={theme.textTertiary} />
                                     <TextInput
-                                        style={{ flex: 1, marginLeft: 8 }}
+                                        style={{ flex: 1, marginLeft: 8, color: theme.text }}
                                         placeholder="Min"
                                         keyboardType="numeric"
                                         value={salaryMin}
                                         onChangeText={setSalaryMin}
+                                        placeholderTextColor={theme.textTertiary}
                                     />
                                 </View>
-                                <Typography style={{ marginHorizontal: 8 }}>-</Typography>
-                                <View style={styles.salaryInput}>
-                                    <IndianRupee size={16} color="#6B7280" />
+                                <Typography style={{ marginHorizontal: 8, color: theme.text }}>-</Typography>
+                                <View style={[styles.salaryInput, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                                    <IndianRupee size={16} color={theme.textTertiary} />
                                     <TextInput
-                                        style={{ flex: 1, marginLeft: 8 }}
+                                        style={{ flex: 1, marginLeft: 8, color: theme.text }}
                                         placeholder="Max"
                                         keyboardType="numeric"
                                         value={salaryMax}
                                         onChangeText={setSalaryMax}
+                                        placeholderTextColor={theme.textTertiary}
                                     />
                                 </View>
                             </View>
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>REQUIRED SKILLS</Typography>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>REQUIRED SKILLS</Typography>
                             <View style={styles.skillInputRow}>
                                 <TextInput
-                                    style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                    style={[styles.input, { flex: 1, marginBottom: 0, backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                                     placeholder="Add a skill..."
                                     value={newSkill}
                                     onChangeText={setNewSkill}
                                     onSubmitEditing={addSkill}
+                                    placeholderTextColor={theme.textTertiary}
                                 />
-                                <TouchableOpacity onPress={addSkill} style={styles.addSkillBtn}>
+                                <TouchableOpacity onPress={addSkill} style={[styles.addSkillBtn, { backgroundColor: theme.primary }]}>
                                     <Plus size={24} color="#FFF" />
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.tagsContainer}>
                                 {skills.map(skill => (
-                                    <TouchableOpacity key={skill} onPress={() => removeSkill(skill)} style={styles.tag}>
-                                        <Typography style={styles.tagText}>{skill}</Typography>
-                                        <X size={14} color="#002f34" style={{ marginLeft: 4 }} />
+                                    <TouchableOpacity key={skill} onPress={() => removeSkill(skill)} style={[styles.tag, { backgroundColor: isDark ? 'rgba(99, 102, 241, 0.15)' : '#EEF2FF' }]}>
+                                        <Typography style={[styles.tagText, { color: isDark ? theme.primary : '#002f34' }]}>{skill}</Typography>
+                                        <X size={14} color={isDark ? theme.primary : '#002f34'} style={{ marginLeft: 4 }} />
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -340,35 +364,36 @@ export const PostJobScreen = ({ navigation }: any) => {
 
                 {/* Logistics */}
                 <Animated.View entering={FadeInUp.delay(400)}>
-                    <View style={styles.cardWhite}>
+                    <View style={[styles.cardWhite, { backgroundColor: theme.card, borderColor: theme.border }]}>
                         <View style={styles.cardHeader}>
-                            <MapPin size={20} color="#002f34" />
-                            <Typography variant="h3" style={{ marginLeft: 10 }}>Logistics</Typography>
+                            <MapPin size={20} color={theme.text} />
+                            <Typography variant="h3" style={{ marginLeft: 10, color: theme.text }}>Logistics</Typography>
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>LOCATION</Typography>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>LOCATION</Typography>
                             <TextInput
-                                style={styles.input}
+                                style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                                 placeholder="City, Country"
                                 value={location}
                                 onChangeText={setLocation}
+                                placeholderTextColor={theme.textTertiary}
                             />
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>WORK MODE</Typography>
-                            <View style={styles.segmentControl}>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>WORK MODE</Typography>
+                            <View style={[styles.segmentControl, { backgroundColor: theme.surface }]}>
                                 {WORK_MODES.map(mode => (
                                     <TouchableOpacity
                                         key={mode}
-                                        style={[styles.segmentBtn, workMode === mode && styles.activeSegment]}
+                                        style={[styles.segmentBtn, workMode === mode && [styles.activeSegment, { backgroundColor: theme.card }]]}
                                         onPress={() => {
                                             triggerHaptic();
                                             setWorkMode(mode);
                                         }}
                                     >
-                                        <Typography style={[styles.segmentText, workMode === mode && styles.activeSegmentText]}>{mode}</Typography>
+                                        <Typography style={[styles.segmentText, { color: theme.textSecondary }, workMode === mode && [styles.activeSegmentText, { color: theme.text }]]}>{mode}</Typography>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -378,57 +403,60 @@ export const PostJobScreen = ({ navigation }: any) => {
 
                 {/* Description */}
                 <Animated.View entering={FadeInUp.delay(500)}>
-                    <View style={styles.cardWhite}>
+                    <View style={[styles.cardWhite, { backgroundColor: theme.card, borderColor: theme.border }]}>
                         <View style={styles.cardHeader}>
-                            <Briefcase size={20} color="#002f34" />
-                            <Typography variant="h3" style={{ marginLeft: 10 }}>Description</Typography>
+                            <Briefcase size={20} color={theme.text} />
+                            <Typography variant="h3" style={{ marginLeft: 10, color: theme.text }}>Description</Typography>
                         </View>
                         <TextInput
-                            style={[styles.input, { height: 120, textAlignVertical: 'top', paddingTop: 12 }]}
+                            style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border, height: 120, textAlignVertical: 'top', paddingTop: 12 }]}
                             placeholder="Describe the role, responsibilities, and requirements..."
                             multiline
                             value={description}
                             onChangeText={setDescription}
+                            placeholderTextColor={theme.textTertiary}
                         />
                     </View>
                 </Animated.View>
 
                 {/* Contact */}
                 <Animated.View entering={FadeInUp.delay(600)}>
-                    <View style={styles.cardWhite}>
+                    <View style={[styles.cardWhite, { backgroundColor: theme.card, borderColor: theme.border }]}>
                         <View style={styles.cardHeader}>
-                            <Mail size={20} color="#002f34" />
-                            <Typography variant="h3" style={{ marginLeft: 10 }}>Application & Contact</Typography>
+                            <Mail size={20} color={theme.text} />
+                            <Typography variant="h3" style={{ marginLeft: 10, color: theme.text }}>Application & Contact</Typography>
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>CONTACT EMAIL</Typography>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>CONTACT EMAIL</Typography>
                             <TextInput
-                                style={styles.input}
+                                style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                                 placeholder="hr@company.com"
                                 keyboardType="email-address"
                                 value={email}
                                 onChangeText={setEmail}
+                                placeholderTextColor={theme.textTertiary}
                             />
                         </View>
 
                         <View style={styles.inputWrapper}>
-                            <Typography variant="label" style={styles.label}>CONTACT PHONE (OPTIONAL)</Typography>
+                            <Typography variant="label" style={[styles.label, { color: theme.textSecondary }]}>CONTACT PHONE (OPTIONAL)</Typography>
                             <TextInput
-                                style={styles.input}
+                                style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                                 placeholder="+1 234 567 8900"
                                 keyboardType="phone-pad"
                                 value={phone}
                                 onChangeText={setPhone}
+                                placeholderTextColor={theme.textTertiary}
                             />
                         </View>
 
                         <View style={styles.rowBetween}>
-                            <Typography style={{ fontWeight: '600' }}>Allow In-App Chat</Typography>
+                            <Typography style={{ fontWeight: '600', color: theme.text }}>Allow In-App Chat</Typography>
                             <Switch
                                 value={enableChat}
                                 onValueChange={setEnableChat}
-                                trackColor={{ false: '#E5E7EB', true: '#002f34' }}
+                                trackColor={{ false: theme.border, true: theme.primary }}
                             />
                         </View>
                     </View>
@@ -437,9 +465,9 @@ export const PostJobScreen = ({ navigation }: any) => {
             </ScrollView>
 
             {/* Bottom Actions */}
-            <View style={styles.footer}>
-                <TouchableOpacity onPress={handlePreview} style={styles.previewBtn}>
-                    <Typography style={{ color: '#002f34', fontWeight: '700' }}>Preview</Typography>
+            <View style={[styles.footer, { backgroundColor: theme.background, borderTopColor: theme.border }]}>
+                <TouchableOpacity onPress={handlePreview} style={[styles.previewBtn, { backgroundColor: theme.surface }]}>
+                    <Typography style={{ color: theme.text, fontWeight: '700' }}>Preview</Typography>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.publishBtn, loading && { opacity: 0.7 }]}
@@ -447,7 +475,7 @@ export const PostJobScreen = ({ navigation }: any) => {
                     disabled={loading}
                 >
                     <LinearGradient
-                        colors={['#002f34', '#002f34']}
+                        colors={[theme.primary, theme.primary]}
                         start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
                         style={StyleSheet.absoluteFill}
                     />
@@ -463,7 +491,6 @@ export const PostJobScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F9FAFB',
     },
     successContainer: {
         flex: 1,
@@ -480,6 +507,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
     },
+    doneBtn: { marginTop: 30, backgroundColor: '#FFF', paddingHorizontal: 40, paddingVertical: 15, borderRadius: 25 },
+    doneBtnText: { color: '#002f34', fontWeight: '800' },
+    backHomeBtn: { marginTop: 15, backgroundColor: 'transparent', paddingHorizontal: 40, paddingVertical: 15, borderRadius: 25, borderWidth: 2, borderColor: '#FFF' },
+    backHomeBtnText: { color: '#FFF', fontWeight: '800' },
     header: {
         paddingTop: 60,
         paddingHorizontal: 24,
@@ -494,13 +525,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.2)',
     },
     textBtn: {
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 12,
-        backgroundColor: 'rgba(255,255,255,0.2)',
     },
     scrollContent: {
         paddingHorizontal: 24,
@@ -512,17 +541,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.5)',
     },
     cardWhite: {
-        backgroundColor: '#FFF',
         borderRadius: 20,
         padding: 20,
         marginBottom: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
+        borderWidth: 1,
         elevation: 2,
     },
     cardHeader: {
@@ -561,14 +585,11 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
     input: {
-        backgroundColor: '#F9FAFB',
         height: 50,
         borderRadius: 12,
         paddingHorizontal: 16,
         fontSize: 15,
-        color: '#1F2937',
         borderWidth: 1,
-        borderColor: '#E5E7EB',
     },
     chipRow: {
         flexDirection: 'row',
@@ -577,13 +598,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: '#F3F4F6',
         marginRight: 8,
     },
     activeChip: {
-        backgroundColor: '#EEF2FF',
         borderWidth: 1,
-        borderColor: '#002f34',
     },
     chipText: {
         fontSize: 13,
@@ -591,7 +609,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     activeChipText: {
-        color: '#002f34',
     },
     salaryRow: {
         flexDirection: 'row',
@@ -601,12 +618,10 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F9FAFB',
         height: 50,
         borderRadius: 12,
         paddingHorizontal: 12,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
     },
     skillInputRow: {
         flexDirection: 'row',
@@ -635,13 +650,11 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     tagText: {
-        color: '#002f34',
         fontWeight: '600',
         fontSize: 12,
     },
     segmentControl: {
         flexDirection: 'row',
-        backgroundColor: '#F3F4F6',
         borderRadius: 12,
         padding: 4,
     },
@@ -652,12 +665,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     activeSegment: {
-        backgroundColor: '#FFF',
         elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
     },
     segmentText: {
         fontSize: 13,
@@ -678,14 +686,12 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: '#FFF',
         paddingHorizontal: 24,
         paddingVertical: 20,
         paddingBottom: Platform.OS === 'ios' ? 34 : 20,
         flexDirection: 'row',
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#F3F4F6',
     },
     previewBtn: {
         flex: 1,
@@ -694,7 +700,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: 16,
         borderRadius: 16,
-        backgroundColor: '#EEF2FF',
     },
     publishBtn: {
         flex: 2,

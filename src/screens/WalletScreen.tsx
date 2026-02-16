@@ -7,10 +7,13 @@ import { Coins, TrendingUp, TrendingDown, Star, Gift, Zap, Award, ArrowLeft } fr
 import { auth } from '../core/config/firebase';
 import { userService } from '../services/userService';
 import { coinTransactionService, CoinTransaction } from '../services/coinTransactionService';
+import { useTheme } from '../theme/ThemeContext';
+import { StatusBar } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
 export const WalletScreen = ({ navigation }: any) => {
+    const { theme, isDark } = useTheme();
     const [userProfile, setUserProfile] = useState<any>(null);
     const [transactions, setTransactions] = useState<CoinTransaction[]>([]);
     const [loading, setLoading] = useState(true);
@@ -48,14 +51,14 @@ export const WalletScreen = ({ navigation }: any) => {
     };
 
     const renderTransaction = ({ item, index }: { item: CoinTransaction; index: number }) => (
-        <Animated.View entering={FadeInRight.delay(index * 50)} style={styles.transactionCard}>
+        <Animated.View entering={FadeInRight.delay(index * 50)} style={[styles.transactionCard, { backgroundColor: theme.card, shadowColor: isDark ? '#000' : theme.primary }]}>
             <View style={styles.transactionLeft}>
-                <View style={[styles.iconCircle, { backgroundColor: item.type === 'earn' ? '#D1FAE5' : '#FEE2E2' }]}>
+                <View style={[styles.iconCircle, { backgroundColor: item.type === 'earn' ? (isDark ? 'rgba(16, 185, 129, 0.2)' : '#D1FAE5') : (isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2') }]}>
                     {getTransactionIcon(item.reason, item.type)}
                 </View>
                 <View style={{ marginLeft: 12 }}>
-                    <Typography variant="bodyMedium" style={{ fontWeight: '600' }}>{item.reason}</Typography>
-                    <Typography variant="bodySmall" color="#9CA3AF">
+                    <Typography variant="bodyMedium" style={{ fontWeight: '600', color: theme.text }}>{item.reason}</Typography>
+                    <Typography variant="bodySmall" style={{ color: theme.textTertiary }}>
                         {item.timestamp?.toDate?.()?.toLocaleDateString() || 'Just now'}
                     </Typography>
                 </View>
@@ -76,12 +79,13 @@ export const WalletScreen = ({ navigation }: any) => {
     const trustScore = userProfile?.trustScore || 50;
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
+            <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 8, marginLeft: -8, marginRight: 8 }}>
-                    <ArrowLeft size={24} color="#002f34" />
+                    <ArrowLeft size={24} color={theme.text} />
                 </TouchableOpacity>
-                <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: '#002f34' }}>
+                <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: theme.text }}>
                     SuperCoin Wallet
                 </Typography>
             </View>
@@ -125,30 +129,30 @@ export const WalletScreen = ({ navigation }: any) => {
 
                 {/* Quick Actions */}
                 <Animated.View entering={FadeInUp.delay(200)} style={styles.actionsContainer}>
-                    <Typography variant="label" color="#9CA3AF" style={styles.sectionTitle}>
+                    <Typography variant="label" style={[styles.sectionTitle, { color: theme.textSecondary }]}>
                         QUICK ACTIONS
                     </Typography>
                     <View style={styles.actionsRow}>
                         <TouchableOpacity
-                            style={styles.actionBtn}
+                            style={[styles.actionBtn, { backgroundColor: theme.card, shadowColor: isDark ? '#000' : theme.primary }]}
                             onPress={() => navigation.navigate('MyListings')}
                         >
-                            <View style={[styles.actionIcon, { backgroundColor: '#DBEAFE' }]}>
+                            <View style={[styles.actionIcon, { backgroundColor: isDark ? 'rgba(59, 130, 246, 0.1)' : '#DBEAFE' }]}>
                                 <Zap size={24} color="#3B82F6" />
                             </View>
-                            <Typography variant="bodySmall" style={{ marginTop: 8, fontWeight: '600' }}>
+                            <Typography variant="bodySmall" style={{ marginTop: 8, fontWeight: '600', color: theme.text }}>
                                 Boost Ad
                             </Typography>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={styles.actionBtn}
+                            style={[styles.actionBtn, { backgroundColor: theme.card, shadowColor: isDark ? '#000' : theme.primary }]}
                             onPress={() => navigation.navigate('Profile')}
                         >
-                            <View style={[styles.actionIcon, { backgroundColor: '#FEF3C7' }]}>
+                            <View style={[styles.actionIcon, { backgroundColor: isDark ? 'rgba(245, 158, 11, 0.1)' : '#FEF3C7' }]}>
                                 <Gift size={24} color="#F59E0B" />
                             </View>
-                            <Typography variant="bodySmall" style={{ marginTop: 8, fontWeight: '600' }}>
+                            <Typography variant="bodySmall" style={{ marginTop: 8, fontWeight: '600', color: theme.text }}>
                                 Earn More
                             </Typography>
                         </TouchableOpacity>
@@ -157,13 +161,13 @@ export const WalletScreen = ({ navigation }: any) => {
 
                 {/* Transaction History */}
                 <View style={styles.historySection}>
-                    <Typography variant="label" color="#9CA3AF" style={styles.sectionTitle}>
+                    <Typography variant="label" style={[styles.sectionTitle, { color: theme.textSecondary }]}>
                         TRANSACTION HISTORY
                     </Typography>
                     {transactions.length === 0 ? (
                         <View style={styles.emptyState}>
-                            <Coins size={48} color="#D1D5DB" />
-                            <Typography variant="bodyMedium" color="#9CA3AF" style={{ marginTop: 12 }}>
+                            <Coins size={48} color={theme.textTertiary} />
+                            <Typography variant="bodyMedium" style={{ marginTop: 12, color: theme.textTertiary }}>
                                 No transactions yet
                             </Typography>
                         </View>
@@ -184,15 +188,12 @@ export const WalletScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F9FAFB',
     },
     header: {
         paddingTop: 60,
         paddingHorizontal: 24,
         paddingBottom: 20,
-        backgroundColor: '#FFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -236,12 +237,10 @@ const styles = StyleSheet.create({
     },
     actionBtn: {
         flex: 1,
-        backgroundColor: '#FFF',
         padding: 20,
         borderRadius: 20,
         alignItems: 'center',
         elevation: 2,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 8,
@@ -261,12 +260,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#FFF',
         padding: 16,
         borderRadius: 16,
         marginBottom: 12,
         elevation: 2,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.03,
         shadowRadius: 6,

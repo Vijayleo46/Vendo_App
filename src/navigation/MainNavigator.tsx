@@ -288,6 +288,7 @@ export const MainNavigator = () => {
                         <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
                         <Stack.Screen name="KYC" component={KycScreen} />
                         <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+                        <Stack.Screen name="UserProfile" component={ProfileScreen} />
                         <Stack.Screen
                             name="MyListings"
                             component={MyListingsScreen}

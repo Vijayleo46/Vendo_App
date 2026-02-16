@@ -47,8 +47,7 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                 <View style={{ position: 'relative' }}>
                     <Image
                         source={{ uri: image || 'https://via.placeholder.com/300x200?text=No+Image' }}
-                        style={{ width: '100%', height: 160 }}
-                        className={isDark ? "bg-[#1F2937]" : "bg-[#F9FAFB]"}
+                        style={{ width: '100%', height: 160, backgroundColor: theme.surface }}
                         resizeMode="cover"
                     />
 
@@ -111,8 +110,8 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                             {type === 'job' ? price : `₹ ${displayPrice}`}
                         </Typography>
                         {type === 'job' && (
-                            <View style={{ backgroundColor: isDark ? 'rgba(77, 208, 225, 0.1)' : '#F0F9FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                                <Typography style={{ fontSize: 9, fontWeight: '800', color: isDark ? '#4DD0E1' : '#0369A1' }}>HIRING</Typography>
+                            <View style={{ backgroundColor: theme.surface, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: theme.border }}>
+                                <Typography style={{ fontSize: 9, fontWeight: '800', color: theme.primary }}>HIRING</Typography>
                             </View>
                         )}
                     </View>

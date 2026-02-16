@@ -18,7 +18,7 @@ const CATEGORIES = ['Mobiles', 'Electronics', 'Vehicles', 'Real Estate', 'Jobs',
 const CONDITIONS = ['New', 'Used', 'Refurbished'];
 
 export const PostScreen = ({ route, navigation }: any) => {
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const [loading, setLoading] = useState(false);
     const [statusText, setStatusText] = useState('');
     const [success, setSuccess] = useState(false);
@@ -190,7 +190,7 @@ export const PostScreen = ({ route, navigation }: any) => {
                     onPress={() => {
                         navigation.reset({
                             index: 0,
-                            routes: [{ name: 'HomeTabs', params: { screen: 'Home' } }],
+                            routes: [{ name: 'Main', params: { screen: 'HomeTab' } }],
                         });
                     }}
                 >
@@ -202,13 +202,13 @@ export const PostScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.topHeader}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <ArrowLeft size={24} color="#002f34" />
+            <View style={[styles.topHeader, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: theme.surface }]}>
+                    <ArrowLeft size={24} color={theme.text} />
                 </TouchableOpacity>
-                <Typography style={styles.headerTitle}>Create Ad</Typography>
+                <Typography style={[styles.headerTitle, { color: theme.text }]}>Create Ad</Typography>
                 <TouchableOpacity onPress={handlePublish} disabled={loading}>
-                    <Typography style={{ color: '#002f34', fontWeight: '800' }}>
+                    <Typography style={{ color: theme.text, fontWeight: '800' }}>
                         {loading ? '...' : 'SAVE'}
                     </Typography>
                 </TouchableOpacity>
@@ -221,20 +221,20 @@ export const PostScreen = ({ route, navigation }: any) => {
                     animate={{ opacity: 1, translateY: 0 }}
                     style={{ paddingHorizontal: 20, paddingTop: 30, paddingBottom: 20 }}
                 >
-                    <Typography style={{ fontSize: 26, fontWeight: '900', color: '#002f34' }}>Sell Something</Typography>
-                    <Typography style={{ color: '#64748B', fontSize: 14, fontWeight: '500' }}>Add details to get best price</Typography>
+                    <Typography style={{ fontSize: 26, fontWeight: '900', color: theme.text }}>Sell Something</Typography>
+                    <Typography style={{ color: theme.textSecondary, fontSize: 14, fontWeight: '500' }}>Add details to get best price</Typography>
                 </MotiView>
 
                 {/* Studio Photo Section */}
                 <View style={{ paddingHorizontal: 20, marginBottom: 32 }}>
                     <Typography style={styles.sectionLabel}>PHOTOS</Typography>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ overflow: 'visible' }}>
-                        <TouchableOpacity onPress={() => pickImage()} style={styles.studioUploadBtn}>
-                            <View style={styles.studioIconCircle}>
-                                <Camera size={28} color="#002f34" />
+                        <TouchableOpacity onPress={() => pickImage()} style={[styles.studioUploadBtn, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                            <View style={[styles.studioIconCircle, { backgroundColor: theme.surface }]}>
+                                <Camera size={28} color={theme.text} />
                             </View>
-                            <Typography style={styles.studioText}>Add Photos</Typography>
-                            <Typography style={styles.studioSubtext}>{images.length}/5 photos</Typography>
+                            <Typography style={[styles.studioText, { color: theme.text }]}>Add Photos</Typography>
+                            <Typography style={[styles.studioSubtext, { color: theme.textTertiary }]}>{images.length}/5 photos</Typography>
                         </TouchableOpacity>
 
                         {images.map((img, index) => (
@@ -251,9 +251,9 @@ export const PostScreen = ({ route, navigation }: any) => {
                 {/* Form Inputs */}
                 <View style={{ paddingHorizontal: 20 }}>
                     <View style={styles.inputWrapper}>
-                        <Typography style={styles.inputLabel}>AD TITLE</Typography>
+                        <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>AD TITLE</Typography>
                         <TextInput
-                            style={styles.premiumInput}
+                            style={[styles.premiumInput, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
                             placeholder="What are you selling?"
                             value={title}
                             onChangeText={setTitle}
@@ -261,15 +261,16 @@ export const PostScreen = ({ route, navigation }: any) => {
                     </View>
 
                     <View style={styles.inputWrapper}>
-                        <Typography style={styles.inputLabel}>PRICE</Typography>
-                        <View style={styles.priceInputRow}>
-                            <Typography style={styles.currencySymbol}>₹</Typography>
+                        <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>PRICE</Typography>
+                        <View style={[styles.priceInputRow, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                            <Typography style={[styles.currencySymbol, { color: theme.text }]}>₹</Typography>
                             <TextInput
-                                style={styles.priceInput}
+                                style={[styles.priceInput, { color: theme.text }]}
                                 placeholder="0.00"
                                 keyboardType="numeric"
                                 value={price}
                                 onChangeText={setPrice}
+                                placeholderTextColor={theme.textTertiary}
                             />
                             <TouchableOpacity onPress={handleAIPredict} style={styles.aiBtn}>
                                 <Wand2 size={18} color="#FFF" />
@@ -278,24 +279,24 @@ export const PostScreen = ({ route, navigation }: any) => {
                     </View>
 
                     <View style={styles.inputWrapper}>
-                        <Typography style={styles.inputLabel}>CATEGORY</Typography>
+                        <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>CATEGORY</Typography>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
                             {CATEGORIES.map(cat => (
                                 <TouchableOpacity
                                     key={cat}
                                     onPress={() => setCategory(cat)}
-                                    style={[styles.catChip, category === cat && styles.activeCatChip]}
+                                    style={[styles.catChip, { backgroundColor: theme.card, borderColor: theme.border }, category === cat && [styles.activeCatChip, { backgroundColor: theme.primary, borderColor: theme.primary }]]}
                                 >
-                                    <Typography style={[styles.catChipText, category === cat && styles.activeCatChipText]}>{cat}</Typography>
+                                    <Typography style={[styles.catChipText, { color: theme.textSecondary }, category === cat && styles.activeCatChipText]}>{cat}</Typography>
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
                     </View>
 
                     <View style={styles.inputWrapper}>
-                        <Typography style={styles.inputLabel}>DESCRIPTION</Typography>
+                        <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>DESCRIPTION</Typography>
                         <TextInput
-                            style={[styles.premiumInput, { height: 120, textAlignVertical: 'top' }]}
+                            style={[styles.premiumInput, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border, height: 120, textAlignVertical: 'top' }]}
                             placeholder="Tell sellers about your item..."
                             multiline
                             value={description}
@@ -304,9 +305,9 @@ export const PostScreen = ({ route, navigation }: any) => {
                     </View>
 
                     <View style={styles.inputWrapper}>
-                        <Typography style={styles.inputLabel}>LOCATION</Typography>
-                        <View style={styles.locationBox}>
-                            <MapPin size={20} color="#64748B" />
+                        <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>LOCATION</Typography>
+                        <View style={[styles.locationBox, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                            <MapPin size={20} color={theme.textTertiary} />
                             <TextInput
                                 style={styles.locationInput}
                                 placeholder="Search city/area"
@@ -318,14 +319,22 @@ export const PostScreen = ({ route, navigation }: any) => {
 
                     {/* Options */}
                     <View style={styles.optionRow}>
-                        <Typography style={styles.optionText}>Enable Chat</Typography>
-                        <Switch value={details.chat} onValueChange={v => setDetails({ ...details, chat: v })} />
+                        <Typography style={[styles.optionText, { color: theme.text }]}>Enable Chat</Typography>
+                        <Switch
+                            value={details.chat}
+                            onValueChange={v => setDetails({ ...details, chat: v })}
+                            trackColor={{ false: theme.border, true: theme.primary }}
+                        />
                     </View>
                 </View>
             </ScrollView>
 
-            <View style={styles.floatingBottom}>
-                <TouchableOpacity style={styles.mainPublishBtn} onPress={handlePublish} disabled={loading}>
+            <View style={[styles.floatingBottom, { backgroundColor: theme.background, borderTopColor: theme.border }]}>
+                <TouchableOpacity
+                    style={[styles.mainPublishBtn, { backgroundColor: theme.primary }]}
+                    onPress={handlePublish}
+                    disabled={loading}
+                >
                     <Typography style={styles.publishBtnText}>
                         {loading ? statusText : 'PUBLISH NOW'}
                     </Typography>
@@ -336,7 +345,9 @@ export const PostScreen = ({ route, navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#FAFAFA' },
+    container: {
+        flex: 1,
+    },
     topHeader: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -346,8 +357,17 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
         backgroundColor: '#FFF',
     },
-    backBtn: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center' },
-    headerTitle: { fontSize: 18, fontWeight: '800', color: '#002f34' },
+    backBtn: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+    },
     sectionLabel: { fontSize: 11, fontWeight: '800', color: '#94A3B8', letterSpacing: 1.5, marginBottom: 12 },
     studioUploadBtn: {
         width: 110, height: 140, borderRadius: 20, backgroundColor: '#FFF',
@@ -371,12 +391,19 @@ const styles = StyleSheet.create({
     inputWrapper: { marginBottom: 24 },
     inputLabel: { fontSize: 11, fontWeight: '900', color: '#002f34', opacity: 0.4, letterSpacing: 1, marginBottom: 8 },
     premiumInput: {
-        backgroundColor: '#FFF', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14,
-        fontSize: 15, color: '#002f34', fontWeight: '600', borderWidth: 1, borderColor: '#F1F5F9'
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        fontSize: 15,
+        fontWeight: '600',
+        borderWidth: 1,
     },
     priceInputRow: {
-        flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF',
-        borderRadius: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: '#F1F5F9'
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        borderWidth: 1,
     },
     currencySymbol: { fontSize: 18, fontWeight: '800', color: '#002f34', marginRight: 8 },
     priceInput: { flex: 1, height: 50, fontSize: 20, fontWeight: '800', color: '#002f34' },
@@ -386,19 +413,30 @@ const styles = StyleSheet.create({
     catChipText: { fontSize: 13, fontWeight: '700', color: '#64748B' },
     activeCatChipText: { color: '#FFF' },
     locationBox: {
-        flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF',
-        borderRadius: 16, paddingHorizontal: 16, height: 50, borderWidth: 1, borderColor: '#F1F5F9'
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        height: 50,
+        borderWidth: 1,
     },
     locationInput: { flex: 1, marginLeft: 10, fontSize: 15, fontWeight: '600', color: '#002f34' },
     optionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
     optionText: { fontSize: 15, fontWeight: '700', color: '#002f34' },
     floatingBottom: {
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        padding: 20, backgroundColor: '#FFF', borderTopWidth: 1, borderTopColor: '#F1F5F9'
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: 20,
+        borderTopWidth: 1,
     },
     mainPublishBtn: {
-        height: 56, backgroundColor: '#002f34', borderRadius: 18,
-        justifyContent: 'center', alignItems: 'center', elevation: 4
+        height: 56,
+        borderRadius: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 4
     },
     publishBtnText: { color: '#FFF', fontSize: 16, fontWeight: '900', letterSpacing: 0.5 },
     successContainer: { flex: 1, backgroundColor: '#002f34', justifyContent: 'center', alignItems: 'center' },

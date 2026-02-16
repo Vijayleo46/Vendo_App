@@ -19,8 +19,11 @@ import { updateProfile } from 'firebase/auth';
 import { userService } from '../services/userService';
 import { storageService } from '../services/storageService';
 import * as ImagePicker from 'expo-image-picker';
+import { useTheme } from '../theme/ThemeContext';
+import { StatusBar } from 'react-native';
 
 export const EditProfileScreen = ({ navigation }: any) => {
+    const { theme, isDark } = useTheme();
     const user = auth.currentUser;
     const [name, setName] = useState(user?.displayName || 'Leo');
     const [email, setEmail] = useState(user?.email || '');
@@ -245,27 +248,28 @@ export const EditProfileScreen = ({ navigation }: any) => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <ChevronLeft size={24} color="#002f34" strokeWidth={2} />
+            <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.surface }]}>
+                    <ChevronLeft size={24} color={theme.text} strokeWidth={2} />
                 </TouchableOpacity>
-                <Typography variant="h2" style={{ fontWeight: '700', fontSize: 20, color: '#002f34' }}>
+                <Typography variant="h2" style={{ fontWeight: '700', fontSize: 20, color: theme.text }}>
                     Edit Profile
                 </Typography>
                 <TouchableOpacity
                     onPress={handleSave}
                     disabled={loading}
-                    style={[styles.headerSaveBtn, loading && { opacity: 0.5 }]}
+                    style={[styles.headerSaveBtn, { backgroundColor: theme.surface }, loading && { opacity: 0.5 }]}
                 >
                     {loading ? (
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <ActivityIndicator size="small" color="#002f34" />
-                            {statusText ? <Typography style={{ marginLeft: 8, fontSize: 12, color: '#002f34' }}>{statusText}</Typography> : null}
+                            <ActivityIndicator size="small" color={theme.primary} />
+                            {statusText ? <Typography style={{ marginLeft: 8, fontSize: 12, color: theme.textSecondary }}>{statusText}</Typography> : null}
                         </View>
                     ) : (
-                        <Typography style={{ color: '#002f34', fontWeight: '700' }}>
+                        <Typography style={{ color: theme.primary, fontWeight: '700' }}>
                             Save
                         </Typography>
                     )}
@@ -283,10 +287,10 @@ export const EditProfileScreen = ({ navigation }: any) => {
                         <Image
                             key={photoURL}
                             source={{ uri: photoURL || 'https://i.pravatar.cc/150?u=default' }}
-                            style={styles.photo}
+                            style={[styles.photo, { backgroundColor: theme.surface }]}
                             onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
                         />
-                        <View style={styles.cameraButton}>
+                        <View style={[styles.cameraButton, { backgroundColor: theme.primary, borderColor: theme.background }]}>
                             <Camera size={18} color="#FFF" />
                         </View>
                     </TouchableOpacity>
@@ -295,60 +299,60 @@ export const EditProfileScreen = ({ navigation }: any) => {
                 {/* Form Fields */}
                 <View style={styles.form}>
                     <View style={styles.inputGroup}>
-                        <Typography variant="bodySmall" style={styles.label}>FULL NAME</Typography>
+                        <Typography variant="bodySmall" style={[styles.label, { color: theme.textSecondary }]}>FULL NAME</Typography>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
                             value={name}
                             onChangeText={setName}
                             placeholder="Enter your name"
-                            placeholderTextColor="#9CA3AF"
+                            placeholderTextColor={theme.textTertiary}
                         />
                     </View>
 
                     <View style={styles.inputGroup}>
-                        <Typography variant="bodySmall" style={styles.label}>EMAIL</Typography>
+                        <Typography variant="bodySmall" style={[styles.label, { color: theme.textSecondary }]}>EMAIL</Typography>
                         <TextInput
-                            style={[styles.input, styles.inputDisabled]}
+                            style={[styles.input, styles.inputDisabled, { backgroundColor: theme.surface, color: theme.textTertiary, borderColor: theme.border }]}
                             value={email}
                             editable={false}
-                            placeholderTextColor="#9CA3AF"
+                            placeholderTextColor={theme.textTertiary}
                         />
-                        <Typography variant="bodySmall" color="#9CA3AF" style={{ marginTop: 4 }}>
+                        <Typography variant="bodySmall" style={{ marginTop: 4, color: theme.textTertiary }}>
                             Email cannot be changed
                         </Typography>
                     </View>
 
                     <View style={styles.inputGroup}>
-                        <Typography variant="bodySmall" style={styles.label}>PHONE NUMBER</Typography>
+                        <Typography variant="bodySmall" style={[styles.label, { color: theme.textSecondary }]}>PHONE NUMBER</Typography>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
                             value={phone}
                             onChangeText={setPhone}
                             placeholder="Enter phone number"
-                            placeholderTextColor="#9CA3AF"
+                            placeholderTextColor={theme.textTertiary}
                             keyboardType="phone-pad"
                         />
                     </View>
 
                     <View style={styles.inputGroup}>
-                        <Typography variant="bodySmall" style={styles.label}>LOCATION</Typography>
+                        <Typography variant="bodySmall" style={[styles.label, { color: theme.textSecondary }]}>LOCATION</Typography>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
                             value={location}
                             onChangeText={setLocation}
                             placeholder="Enter your location"
-                            placeholderTextColor="#9CA3AF"
+                            placeholderTextColor={theme.textTertiary}
                         />
                     </View>
 
                     <View style={styles.inputGroup}>
-                        <Typography variant="bodySmall" style={styles.label}>BIO</Typography>
+                        <Typography variant="bodySmall" style={[styles.label, { color: theme.textSecondary }]}>BIO</Typography>
                         <TextInput
-                            style={[styles.input, styles.textArea]}
+                            style={[styles.input, styles.textArea, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
                             value={bio}
                             onChangeText={setBio}
                             placeholder="Tell us about yourself"
-                            placeholderTextColor="#9CA3AF"
+                            placeholderTextColor={theme.textTertiary}
                             multiline
                             numberOfLines={4}
                         />
@@ -357,7 +361,7 @@ export const EditProfileScreen = ({ navigation }: any) => {
 
                 {/* Save Button */}
                 <TouchableOpacity
-                    style={[styles.saveButton, loading && { opacity: 0.7 }]}
+                    style={[styles.saveButton, { backgroundColor: theme.primary, shadowColor: theme.primary }, loading && { opacity: 0.7 }]}
                     onPress={handleSave}
                     disabled={loading}
                     activeOpacity={0.8}
@@ -381,7 +385,6 @@ export const EditProfileScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FAFAFA',
     },
     header: {
         flexDirection: 'row',
@@ -390,15 +393,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: Platform.OS === 'ios' ? 60 : 20,
         paddingBottom: 16,
-        backgroundColor: '#FFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F1F5F9',
     },
     backButton: {
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: '#F8FAFC',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -410,7 +410,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 12,
-        backgroundColor: '#F8FAFC',
     },
     photoSection: {
         alignItems: 'center',
@@ -432,11 +431,9 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#002f34',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 3,
-        borderColor: '#FFF',
     },
     form: {
         gap: 20,
@@ -452,19 +449,14 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
     input: {
-        backgroundColor: '#FFF',
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 14,
         fontSize: 15,
-        color: '#002f34',
         borderWidth: 1.5,
-        borderColor: '#E2E8F0',
     },
     inputDisabled: {
-        backgroundColor: '#F8FAFC',
-        color: '#94A3B8',
-        borderColor: '#F1F5F9',
+        opacity: 0.6,
     },
     textArea: {
         height: 100,
@@ -475,8 +467,6 @@ const styles = StyleSheet.create({
         marginTop: 32,
         borderRadius: 16,
         overflow: 'hidden',
-        backgroundColor: '#002f34',
-        shadowColor: '#002f34',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,

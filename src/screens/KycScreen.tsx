@@ -26,7 +26,7 @@ import { auth } from '../core/config/firebase';
 const { width } = Dimensions.get('window');
 
 export const KycScreen = ({ navigation }: any) => {
-    const { theme, spacing, borderRadius } = useTheme();
+    const { theme, spacing, borderRadius, isDark } = useTheme();
     const [idNumber, setIdNumber] = useState('');
     const [docType, setDocType] = useState('ID Card');
     const [submitted, setSubmitted] = useState(false);
@@ -83,15 +83,15 @@ export const KycScreen = ({ navigation }: any) => {
 
     if (submitted) {
         return (
-            <SafeAreaView style={[styles.container, { backgroundColor: '#F9FAFB', justifyContent: 'center', alignItems: 'center', padding: 24 }]}>
+            <SafeAreaView style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center', padding: 24 }]}>
                 <Animated.View entering={ZoomIn.duration(600)} style={styles.successContainer}>
                     <View style={styles.successPulse}>
                         <CheckCircle2 size={54} {...{ color: "#10B981" } as any} />
                     </View>
                 </Animated.View>
                 <Animated.View entering={FadeInUp.delay(300)} style={{ alignItems: 'center' }}>
-                    <Typography variant="h1" style={{ marginTop: 32, fontSize: 32, fontWeight: '800', textAlign: 'center' }}>Verification Pending</Typography>
-                    <Typography variant="bodyLarge" color="#9CA3AF" style={{ marginTop: 12, textAlign: 'center', lineHeight: 28 }}>
+                    <Typography variant="h1" style={{ marginTop: 32, fontSize: 32, fontWeight: '800', textAlign: 'center', color: theme.text }}>Verification Pending</Typography>
+                    <Typography variant="bodyLarge" style={{ marginTop: 12, textAlign: 'center', lineHeight: 28, color: theme.textSecondary }}>
                         We're reviewing your documents. You'll receive a notification within 24 hours.
                     </Typography>
                 </Animated.View>
@@ -107,23 +107,23 @@ export const KycScreen = ({ navigation }: any) => {
     }
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: '#F5F5F5' }]}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <ChevronLeft size={24} {...{ color: "#1F2937" } as any} />
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.surface }]}>
+                    <ChevronLeft size={24} color={theme.text} />
                 </TouchableOpacity>
-                <Typography variant="h2" style={{ fontWeight: '700', fontSize: 20 }}>Identity Verification</Typography>
+                <Typography variant="h2" style={{ fontWeight: '700', fontSize: 20, color: theme.text }}>Identity Verification</Typography>
                 <View style={{ width: 44 }} />
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 24, paddingBottom: 60 }}>
                 {/* Secure Verification Banner */}
-                <Animated.View entering={FadeInUp.delay(200)} style={styles.secureCard}>
-                    <View style={styles.shieldIconContainer}>
-                        <Shield size={24} {...{ color: "#6366F1" } as any} />
+                <Animated.View entering={FadeInUp.delay(200)} style={[styles.secureCard, { backgroundColor: isDark ? 'rgba(99, 102, 241, 0.1)' : '#EEF2FF' }]}>
+                    <View style={[styles.shieldIconContainer, { backgroundColor: theme.card }]}>
+                        <Shield size={24} color="#6366F1" />
                     </View>
                     <View style={{ marginLeft: 16, flex: 1 }}>
-                        <Typography variant="bodyMedium" style={{ fontWeight: '700', color: '#1F2937', fontSize: 16 }}>
+                        <Typography variant="bodyMedium" style={{ fontWeight: '700', color: theme.text, fontSize: 16 }}>
                             Secure Verification
                         </Typography>
                         <Typography variant="bodySmall" style={{ color: '#6366F1', marginTop: 2, fontSize: 13 }}>
@@ -133,7 +133,7 @@ export const KycScreen = ({ navigation }: any) => {
                 </Animated.View>
 
                 {/* Select Document */}
-                <Typography variant="h3" style={{ marginTop: 32, marginBottom: 16, fontWeight: '600', fontSize: 18 }}>
+                <Typography variant="h3" style={{ marginTop: 32, marginBottom: 16, fontWeight: '600', fontSize: 18, color: theme.text }}>
                     Select Document
                 </Typography>
                 <View style={styles.docTypeContainer}>
@@ -144,7 +144,7 @@ export const KycScreen = ({ navigation }: any) => {
                             style={[
                                 styles.docTypeButton,
                                 {
-                                    backgroundColor: docType === item ? '#1F2937' : '#FFF',
+                                    backgroundColor: docType === item ? theme.primary : theme.card,
                                 }
                             ]}
                         >
@@ -153,7 +153,7 @@ export const KycScreen = ({ navigation }: any) => {
                                 style={{
                                     fontWeight: '600',
                                     fontSize: 14,
-                                    color: docType === item ? '#FFF' : '#6B7280'
+                                    color: docType === item ? '#FFF' : theme.textSecondary
                                 }}
                             >
                                 {item}
@@ -164,24 +164,24 @@ export const KycScreen = ({ navigation }: any) => {
 
                 {/* Document Number */}
                 <View style={{ marginTop: 24 }}>
-                    <Typography variant="bodySmall" style={{ color: '#9CA3AF', marginBottom: 8, fontSize: 12, fontWeight: '600', letterSpacing: 0.5 }}>
+                    <Typography variant="bodySmall" style={{ color: theme.textTertiary, marginBottom: 8, fontSize: 12, fontWeight: '600', letterSpacing: 0.5 }}>
                         DOCUMENT NUMBER
                     </Typography>
                     <TextInput
                         placeholder="32323345656778"
                         value={idNumber}
                         onChangeText={setIdNumber}
-                        style={styles.documentInput}
-                        placeholderTextColor="#D1D5DB"
+                        style={[styles.documentInput, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
+                        placeholderTextColor={theme.textTertiary}
                     />
                 </View>
 
                 {/* Capture Document */}
-                <Typography variant="h3" style={{ marginTop: 32, marginBottom: 16, fontWeight: '600', fontSize: 18 }}>
+                <Typography variant="h3" style={{ marginTop: 32, marginBottom: 16, fontWeight: '600', fontSize: 18, color: theme.text }}>
                     Capture Document
                 </Typography>
-                <TouchableOpacity 
-                    style={styles.captureBox} 
+                <TouchableOpacity
+                    style={[styles.captureBox, { backgroundColor: theme.card }]}
                     onPress={pickImage}
                     activeOpacity={0.8}
                 >
@@ -199,7 +199,7 @@ export const KycScreen = ({ navigation }: any) => {
 
                 {/* Submit Button */}
                 <TouchableOpacity
-                    style={[styles.submitButton, (!idNumber || !image) && styles.submitButtonDisabled]}
+                    style={[styles.submitButton, { backgroundColor: theme.primary, shadowColor: theme.primary }, (!idNumber || !image) && styles.submitButtonDisabled]}
                     onPress={handleSubmit}
                     disabled={!idNumber || !image || loading}
                     activeOpacity={0.8}
@@ -228,22 +228,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 16,
         paddingBottom: 16,
-        backgroundColor: '#FFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F3F4F6',
     },
     backButton: {
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: '#F9FAFB',
         justifyContent: 'center',
         alignItems: 'center',
     },
     secureCard: {
         flexDirection: 'row',
         padding: 20,
-        backgroundColor: '#EEF2FF',
         borderRadius: 16,
         alignItems: 'center',
     },
@@ -251,7 +247,6 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 12,
-        backgroundColor: '#FFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -272,25 +267,20 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     documentInput: {
-        backgroundColor: '#FFF',
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 16,
         fontSize: 16,
-        color: '#1F2937',
         borderWidth: 1,
-        borderColor: '#E5E7EB',
     },
     captureBox: {
         height: 220,
-        backgroundColor: '#FFF',
         borderRadius: 24,
         overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
         elevation: 4,
+    },
+    homescreen: {
+        backgroundColor: '#FFF',
     },
     capturedImage: {
         width: '100%',
@@ -311,15 +301,10 @@ const styles = StyleSheet.create({
     },
     submitButton: {
         marginTop: 40,
-        backgroundColor: '#6366F1',
         borderRadius: 16,
         paddingVertical: 18,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#6366F1',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.3,
-        shadowRadius: 16,
         elevation: 8,
     },
     submitButtonDisabled: {
@@ -330,7 +315,7 @@ const styles = StyleSheet.create({
         width: 140,
         height: 140,
         borderRadius: 70,
-        backgroundColor: '#ECFDF5',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -338,7 +323,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: '#FFF',
+        backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
         elevation: 4,

@@ -26,7 +26,8 @@ import {
     ChevronLeft,
     CheckCircle,
     XCircle,
-    UserCircle
+    UserCircle,
+    Home
 } from 'lucide-react-native';
 
 import { listingService } from '../services/listingService';
@@ -98,12 +99,20 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
         <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
             <View style={[styles.header, { paddingHorizontal: 24, paddingTop: 30 }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                        style={[styles.backBtn, { backgroundColor: theme.surface }]}
-                    >
-                        <ChevronLeft size={24} color={theme.text} strokeWidth={2.5} />
-                    </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TouchableOpacity
+                            onPress={() => navigation.goBack()}
+                            style={[styles.backBtn, { backgroundColor: theme.surface }]}
+                        >
+                            <ChevronLeft size={24} color={theme.text} strokeWidth={2.5} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Main', { screen: 'HomeTab' })}
+                            style={[styles.backBtn, { backgroundColor: theme.surface, marginLeft: 8 }]}
+                        >
+                            <Home size={20} color={theme.text} strokeWidth={2.5} />
+                        </TouchableOpacity>
+                    </View>
                     <View>
                         <Typography variant="h1" style={{ fontSize: 28, fontWeight: '800', color: theme.text }}>Admin Console</Typography>
                         <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>System health & Overview</Typography>
@@ -171,7 +180,10 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
                     ) : (
                         users.map((item, idx) => (
                             <View key={item.uid} style={[styles.userItem, { borderBottomColor: theme.border, borderBottomWidth: idx === users.length - 1 ? 0 : 1 }]}>
-                                <View style={styles.userMain}>
+                                <TouchableOpacity
+                                    style={styles.userMain}
+                                    onPress={() => navigation.navigate('UserProfile', { userId: item.uid })}
+                                >
                                     <View style={[styles.userAvatar, { backgroundColor: theme.background }]}>
                                         <UserCircle size={24} color={theme.textSecondary} />
                                     </View>
@@ -191,20 +203,31 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
                                             )}
                                         </View>
                                     </View>
-                                </View>
-                                <TouchableOpacity
-                                    onPress={() => handleToggleVerification(item.uid, item.kycStatus)}
-                                    style={[styles.verifyBtn, { backgroundColor: item.kycStatus === 'verified' ? '#EF4444' : '#10B981' }]}
-                                >
-                                    {item.kycStatus === 'verified' ? (
-                                        <XCircle size={18} color="#FFF" />
-                                    ) : (
-                                        <CheckCircle size={18} color="#FFF" />
-                                    )}
-                                    <Typography style={{ color: '#FFF', fontSize: 12, fontWeight: '700', marginLeft: 8 }}>
-                                        {item.kycStatus === 'verified' ? 'Revoke' : 'Verify'}
-                                    </Typography>
                                 </TouchableOpacity>
+                                <View style={styles.actionColumn}>
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('UserProfile', { userId: item.uid })}
+                                        style={[styles.actionBtn, { backgroundColor: theme.primary + '15', marginBottom: 8 }]}
+                                    >
+                                        <UserCircle size={16} color={theme.primary} />
+                                        <Typography style={{ color: theme.primary, fontSize: 11, fontWeight: '700', marginLeft: 6 }}>
+                                            View Profile
+                                        </Typography>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => handleToggleVerification(item.uid, item.kycStatus)}
+                                        style={[styles.verifyBtn, { backgroundColor: item.kycStatus === 'verified' ? '#EF4444' : '#10B981' }]}
+                                    >
+                                        {item.kycStatus === 'verified' ? (
+                                            <XCircle size={16} color="#FFF" />
+                                        ) : (
+                                            <CheckCircle size={16} color="#FFF" />
+                                        )}
+                                        <Typography style={{ color: '#FFF', fontSize: 11, fontWeight: '700', marginLeft: 6 }}>
+                                            {item.kycStatus === 'verified' ? 'Revoke' : 'Verify'}
+                                        </Typography>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         ))
                     )}
@@ -400,9 +423,22 @@ const styles = StyleSheet.create({
     verifyBtn: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 12,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 10,
+    },
+    actionColumn: {
+        alignItems: 'flex-end',
+        justifyContent: 'center',
         marginLeft: 12,
+    },
+    actionBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: 'transparent',
     }
 });

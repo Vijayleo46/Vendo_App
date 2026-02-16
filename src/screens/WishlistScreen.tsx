@@ -49,7 +49,7 @@ const { width } = Dimensions.get('window');
 type TabType = 'all' | 'products' | 'jobs';
 
 export const WishlistScreen = ({ navigation }: any) => {
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const isFocused = useIsFocused();
     const [activeTab, setActiveTab] = useState<TabType>('all');
     const [searchQuery, setSearchQuery] = useState('');
@@ -175,7 +175,7 @@ export const WishlistScreen = ({ navigation }: any) => {
                 activeOpacity={0.9}
                 onPress={() => navigation.navigate('ProductDetails', { product: item })}
             >
-                <BlurView intensity={80} tint="light" style={styles.glassCard}>
+                <BlurView intensity={80} tint={isDark ? "dark" : "light"} style={[styles.glassCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
                     <Image
                         source={{ uri: item.images?.[0] || 'https://via.placeholder.com/100' }}
                         style={styles.cardImage}
@@ -188,7 +188,7 @@ export const WishlistScreen = ({ navigation }: any) => {
 
                         <View style={styles.ratingRow}>
                             <Star size={12} fill="#F59E0B" color="#F59E0B" />
-                            <Typography variant="bodySmall" style={{ marginLeft: 4, fontWeight: '600', color: '#002f34' }}>
+                            <Typography variant="bodySmall" style={{ marginLeft: 4, fontWeight: '600', color: theme.text }}>
                                 {item.rating || '4.5'}
                             </Typography>
                             <Typography variant="bodySmall" color="#6B7280" style={{ marginLeft: 8 }}>
@@ -196,11 +196,11 @@ export const WishlistScreen = ({ navigation }: any) => {
                             </Typography>
                         </View>
 
-                        <Typography variant="h2" style={{ color: '#002f34', marginTop: 4, fontWeight: '900' }}>₹{item.price}</Typography>
+                        <Typography variant="h2" style={{ color: theme.text, marginTop: 4, fontWeight: '900' }}>₹{item.price}</Typography>
 
                         <View style={styles.cardActions}>
                             <TouchableOpacity
-                                style={[styles.chatBtn, { backgroundColor: '#002f34' }]}
+                                style={[styles.chatBtn, { backgroundColor: theme.primary }]}
                                 onPress={() => navigation.navigate('ChatRoom', {
                                     chatId: 'new', // chatService will handle actual ID
                                     otherName: item.sellerName,
@@ -234,9 +234,9 @@ export const WishlistScreen = ({ navigation }: any) => {
                 activeOpacity={0.9}
                 onPress={() => navigation.navigate('ProductDetails', { product: item })}
             >
-                <BlurView intensity={80} tint="light" style={styles.glassCard}>
-                    <View style={styles.jobIconContainer}>
-                        <Briefcase size={24} color="#002f34" />
+                <BlurView intensity={80} tint={isDark ? "dark" : "light"} style={[styles.glassCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                    <View style={[styles.jobIconContainer, { backgroundColor: theme.surface }]}>
+                        <Briefcase size={24} color={theme.text} />
                     </View>
                     <View style={styles.cardInfo}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -249,11 +249,11 @@ export const WishlistScreen = ({ navigation }: any) => {
                         </Typography>
 
                         <View style={styles.jobMeta}>
-                            <View style={styles.jobBadge}>
-                                <Typography style={styles.jobBadgeText}>{item.jobType || 'Full Time'}</Typography>
+                            <View style={[styles.jobBadge, { backgroundColor: theme.surface }]}>
+                                <Typography style={[styles.jobBadgeText, { color: theme.text }]}>{item.jobType || 'Full Time'}</Typography>
                             </View>
-                            <View style={[styles.jobBadge, { backgroundColor: '#f1f4f5' }]}>
-                                <Typography style={[styles.jobBadgeText, { color: '#002f34' }]}>{item.workMode || 'Remote'}</Typography>
+                            <View style={[styles.jobBadge, { backgroundColor: theme.surface }]}>
+                                <Typography style={[styles.jobBadgeText, { color: theme.textSecondary }]}>{item.workMode || 'Remote'}</Typography>
                             </View>
                         </View>
 
@@ -277,9 +277,9 @@ export const WishlistScreen = ({ navigation }: any) => {
         <View style={styles.emptyContainer}>
             <Image
                 source={{ uri: 'https://cdn-icons-png.flaticon.com/512/5087/5087847.png' }}
-                style={styles.emptyImage}
+                style={[styles.emptyImage, { opacity: isDark ? 0.5 : 1 }]}
             />
-            <Typography variant="h2" style={{ marginTop: 20 }}>Your wishlist is empty</Typography>
+            <Typography variant="h2" style={{ marginTop: 20, color: theme.text }}>Your wishlist is empty</Typography>
             <Typography variant="bodyMedium" color="#6B7280" style={{ textAlign: 'center', marginTop: 8, paddingHorizontal: 40 }}>
                 Explore the marketplace and save items you love for later.
             </Typography>
@@ -288,7 +288,7 @@ export const WishlistScreen = ({ navigation }: any) => {
                 onPress={() => navigation.navigate('Main', { screen: 'HomeTab' })}
             >
                 <LinearGradient
-                    colors={['#002f34', '#004a52']}
+                    colors={[theme.primary, theme.primary]}
                     style={StyleSheet.absoluteFill}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
@@ -299,9 +299,9 @@ export const WishlistScreen = ({ navigation }: any) => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <TouchableOpacity
@@ -313,27 +313,27 @@ export const WishlistScreen = ({ navigation }: any) => {
                                 borderRadius: 20,
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                backgroundColor: '#f1f4f5'
+                                backgroundColor: theme.surface
                             }}
                         >
-                            <ChevronLeft size={24} color="#002f34" strokeWidth={2.5} />
+                            <ChevronLeft size={24} color={theme.text} strokeWidth={2.5} />
                         </TouchableOpacity>
-                        <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: '#002f34' }}>Wishlist</Typography>
+                        <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: theme.text }}>Wishlist</Typography>
                     </View>
                     <TouchableOpacity style={styles.iconBtn}>
-                        <Filter size={20} color="#002f34" strokeWidth={2} />
+                        <Filter size={20} color={theme.text} strokeWidth={2} />
                     </TouchableOpacity>
                 </View>
 
                 {/* Search Bar */}
-                <Animated.View entering={FadeInRight.delay(200)} style={styles.searchContainer}>
-                    <Search size={20} color="#7f9799" strokeWidth={2} />
+                <Animated.View entering={FadeInRight.delay(200)} style={[styles.searchContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                    <Search size={20} color={theme.textTertiary} strokeWidth={2} />
                     <TextInput
                         placeholder="Search your wishlist..."
-                        style={styles.searchInput}
+                        style={[styles.searchInput, { color: theme.text }]}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
-                        placeholderTextColor="#7f9799"
+                        placeholderTextColor={theme.textTertiary}
                     />
                 </Animated.View>
             </View>
@@ -344,7 +344,7 @@ export const WishlistScreen = ({ navigation }: any) => {
                     <TouchableOpacity
                         key={tab}
                         onPress={() => setActiveTab(tab)}
-                        style={[styles.tab, activeTab === tab && styles.activeTab]}
+                        style={[styles.tab, activeTab === tab && [styles.activeTab, { backgroundColor: theme.primary }]]}
                     >
                         <Typography
                             style={[
@@ -361,7 +361,7 @@ export const WishlistScreen = ({ navigation }: any) => {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#002f34" />}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
             >
                 {filteredListings.length === 0 ? (
                     <EmptyState />
@@ -375,7 +375,7 @@ export const WishlistScreen = ({ navigation }: any) => {
 
                 {listings.length > 0 && (
                     <View style={styles.suggestionHeader}>
-                        <Typography variant="h2">Recently Viewed</Typography>
+                        <Typography variant="h2" style={{ color: theme.text }}>Recently Viewed</Typography>
                     </View>
                 )}
             </ScrollView>
@@ -391,9 +391,7 @@ const styles = StyleSheet.create({
         paddingTop: 60,
         paddingHorizontal: 16,
         paddingBottom: 16,
-        backgroundColor: '#FFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#e8ebed',
     },
     iconBtn: {
         width: 40,
@@ -406,19 +404,16 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
         borderRadius: 4,
         paddingHorizontal: 16,
         paddingVertical: 12,
         marginTop: 16,
         borderWidth: 2,
-        borderColor: '#002f34',
     },
     searchInput: {
         flex: 1,
         marginLeft: 12,
         fontSize: 16,
-        color: '#1F2937',
     },
     tabsContainer: {
         flexDirection: 'row',
@@ -475,11 +470,8 @@ const styles = StyleSheet.create({
         padding: 12,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.5)',
     },
     selectedCard: {
-        backgroundColor: 'rgba(0, 47, 52, 0.1)',
-        borderColor: '#002f34',
     },
     imageContainer: {
         position: 'relative',
@@ -507,7 +499,6 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 16,
-        backgroundColor: '#F3F4F6',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -526,13 +517,10 @@ const styles = StyleSheet.create({
         top: 10,
         right: 10,
         zIndex: 10,
-        backgroundColor: '#FFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
     activeCheckbox: {
-        borderColor: '#002f34',
-        backgroundColor: '#002f34',
     },
     checkboxInner: {
         width: 8,
@@ -584,7 +572,6 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     jobBadge: {
-        backgroundColor: '#F3F4F6',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 6,

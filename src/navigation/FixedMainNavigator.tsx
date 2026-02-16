@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { PostTypeSelector } from '../components/post/PostTypeSelector';
 import { Home, Search, Plus, MessageCircle, User } from 'lucide-react-native';
 import { ModernTabBar } from '../components/common/ModernTabBar';
@@ -28,6 +28,8 @@ import { WalletScreen } from '../screens/WalletScreen';
 import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
 
 import { authService } from '../services/authService';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { useTheme } from '../theme/ThemeContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -157,6 +159,7 @@ const TabNavigator = () => {
 export const FixedMainNavigator = () => {
     const [user, setUser] = React.useState<any>(null);
     const [initializing, setInitializing] = React.useState(true);
+    const { theme, isDark } = useTheme();
 
     React.useEffect(() => {
         const unsubscribe = authService.subscribeToAuthChanges((u) => {
@@ -166,10 +169,22 @@ export const FixedMainNavigator = () => {
         return () => unsubscribe();
     }, []);
 
+    const navTheme = {
+        ...(isDark ? DarkTheme : DefaultTheme),
+        colors: {
+            ...(isDark ? DarkTheme.colors : DefaultTheme.colors),
+            background: theme.background,
+            card: theme.background,
+            text: theme.text,
+            border: theme.border,
+            primary: theme.primary,
+        },
+    };
+
     if (initializing) return null;
 
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={navTheme}>
             <Stack.Navigator
                 screenOptions={{ headerShown: false }}
                 initialRouteName={!user ? "Landing" : "Main"}
@@ -197,6 +212,7 @@ export const FixedMainNavigator = () => {
                         <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
                         <Stack.Screen name="KYC" component={KycScreen} />
                         <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+                        <Stack.Screen name="UserProfile" component={ProfileScreen} />
                         <Stack.Screen
                             name="EditProfile"
                             component={EditProfileScreen}
@@ -210,6 +226,11 @@ export const FixedMainNavigator = () => {
                         <Stack.Screen
                             name="Wishlist"
                             component={WishlistScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="Settings"
+                            component={SettingsScreen}
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen

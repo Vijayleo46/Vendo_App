@@ -22,7 +22,7 @@ import Animated, {
 const { width, height } = Dimensions.get('window');
 
 export const ImageViewerScreen = ({ route, navigation }: any) => {
-  const { images = [], initialIndex = 0 } = route.params || {};
+  const { images = [], initialIndex = 0, title = '' } = route.params || {};
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
@@ -235,9 +235,9 @@ export const ImageViewerScreen = ({ route, navigation }: any) => {
           </View>
         )}
 
-        {/* 360° Indicator Badge */}
+        {/* 360° Indicator Badge - ONLY FOR MULTIPLE IMAGES */}
         <AnimatePresence>
-          {!imageLoading && (
+          {!imageLoading && images.length > 1 && (
             <MotiView
               from={{ opacity: 0, scale: 0.5, translateY: 20 }}
               animate={{ opacity: 1, scale: 1, translateY: 0 }}
@@ -268,14 +268,21 @@ export const ImageViewerScreen = ({ route, navigation }: any) => {
 
         {/* Back Button Floating */}
         <SafeAreaView style={styles.header}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <BlurView intensity={80} style={StyleSheet.absoluteFill} tint="light" />
-            <ChevronLeft size={28} color="#000" strokeWidth={2.5} />
-          </TouchableOpacity>
+          <View style={styles.headerContent}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
+              <BlurView intensity={80} style={StyleSheet.absoluteFill} tint="light" />
+              <ChevronLeft size={28} color="#000" strokeWidth={2.5} />
+            </TouchableOpacity>
+            {title ? (
+              <View style={styles.titleContainer}>
+                <Typography variant="h3" style={styles.headerTitle}>{title}</Typography>
+              </View>
+            ) : null}
+          </View>
         </SafeAreaView>
       </View>
     </GestureHandlerRootView>
@@ -305,6 +312,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 8,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  titleContainer: {
+    marginLeft: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    overflow: 'hidden',
+  },
+  headerTitle: {
+    color: '#000',
+    fontSize: 18,
+    fontWeight: '700',
   },
   badgeContainer: {
     position: 'absolute',

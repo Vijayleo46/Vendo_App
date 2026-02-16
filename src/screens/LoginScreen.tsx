@@ -85,7 +85,7 @@ export const LoginScreen = ({ navigation }: any) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDark ? theme.background : '#FFB6D9' }]}>
             {/* Gradient Background */}
             <LinearGradient
                 colors={['#FFB6D9', '#D8B5FF', '#B8B5FF']}
@@ -98,8 +98,8 @@ export const LoginScreen = ({ navigation }: any) => {
 
                 {/* Back Button */}
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <ArrowLeft size={24} color="#333" strokeWidth={2} />
-                    <Typography variant="bodyLarge" style={styles.backText}>Back</Typography>
+                    <ArrowLeft size={24} color={isDark ? theme.text : "#333"} strokeWidth={2} />
+                    <Typography variant="bodyLarge" style={[styles.backText, { color: isDark ? theme.text : "#333" }]}>Back</Typography>
                 </TouchableOpacity>
             </LinearGradient>
 
@@ -109,15 +109,15 @@ export const LoginScreen = ({ navigation }: any) => {
                 style={styles.cardContainer}
             >
                 <ScrollView
-                    style={styles.card}
+                    style={[styles.card, { backgroundColor: theme.background }]}
                     contentContainerStyle={styles.cardContent}
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
                     {/* Header */}
                     <View style={styles.header}>
-                        <Typography variant="h1" style={styles.title}>Welcome Back</Typography>
-                        <Typography variant="bodyMedium" style={styles.subtitle}>
+                        <Typography variant="h1" style={[styles.title, { color: theme.text }]}>Welcome Back</Typography>
+                        <Typography variant="bodyMedium" style={[styles.subtitle, { color: theme.textSecondary }]}>
                             Ready to continue your learning journey?{'\n'}Your path is right here.
                         </Typography>
                     </View>
@@ -125,9 +125,9 @@ export const LoginScreen = ({ navigation }: any) => {
                     {/* Email Input */}
                     <View style={styles.inputContainer}>
                         <TextInput
-                            style={[styles.input, { color: '#1F2937' }]}
+                            style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                             placeholder="Enter email"
-                            placeholderTextColor="#999"
+                            placeholderTextColor={theme.textTertiary}
                             value={email}
                             onChangeText={setEmail}
                             keyboardType="email-address"
@@ -140,9 +140,9 @@ export const LoginScreen = ({ navigation }: any) => {
                     {/* Password Input */}
                     <View style={styles.inputContainer}>
                         <TextInput
-                            style={[styles.input, { color: '#1F2937' }]}
+                            style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
                             placeholder="Password"
-                            placeholderTextColor="#999"
+                            placeholderTextColor={theme.textTertiary}
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry={!showPassword}
@@ -154,9 +154,9 @@ export const LoginScreen = ({ navigation }: any) => {
                             onPress={() => setShowPassword(!showPassword)}
                         >
                             {showPassword ? (
-                                <EyeOff size={20} color="#999" />
+                                <EyeOff size={20} color={theme.textTertiary} />
                             ) : (
-                                <Eye size={20} color="#999" />
+                                <Eye size={20} color={theme.textTertiary} />
                             )}
                         </TouchableOpacity>
                     </View>
@@ -183,12 +183,12 @@ export const LoginScreen = ({ navigation }: any) => {
 
                     {/* Login Button */}
                     <TouchableOpacity
-                        style={styles.loginButton}
+                        style={[styles.loginButton, { shadowColor: theme.primary }]}
                         onPress={handleLogin}
                         disabled={loading}
                     >
                         <LinearGradient
-                            colors={['#FFB6D9', '#B8B5FF']}
+                            colors={isDark ? [theme.primary, theme.primary] : ['#FFB6D9', '#B8B5FF']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={styles.loginGradient}
@@ -201,33 +201,33 @@ export const LoginScreen = ({ navigation }: any) => {
 
                     {/* Divider */}
                     <View style={styles.divider}>
-                        <View style={styles.dividerLine} />
-                        <Typography variant="bodySmall" style={styles.dividerText}>
+                        <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
+                        <Typography variant="bodySmall" style={[styles.dividerText, { color: theme.textTertiary }]}>
                             Sign in with
                         </Typography>
-                        <View style={styles.dividerLine} />
+                        <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
                     </View>
 
                     {/* Social Login */}
                     <View style={styles.socialRow}>
-                        <TouchableOpacity style={styles.socialButton}>
-                            <Typography variant="h2" style={styles.socialIcon}>f</Typography>
+                        <TouchableOpacity style={[styles.socialButton, { backgroundColor: theme.surface }]}>
+                            <Typography variant="h2" style={[styles.socialIcon, { color: theme.text }]}>f</Typography>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.socialButton}>
-                            <Typography variant="h2" style={styles.socialIcon}>G</Typography>
+                        <TouchableOpacity style={[styles.socialButton, { backgroundColor: theme.surface }]}>
+                            <Typography variant="h2" style={[styles.socialIcon, { color: theme.text }]}>G</Typography>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.socialButton}>
-                            <Typography variant="h2" style={styles.socialIcon}></Typography>
+                        <TouchableOpacity style={[styles.socialButton, { backgroundColor: theme.surface }]}>
+                            <Typography variant="h2" style={[styles.socialIcon, { color: theme.text }]}></Typography>
                         </TouchableOpacity>
                     </View>
 
                     {/* Sign Up Link */}
                     <View style={styles.footer}>
-                        <Typography variant="bodyMedium" style={styles.footerText}>
+                        <Typography variant="bodyMedium" style={[styles.footerText, { color: theme.textSecondary }]}>
                             Don't have an account?{' '}
                         </Typography>
                         <TouchableOpacity onPress={() => navigation?.navigate('Register')}>
-                            <Typography variant="bodyMedium" style={styles.signUpText}>
+                            <Typography variant="bodyMedium" style={[styles.signUpText, { color: theme.primary }]}>
                                 Sign Up
                             </Typography>
                         </TouchableOpacity>
@@ -241,7 +241,6 @@ export const LoginScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFB6D9',
     },
     gradientBackground: {
         height: '40%',
@@ -268,13 +267,8 @@ const styles = StyleSheet.create({
     },
     card: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
         borderTopLeftRadius: 32,
         borderTopRightRadius: 32,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
         elevation: 8,
     },
     cardContent: {

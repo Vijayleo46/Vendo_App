@@ -136,13 +136,13 @@ export const ChatRoomScreen = ({ route, navigation }: any) => {
                 <View
                     style={[
                         styles.bubble,
-                        isMe ? styles.myBubble : styles.theirBubble
+                        isMe ? [styles.myBubble, { backgroundColor: theme.primary }] : [styles.theirBubble, { backgroundColor: theme.card, borderColor: theme.border }]
                     ]}
                 >
                     <View style={styles.bubbleInner}>
                         <Typography variant="bodyMedium" style={[
                             styles.messageText,
-                            isMe ? styles.messageTextMe : styles.messageTextTheir
+                            isMe ? styles.messageTextMe : [styles.messageTextTheir, { color: theme.text }]
                         ]}>
                             {item.text}
                         </Typography>
@@ -161,33 +161,33 @@ export const ChatRoomScreen = ({ route, navigation }: any) => {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+        <View style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#ECE5DD' }]}>
+            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
 
             {/* WhatsApp Style Header with Product Info */}
-            <SafeAreaView style={styles.safeHeader}>
-                <View style={styles.header}>
+            <SafeAreaView style={[styles.safeHeader, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+                <View style={[styles.header, { backgroundColor: theme.background }]}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <ChevronLeft size={24} color="#000" />
+                        <ChevronLeft size={24} color={theme.text} />
                     </TouchableOpacity>
 
                     <View style={styles.headerCenter}>
                         <Image source={{ uri: otherAvatar }} style={styles.headerAvatar} />
                         <View style={styles.headerInfo}>
-                            <Typography variant="h3" style={styles.headerName}>{otherName}</Typography>
-                            <Typography variant="bodySmall" style={styles.headerStatus}>online</Typography>
+                            <Typography variant="h3" style={[styles.headerName, { color: theme.text }]}>{otherName}</Typography>
+                            <Typography variant="bodySmall" style={[styles.headerStatus, { color: theme.textSecondary }]}>online</Typography>
                         </View>
                     </View>
 
                     <View style={styles.headerActions}>
                         <TouchableOpacity style={styles.iconButton}>
-                            <Video size={22} color="#000" />
+                            <Video size={22} color={theme.text} />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.iconButton}>
-                            <Phone size={22} color="#000" />
+                            <Phone size={22} color={theme.text} />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.iconButton}>
-                            <MoreVertical size={22} color="#000" />
+                            <MoreVertical size={22} color={theme.text} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -198,14 +198,14 @@ export const ChatRoomScreen = ({ route, navigation }: any) => {
                         from={{ opacity: 0, translateY: -20 }}
                         animate={{ opacity: 1, translateY: 0 }}
                         transition={{ type: 'timing', duration: 400 }}
-                        style={styles.productBar}
+                        style={[styles.productBar, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}
                     >
                         <Image source={{ uri: productImage }} style={styles.productThumb} />
                         <View style={styles.productInfo}>
-                            <Typography style={styles.productTitle} numberOfLines={1}>
+                            <Typography style={[styles.productTitle, { color: theme.text }]} numberOfLines={1}>
                                 {productTitle}
                             </Typography>
-                            <Typography style={styles.productPrice}>{productPrice}</Typography>
+                            <Typography style={[styles.productPrice, { color: theme.primary }]}>{productPrice}</Typography>
                         </View>
                         <TouchableOpacity
                             onPress={async () => {
@@ -227,7 +227,7 @@ export const ChatRoomScreen = ({ route, navigation }: any) => {
                             }}
                             style={styles.viewProductButton}
                         >
-                            <Typography style={styles.viewProductText}>View</Typography>
+                            <Typography style={[styles.viewProductText, { color: '#FFF' }]}>View</Typography>
                         </TouchableOpacity>
                     </MotiView>
                 )}
@@ -248,19 +248,19 @@ export const ChatRoomScreen = ({ route, navigation }: any) => {
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 keyboardVerticalOffset={0}
-                style={styles.footer}
+                style={[styles.footer, { backgroundColor: theme.background, borderTopColor: theme.border }]}
             >
-                <View style={styles.inputContainer}>
+                <View style={[styles.inputContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <TouchableOpacity style={styles.attachButton}>
                         <Smile size={24} color="#5E5E5E" />
                     </TouchableOpacity>
 
                     <TextInput
                         placeholder="Message"
-                        style={styles.input}
+                        style={[styles.input, { color: theme.text }]}
                         value={inputText}
                         onChangeText={setInputText}
-                        placeholderTextColor="#999"
+                        placeholderTextColor={theme.textTertiary}
                         multiline
                     />
 
@@ -275,9 +275,9 @@ export const ChatRoomScreen = ({ route, navigation }: any) => {
                     >
                         <View style={[
                             styles.sendCircle,
-                            { backgroundColor: inputText.trim() ? '#002f34' : '#E2E8F0' }
+                            { backgroundColor: inputText.trim() ? theme.primary : (isDark ? 'rgba(255,255,255,0.1)' : '#E2E8F0') }
                         ]}>
-                            <Send size={20} color={inputText.trim() ? '#FFF' : '#94A3B8'} />
+                            <Send size={20} color={inputText.trim() ? '#FFF' : theme.textTertiary} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -289,19 +289,15 @@ export const ChatRoomScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ECE5DD',
     },
     safeHeader: {
-        backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E5E5',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 8,
         paddingVertical: 8,
-        backgroundColor: '#FFFFFF',
     },
     backButton: {
         width: 40,
@@ -347,11 +343,9 @@ const styles = StyleSheet.create({
     productBar: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F9FAFB',
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
     },
     productThumb: {
         width: 50,
@@ -450,25 +444,20 @@ const styles = StyleSheet.create({
         color: 'rgba(255,255,255,0.6)',
     },
     timestampTheir: {
-        color: '#8696a0',
     },
     footer: {
-        backgroundColor: '#FFFFFF',
         paddingHorizontal: 12,
         paddingVertical: 8,
         paddingBottom: Platform.OS === 'ios' ? 34 : 12,
         borderTopWidth: 1,
-        borderTopColor: '#F1F5F9',
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F8FAFC',
         borderRadius: 28,
         paddingHorizontal: 12,
         paddingVertical: 4,
         borderWidth: 1,
-        borderColor: '#F1F5F9',
     },
     attachButton: {
         padding: 8,

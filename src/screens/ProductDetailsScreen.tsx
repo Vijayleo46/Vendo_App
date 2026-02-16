@@ -23,11 +23,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { collection, getDocs } from 'firebase/firestore';
 import { userService } from '../services/userService';
+import { useTheme } from '../theme/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 const IMG_HEIGHT = height * 0.45;
 
 export const ProductDetailsScreen = ({ route, navigation }: any) => {
+    const { theme, isDark } = useTheme();
     const { product } = route.params || {};
     const [item, setItem] = useState<any>(product);
     const sellerDisplayName = item.sellerName === 'Antigravity Test' ? 'Leo' : (item.sellerName || 'Leo');
@@ -190,8 +192,8 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
 
     if (loading || !item) {
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF' }}>
-                <ActivityIndicator size="large" color="#002f34" />
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.background }}>
+                <ActivityIndicator size="large" color={theme.primary} />
             </View>
         );
     }
@@ -200,8 +202,8 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
     const MAP_PLACEHOLDER = "https://images.unsplash.com/photo-1569336415962-a4bd9f6dfc0f?auto=format&fit=crop&q=80&w=1000";
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} translucent backgroundColor="transparent" />
 
             {/* Header / Image Slider */}
             <View style={styles.imageContainer}>
@@ -257,18 +259,18 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
 
                 {/* Header Actions */}
                 <SafeAreaView style={styles.headerOverlay} edges={['top']}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconCircle}>
-                        <ArrowLeft size={24} color="#002f34" />
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.iconCircle, { backgroundColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)' }]}>
+                        <ArrowLeft size={24} color={isDark ? '#FFF' : '#002f34'} />
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', gap: 12 }}>
                         <TouchableOpacity
-                            style={styles.iconCircle}
+                            style={[styles.iconCircle, { backgroundColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)' }]}
                             onPress={() => Share.share({ message: `Check this out: ${item.title} - ${item.price}` })}
                         >
-                            <Share2 size={24} color="#002f34" />
+                            <Share2 size={24} color={isDark ? '#FFF' : '#002f34'} />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.iconCircle} onPress={toggleWishlist}>
-                            <Heart size={24} color={isInWishlist ? "#EF4444" : "#002f34"} fill={isInWishlist ? "#EF4444" : "transparent"} />
+                        <TouchableOpacity style={[styles.iconCircle, { backgroundColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.9)' }]} onPress={toggleWishlist}>
+                            <Heart size={24} color={isInWishlist ? "#EF4444" : (isDark ? '#FFF' : "#002f34")} fill={isInWishlist ? "#EF4444" : "transparent"} />
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>
@@ -278,14 +280,14 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
-                style={styles.sheetContainer}
+                style={[styles.sheetContainer, { backgroundColor: theme.background }]}
             >
                 {/* 1. Primary Info (OLX Style: Price -> Title -> Location) */}
                 <View style={styles.section}>
                     <View style={styles.priceRow}>
                         <View>
-                            <Typography style={styles.priceText}>{item.price}</Typography>
-                            <Typography style={{ fontSize: 13, color: '#64748B', fontWeight: '600', marginTop: 4 }}>Negotiable • Local Pickup</Typography>
+                            <Typography style={[styles.priceText, { color: theme.text }]}>{item.price}</Typography>
+                            <Typography style={{ fontSize: 13, color: theme.textSecondary, fontWeight: '600', marginTop: 4 }}>Negotiable • Local Pickup</Typography>
                         </View>
                         {item.isBoosted && (
                             <LinearGradient
@@ -300,7 +302,7 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                         )}
                     </View>
 
-                    <Typography style={styles.titleText}>{item.title}</Typography>
+                    <Typography style={[styles.titleText, { color: theme.text }]}>{item.title}</Typography>
 
                     {/* Redeem Coins Offer */}
                     {userCoins > 0 && (
@@ -333,39 +335,39 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
 
                     <View style={styles.metaRow}>
                         <View style={styles.metaItem}>
-                            <MapPin size={14} color="#555" />
-                            <Typography style={styles.metaText}>{item.location || 'Location N/A'}</Typography>
+                            <MapPin size={14} color={theme.textSecondary} />
+                            <Typography style={[styles.metaText, { color: theme.textSecondary }]}>{item.location || 'Location N/A'}</Typography>
                         </View>
                         <View style={styles.metaItem}>
-                            <Calendar size={14} color="#555" />
-                            <Typography style={styles.metaText}>{getTimeAgo()}</Typography>
+                            <Calendar size={14} color={theme.textSecondary} />
+                            <Typography style={[styles.metaText, { color: theme.textSecondary }]}>{getTimeAgo()}</Typography>
                         </View>
                     </View>
                 </View>
 
                 {/* 2. Details Grid */}
-                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingVertical: 20 }]}>
-                    <Typography style={styles.sectionLabel}>Quick Specs</Typography>
+                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: theme.border, paddingVertical: 20 }]}>
+                    <Typography style={[styles.sectionLabel, { color: theme.text }]}>Quick Specs</Typography>
                     <View style={styles.grid}>
-                        <View style={styles.premiumChip}>
-                            <Typography style={styles.chipLabel}>Category</Typography>
-                            <Typography style={styles.chipValue}>{item.category}</Typography>
+                        <View style={[styles.premiumChip, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                            <Typography style={[styles.chipLabel, { color: theme.textSecondary }]}>Category</Typography>
+                            <Typography style={[styles.chipValue, { color: theme.text }]}>{item.category}</Typography>
                         </View>
                         {item.condition && (
-                            <View style={styles.premiumChip}>
-                                <Typography style={styles.chipLabel}>Condition</Typography>
-                                <Typography style={styles.chipValue}>{item.condition}</Typography>
+                            <View style={[styles.premiumChip, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                                <Typography style={[styles.chipLabel, { color: theme.textSecondary }]}>Condition</Typography>
+                                <Typography style={[styles.chipValue, { color: theme.text }]}>{item.condition}</Typography>
                             </View>
                         )}
                         {item.type === 'job' && (
                             <>
-                                <View style={styles.premiumChip}>
-                                    <Typography style={styles.chipLabel}>Job Type</Typography>
-                                    <Typography style={styles.chipValue}>{item.jobType || 'Full Time'}</Typography>
+                                <View style={[styles.premiumChip, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                                    <Typography style={[styles.chipLabel, { color: theme.textSecondary }]}>Job Type</Typography>
+                                    <Typography style={[styles.chipValue, { color: theme.text }]}>{item.jobType || 'Full Time'}</Typography>
                                 </View>
-                                <View style={styles.premiumChip}>
-                                    <Typography style={styles.chipLabel}>Exp.</Typography>
-                                    <Typography style={styles.chipValue}>{item.experienceLevel || 'Entry'}</Typography>
+                                <View style={[styles.premiumChip, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                                    <Typography style={[styles.chipLabel, { color: theme.textSecondary }]}>Exp.</Typography>
+                                    <Typography style={[styles.chipValue, { color: theme.text }]}>{item.experienceLevel || 'Entry'}</Typography>
                                 </View>
                             </>
                         )}
@@ -373,56 +375,56 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                 </View>
 
                 {/* 3. Description */}
-                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingVertical: 16 }]}>
-                    <Typography style={styles.sectionLabel}>Description</Typography>
-                    <Typography style={styles.descriptionText}>{item.description}</Typography>
+                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: theme.border, paddingVertical: 16 }]}>
+                    <Typography style={[styles.sectionLabel, { color: theme.text }]}>Description</Typography>
+                    <Typography style={[styles.descriptionText, { color: theme.textSecondary }]}>{item.description}</Typography>
                 </View>
 
                 {/* 4. Premium Location Section */}
-                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingVertical: 16 }]}>
+                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: theme.border, paddingVertical: 16 }]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                        <Typography style={styles.sectionLabel}>Location</Typography>
+                        <Typography style={[styles.sectionLabel, { color: theme.text }]}>Location</Typography>
                         <TouchableOpacity
                             onPress={() => {
                                 const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location || 'Kochi, Kerala')}`;
                                 Platform.OS === 'web' ? window.open(url, '_blank') : Alert.alert("Opening Maps", "Redirecting...");
                             }}
                         >
-                            <Typography style={{ color: '#002f34', fontSize: 13, fontWeight: '700', opacity: 0.6 }}>Show on map</Typography>
+                            <Typography style={{ color: theme.primary, fontSize: 13, fontWeight: '700', opacity: 0.6 }}>Show on map</Typography>
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.premiumMapContainer}>
+                    <View style={[styles.premiumMapContainer, { borderColor: theme.border }]}>
                         <Image
                             source={{ uri: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=1000" }}
                             style={styles.premiumMapImage}
                         />
                         <LinearGradient
-                            colors={['transparent', 'rgba(0,0,0,0.4)']}
+                            colors={['transparent', isDark ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.4)']}
                             style={StyleSheet.absoluteFill}
                         />
 
                         {/* Pulsating Marker */}
                         <View style={styles.pulsarContainer}>
-                            <View style={styles.pulsarRing} />
-                            <View style={styles.pulsarCore} />
+                            <View style={[styles.pulsarRing, { backgroundColor: isDark ? theme.primary : '#002f34' }]} />
+                            <View style={[styles.pulsarCore, { backgroundColor: isDark ? theme.primary : '#002f34' }]} />
                         </View>
 
                         {/* Glassmorphic Address Card */}
-                        <View style={styles.glassAddressCard}>
-                            <View style={styles.glassAddressIcon}>
-                                <MapPin size={18} color="#002f34" strokeWidth={3} />
+                        <View style={[styles.glassAddressCard, { backgroundColor: isDark ? 'rgba(30,30,30,0.9)' : 'rgba(255,255,255,0.85)' }]}>
+                            <View style={[styles.glassAddressIcon, { backgroundColor: theme.background }]}>
+                                <MapPin size={18} color={theme.primary} strokeWidth={3} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Typography style={styles.glassAddressTitle}>{item.location || 'Kochi, Kerala'}</Typography>
-                                <Typography style={styles.glassAddressSubtitle}>India • Verified Location</Typography>
+                                <Typography style={[styles.glassAddressTitle, { color: theme.text }]}>{item.location || 'Kochi, Kerala'}</Typography>
+                                <Typography style={[styles.glassAddressSubtitle, { color: theme.textSecondary }]}>India • Verified Location</Typography>
                             </View>
                         </View>
                     </View>
 
                     <TouchableOpacity
                         activeOpacity={0.8}
-                        style={styles.premiumMapsBtn}
+                        style={[styles.premiumMapsBtn, { backgroundColor: isDark ? theme.surface : '#002f34', shadowColor: isDark ? '#000' : '#002f34' }]}
                         onPress={() => {
                             const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location || 'Kochi, Kerala')}`;
                             if (Platform.OS === 'web') window.open(url, '_blank');
@@ -437,7 +439,7 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                 </View>
 
                 {/* 5. Seller Profile (Enhanced) */}
-                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 16 }]}>
+                <View style={[styles.section, { borderTopWidth: 1, borderTopColor: theme.border, paddingTop: 16 }]}>
 
                     {/* Earn Coins Reminder */}
                     <View style={styles.earnCoinsBanner}>
@@ -449,8 +451,8 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                         </Typography>
                     </View>
 
-                    <Typography style={styles.sectionLabel}>Sold By</Typography>
-                    <TouchableOpacity style={styles.sellerRow}>
+                    <Typography style={[styles.sectionLabel, { color: theme.text }]}>Sold By</Typography>
+                    <TouchableOpacity style={[styles.sellerRow, { backgroundColor: theme.surface }]}>
                         {item.sellerAvatar ? (
                             <Image source={{ uri: item.sellerAvatar }} style={styles.avatar} />
                         ) : (
@@ -459,12 +461,12 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                             </View>
                         )}
                         <View style={styles.sellerInfo}>
-                            <Typography style={styles.sellerName}>{sellerDisplayName}</Typography>
+                            <Typography style={[styles.sellerName, { color: theme.text }]}>{sellerDisplayName}</Typography>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Star size={14} color="#FBBF24" fill="#FBBF24" />
                                 <Typography style={styles.sellerRating}>{item.rating || 'New Seller'}</Typography>
                             </View>
-                            <Typography style={styles.memberSince}>Member since 2024</Typography>
+                            <Typography style={[styles.memberSince, { color: theme.textSecondary }]}>Member since 2024</Typography>
                         </View>
                         <ChevronRight size={20} color="#94A3B8" />
                     </TouchableOpacity>
@@ -472,29 +474,29 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
 
                 {/* 6. Safety Tips (New Feature) */}
                 <View style={[styles.section, {
-                    backgroundColor: '#F0FDF4',
+                    backgroundColor: isDark ? 'rgba(22, 101, 52, 0.1)' : '#F0FDF4',
                     borderRadius: 12,
                     padding: 16,
                     marginTop: 8,
                     borderWidth: 1,
-                    borderColor: '#BBF7D0'
+                    borderColor: isDark ? 'rgba(22, 101, 52, 0.3)' : '#BBF7D0'
                 }]}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-                        <ShieldCheck size={20} color="#166534" />
-                        <Typography style={{ fontSize: 16, fontWeight: '700', color: '#166534', marginLeft: 8 }}>Safety Tips</Typography>
+                        <ShieldCheck size={20} color={isDark ? '#4ade80' : "#166534"} />
+                        <Typography style={{ fontSize: 16, fontWeight: '700', color: isDark ? '#4ade80' : '#166534', marginLeft: 8 }}>Safety Tips</Typography>
                     </View>
                     <View style={{ gap: 8 }}>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
-                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#166534', marginTop: 8 }} />
-                            <Typography style={{ fontSize: 13, color: '#14532D', flex: 1 }}>Meet in a safe and public place</Typography>
+                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: isDark ? '#4ade80' : '#166534', marginTop: 8 }} />
+                            <Typography style={{ fontSize: 13, color: isDark ? '#bbf7d0' : '#14532D', flex: 1 }}>Meet in a safe and public place</Typography>
                         </View>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
-                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#166534', marginTop: 8 }} />
-                            <Typography style={{ fontSize: 13, color: '#14532D', flex: 1 }}>Don't pay in advance</Typography>
+                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: isDark ? '#4ade80' : '#166534', marginTop: 8 }} />
+                            <Typography style={{ fontSize: 13, color: isDark ? '#bbf7d0' : '#14532D', flex: 1 }}>Don't pay in advance</Typography>
                         </View>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
-                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#166534', marginTop: 8 }} />
-                            <Typography style={{ fontSize: 13, color: '#14532D', flex: 1 }}>Check the item before you buy</Typography>
+                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: isDark ? '#4ade80' : '#166534', marginTop: 8 }} />
+                            <Typography style={{ fontSize: 13, color: isDark ? '#bbf7d0' : '#14532D', flex: 1 }}>Check the item before you buy</Typography>
                         </View>
                     </View>
                 </View>
@@ -511,13 +513,13 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
             </ScrollView>
 
             {/* Sticky Bottom Actions */}
-            <View style={styles.bottomBar}>
+            <View style={[styles.bottomBar, { backgroundColor: theme.background, borderTopColor: theme.border }]}>
                 <View>
                     <TouchableOpacity
                         onPress={handleChatWithSeller}
                         disabled={chatLoading}
                         activeOpacity={0.8}
-                        style={[styles.chatButton, { opacity: chatLoading ? 0.7 : 1 }]}
+                        style={[styles.chatButton, { backgroundColor: isDark ? theme.surface : '#002f34', opacity: chatLoading ? 0.7 : 1 }]}
                     >
                         {chatLoading ? (
                             <ActivityIndicator color="#FFFFFF" />
@@ -539,7 +541,6 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
     },
     imageContainer: {
         height: IMG_HEIGHT,
@@ -588,7 +589,6 @@ const styles = StyleSheet.create({
     },
     sheetContainer: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
         marginTop: -24,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
@@ -856,7 +856,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     bottomBar: {
-        backgroundColor: '#FFFFFF',
         paddingHorizontal: 24,
         paddingTop: 16,
         paddingBottom: Platform.OS === 'ios' ? 34 : 16,
@@ -869,7 +868,6 @@ const styles = StyleSheet.create({
         elevation: 20,
     },
     chatButton: {
-        backgroundColor: '#002f34',
         height: 64,
         borderRadius: 32,
         flexDirection: 'row',

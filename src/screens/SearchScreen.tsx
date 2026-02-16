@@ -20,7 +20,7 @@ const SUGGESTIONS = [
 
 
 export const SearchScreen = ({ navigation }: any) => {
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
     const [locationQuery, setLocationQuery] = useState('');
     const [results, setResults] = useState<Listing[]>([]);
@@ -88,50 +88,50 @@ export const SearchScreen = ({ navigation }: any) => {
     );
 
     return (
-        <SafeAreaView edges={['top']} style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+        <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: theme.background }]}>
+            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
 
             {/* Search Header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
                 <View style={styles.searchBarContainer}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <ArrowUpRight size={24} color="#002f34" style={{ transform: [{ rotate: '225deg' }] }} />
+                        <ArrowUpRight size={24} color={theme.text} style={{ transform: [{ rotate: '225deg' }] }} />
                     </TouchableOpacity>
 
                     <View style={{ flex: 1, gap: 8 }}>
                         {/* Keyword Search */}
-                        <View style={styles.searchInputWrapper}>
-                            <Search size={20} color="#002f34" strokeWidth={2} />
+                        <View style={[styles.searchInputWrapper, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                            <Search size={20} color={theme.text} strokeWidth={2} />
                             <TextInput
                                 ref={inputRef}
-                                style={styles.searchInput}
+                                style={[styles.searchInput, { color: theme.text }]}
                                 placeholder="Search for cars, guitars, property..."
-                                placeholderTextColor="#7f9799"
+                                placeholderTextColor={theme.textTertiary}
                                 value={searchQuery}
                                 onChangeText={(t) => handleSearch(t, 'query')}
-                                selectionColor="#002f34"
+                                selectionColor={theme.primary}
                             />
                             {searchQuery.length > 0 && (
                                 <TouchableOpacity onPress={() => handleSearch('', 'query')}>
-                                    <X size={20} color="#7f9799" />
+                                    <X size={20} color={theme.textTertiary} />
                                 </TouchableOpacity>
                             )}
                         </View>
 
                         {/* Location Search */}
-                        <View style={styles.searchInputWrapper}>
-                            <MapPin size={20} color="#002f34" strokeWidth={2} />
+                        <View style={[styles.searchInputWrapper, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                            <MapPin size={20} color={theme.text} strokeWidth={2} />
                             <TextInput
-                                style={styles.searchInput}
+                                style={[styles.searchInput, { color: theme.text }]}
                                 placeholder="Search by location (e.g. Kochi)"
-                                placeholderTextColor="#7f9799"
+                                placeholderTextColor={theme.textTertiary}
                                 value={locationQuery}
                                 onChangeText={(t) => handleSearch(t, 'location')}
-                                selectionColor="#002f34"
+                                selectionColor={theme.primary}
                             />
                             {locationQuery.length > 0 && (
                                 <TouchableOpacity onPress={() => handleSearch('', 'location')}>
-                                    <X size={20} color="#7f9799" />
+                                    <X size={20} color={theme.textTertiary} />
                                 </TouchableOpacity>
                             )}
                         </View>
@@ -143,7 +143,7 @@ export const SearchScreen = ({ navigation }: any) => {
             <View style={styles.content}>
                 {isLoading ? (
                     <View style={styles.centerContainer}>
-                        <ActivityIndicator size="large" color="#002f34" />
+                        <ActivityIndicator size="large" color={theme.primary} />
                     </View>
                 ) : searchQuery.length > 0 ? (
                     <FlatList
@@ -155,7 +155,7 @@ export const SearchScreen = ({ navigation }: any) => {
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
                             <View style={styles.centerContainer}>
-                                <Typography style={styles.emptyText}>No results found for "{searchQuery}"</Typography>
+                                <Typography style={[styles.emptyText, { color: theme.textTertiary }]}>No results found for "{searchQuery}"</Typography>
                             </View>
                         }
                     />
@@ -166,15 +166,15 @@ export const SearchScreen = ({ navigation }: any) => {
 
                         {/* Popular Searches */}
                         <View style={styles.sectionContainer}>
-                            <Typography style={[styles.sectionTitle, { marginBottom: 12 }]}>Popular Searches</Typography>
+                            <Typography style={[styles.sectionTitle, { marginBottom: 12, color: theme.text }]}>Popular Searches</Typography>
                             <View style={styles.chipsContainer}>
                                 {SUGGESTIONS.map((item, index) => (
                                     <TouchableOpacity
                                         key={index}
-                                        style={styles.chip}
+                                        style={[styles.chip, { backgroundColor: theme.surface, borderColor: theme.border }]}
                                         onPress={() => handleSearch(item, 'query')}
                                     >
-                                        <Typography style={styles.chipText}>{item}</Typography>
+                                        <Typography style={[styles.chipText, { color: theme.textSecondary }]}>{item}</Typography>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -190,14 +190,11 @@ export const SearchScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
     },
     header: {
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#F3F4F6',
-        backgroundColor: '#FFFFFF',
     },
     searchBarContainer: {
         flexDirection: 'row',
@@ -212,18 +209,15 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F3F4F6',
         borderRadius: 24,
         paddingHorizontal: 16,
         height: 50,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
     },
     searchInput: {
         flex: 1,
         marginLeft: 10,
         fontSize: 16,
-        color: '#002f34',
         fontFamily: Platform.select({ ios: 'System', android: 'Roboto' }),
         fontWeight: '500',
     },
@@ -282,10 +276,8 @@ const styles = StyleSheet.create({
     chip: {
         paddingHorizontal: 16,
         paddingVertical: 10,
-        backgroundColor: '#F3F4F6',
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
     },
     chipText: {
         color: '#4B5563',

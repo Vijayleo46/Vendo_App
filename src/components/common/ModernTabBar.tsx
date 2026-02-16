@@ -144,15 +144,12 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#002f34', // Keeping the signature teal for the post button or using theme.primary
         marginTop: -35,
-        shadowColor: '#002f34',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 8,
         borderWidth: 4,
-        borderColor: '#FFFFFF',
     },
     label: {
         fontSize: 10,

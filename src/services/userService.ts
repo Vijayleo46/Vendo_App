@@ -156,7 +156,10 @@ export const userService = {
     getAllUsers: async () => {
         try {
             const querySnapshot = await getDocs(collection(db, 'users'));
-            return querySnapshot.docs.map(doc => doc.data() as UserProfile);
+            return querySnapshot.docs.map(doc => ({
+                uid: doc.id,
+                ...(doc.data() as any)
+            }) as UserProfile);
         } catch (error) {
             console.error("Error getting all users: ", error);
             throw error;

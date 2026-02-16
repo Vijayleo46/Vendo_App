@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions, TextInput, ActivityIndicator, ScrollView } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions, TextInput, ActivityIndicator, ScrollView, StatusBar } from 'react-native';
 import Animated, { FadeInUp, FadeInRight } from 'react-native-reanimated';
 import { useTheme } from '../theme/ThemeContext';
 import { Typography } from '../components/common/Typography';
@@ -165,22 +165,23 @@ export const ChatScreen = ({ navigation }: any) => {
     });
 
     return (
-        <View style={[styles.container, { backgroundColor: '#FFFFFF' }]}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
             {/* WhatsApp Style Header */}
-            <View style={styles.header}>
-                <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: '#002f34' }}>
+            <View style={[styles.header, { backgroundColor: theme.background }]}>
+                <Typography variant="h1" style={{ fontSize: 24, fontWeight: '700', color: theme.text }}>
                     Chats
                 </Typography>
             </View>
 
             {/* Premium Search Bar */}
             <View style={styles.searchContainer}>
-                <View style={styles.searchInner}>
-                    <Search size={18} color="#94A3B8" strokeWidth={2.5} />
+                <View style={[styles.searchInner, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                    <Search size={18} color={theme.textTertiary} strokeWidth={2.5} />
                     <TextInput
-                        style={styles.searchInput}
+                        style={[styles.searchInput, { color: theme.text }]}
                         placeholder="Search chats"
-                        placeholderTextColor="#94A3B8"
+                        placeholderTextColor={theme.textTertiary}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
@@ -207,13 +208,15 @@ export const ChatScreen = ({ navigation }: any) => {
                                     onPress={() => setActiveFilter(filter.id)}
                                     style={[
                                         styles.filterChip,
-                                        isActive && styles.activeFilterChip
+                                        { backgroundColor: theme.surface, borderColor: theme.border },
+                                        isActive && [styles.activeFilterChip, { backgroundColor: theme.primary, borderColor: theme.primary }]
                                     ]}
                                 >
-                                    <Icon size={16} color={isActive ? '#FFFFFF' : '#64748B'} strokeWidth={2.5} />
+                                    <Icon size={16} color={isActive ? '#FFFFFF' : theme.textSecondary} strokeWidth={2.5} />
                                     <Typography
                                         style={[
                                             styles.filterChipText,
+                                            { color: theme.textSecondary },
                                             isActive && styles.activeFilterChipText
                                         ]}
                                     >
@@ -234,30 +237,32 @@ export const ChatScreen = ({ navigation }: any) => {
             </View>
 
             {/* Tab Selector - Chats/Groups Style */}
-            <View style={styles.tabContainer}>
+            <View style={[styles.tabContainer, { backgroundColor: theme.surface }]}>
                 <TouchableOpacity
-                    style={[styles.tab, activeTab === 'products' && styles.activeTab]}
+                    style={[styles.tab, activeTab === 'products' && [styles.activeTab, { backgroundColor: theme.background }]]}
                     onPress={() => setActiveTab('products')}
                 >
                     <Typography
                         variant="bodyMedium"
                         style={[
                             styles.tabText,
-                            activeTab === 'products' && styles.activeTabText
+                            { color: theme.textSecondary },
+                            activeTab === 'products' && [styles.activeTabText, { color: theme.primary }]
                         ]}
                     >
                         Products
                     </Typography>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.tab, activeTab === 'jobs' && styles.activeTab]}
+                    style={[styles.tab, activeTab === 'jobs' && [styles.activeTab, { backgroundColor: theme.background }]]}
                     onPress={() => setActiveTab('jobs')}
                 >
                     <Typography
                         variant="bodyMedium"
                         style={[
                             styles.tabText,
-                            activeTab === 'jobs' && styles.activeTabText
+                            { color: theme.textSecondary },
+                            activeTab === 'jobs' && [styles.activeTabText, { color: theme.primary }]
                         ]}
                     >
                         Jobs
@@ -267,8 +272,8 @@ export const ChatScreen = ({ navigation }: any) => {
 
             {loading ? (
                 <View style={[styles.emptyContainer, { marginTop: 100 }]}>
-                    <ActivityIndicator size="large" color="#002f34" />
-                    <Typography style={{ marginTop: 16, color: '#6B7280' }}>Loading chats...</Typography>
+                    <ActivityIndicator size="large" color={theme.primary} />
+                    <Typography style={{ marginTop: 16, color: theme.textTertiary }}>Loading chats...</Typography>
                 </View>
             ) : (
                 <FlatList
@@ -277,13 +282,13 @@ export const ChatScreen = ({ navigation }: any) => {
                     contentContainerStyle={{ paddingBottom: 100 }}
                     ListEmptyComponent={
                         <Animated.View entering={FadeInUp.delay(300)} style={styles.emptyContainer}>
-                            <View style={styles.emptyIconCircle}>
-                                <MessageSquare size={40} {...{ color: "#9CA3AF" } as any} />
+                            <View style={[styles.emptyIconCircle, { backgroundColor: theme.surface }]}>
+                                <MessageSquare size={40} color={theme.textTertiary} />
                             </View>
-                            <Typography variant="h3" color="#1F2937" style={{ marginTop: 20 }}>
+                            <Typography variant="h3" style={{ marginTop: 20, color: theme.text }}>
                                 No {activeTab} chats yet
                             </Typography>
-                            <Typography variant="bodyMedium" color="#9CA3AF" style={{ textAlign: 'center', marginTop: 8 }}>
+                            <Typography variant="bodyMedium" style={{ textAlign: 'center', marginTop: 8, color: theme.textTertiary }}>
                                 Your conversations about {activeTab} will appear here.
                             </Typography>
                         </Animated.View>
@@ -308,7 +313,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 60,
         paddingBottom: 16,
-        backgroundColor: '#FFFFFF',
     },
     headerIcon: {
         width: 44,
@@ -342,7 +346,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     activeTab: {
-        backgroundColor: '#FFFFFF',
     },
     tabText: {
         fontSize: 14,
@@ -370,7 +373,6 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 12,
         fontSize: 15,
-        color: '#002f34',
         fontWeight: '500',
     },
     filterChip: {
@@ -379,9 +381,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 20,
-        backgroundColor: '#FFFFFF',
         borderWidth: 1.5,
-        borderColor: '#F1F5F9',
         gap: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -390,8 +390,6 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     activeFilterChip: {
-        backgroundColor: '#002f34',
-        borderColor: '#002f34',
     },
     filterChipText: {
         fontSize: 13,
@@ -429,12 +427,10 @@ const styles = StyleSheet.create({
     chatCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
         paddingHorizontal: 16,
         paddingVertical: 12,
         marginHorizontal: 0,
         borderBottomWidth: 0.5,
-        borderBottomColor: '#F3F4F6',
     },
     avatarContainer: {
         position: 'relative',

@@ -207,9 +207,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingBottom: 16,
-        backgroundColor: '#FFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#F1F5F9',
     },
     backBtn: {
         width: 40,
@@ -237,12 +235,10 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     sectionBox: {
-        backgroundColor: '#FFF',
         borderRadius: 20,
         overflow: 'hidden',
         marginBottom: 24,
         borderWidth: 1,
-        borderColor: '#F1F5F9',
     },
     settingItem: {
         flexDirection: 'row',
@@ -277,12 +273,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FFF',
         padding: 16,
         borderRadius: 20,
         marginTop: 8,
         borderWidth: 1,
-        borderColor: '#FEE2E2',
     },
     deleteText: {
         fontSize: 16,
