@@ -18,6 +18,7 @@ import { db, auth } from '../core/config/firebase';
 import { userService } from './userService';
 import { coinTransactionService } from './coinTransactionService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { rentalService, RentalProduct } from './rentalService';
 
 const RECENTLY_VIEWED_KEY = '@recently_viewed_listings';
 
@@ -115,13 +116,34 @@ export const listingService = {
             const productQuery = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(listingLimit));
             const jobQuery = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'), limit(listingLimit));
 
-            const [productSnap, jobSnap] = await Promise.all([getDocs(productQuery), getDocs(jobQuery)]);
+            const [productSnap, jobSnap, rentalProducts] = await Promise.all([
+                getDocs(productQuery),
+                getDocs(jobQuery),
+                rentalService.getProducts().catch(() => [] as RentalProduct[])
+            ]);
 
             const products = productSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing));
             const jobs = jobSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing));
 
+            // Map rental products to Listing format
+            const rentals = rentalProducts.map(rp => ({
+                id: rp.id,
+                title: rp.title,
+                description: rp.description,
+                price: `₹${rp.rentPricePerDay}/day`,
+                category: rp.category,
+                images: rp.images,
+                sellerId: rp.ownerId,
+                sellerName: 'Owner',
+                location: rp.location,
+                type: 'rent',
+                status: 'active',
+                rating: 0,
+                createdAt: Timestamp.now()
+            } as any as Listing));
+
             // Merge and sort: Boosted first, then by createdAt
-            return [...products, ...jobs]
+            return [...products, ...jobs, ...rentals]
                 .sort((a, b) => {
                     // Boosted items first
                     if (a.isBoosted && !b.isBoosted) return -1;

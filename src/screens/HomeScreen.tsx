@@ -245,6 +245,9 @@ export const HomeScreen = ({ navigation }: any) => {
               <Star size={14} color="#FBBF24" fill="#FBBF24" />
               <Typography style={{ color: theme.text, fontSize: 13, fontWeight: '800' }}>{userProfile?.coins || 0}</Typography>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+              <Search size={24} color={theme.text} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Wishlist')}>
               <Heart size={24} color={theme.text} />
             </TouchableOpacity>
