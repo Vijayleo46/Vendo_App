@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Auth helper
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Product Rental Collection
+    match /products/{productId} {
+      allow read: if true; // Publicly viewable
+      allow create: if isSignedIn(); // Only authenticated users can list
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.ownerId; // Only owner can edit/delete
+    }
+
+    // Rent Orders Collection
+    match /rent_orders/{orderId} {
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.renterId || request.auth.uid == resource.data.ownerId);
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.renterId;
+      
+      // Update rules for specific status changes
+      allow update: if isSignedIn() && (
+        // Renter can cancel
+        (request.auth.uid == resource.data.renterId && request.resource.data.status == 'cancelled') ||
+        // Owner can approve/reject
+        (request.auth.uid == resource.data.ownerId && request.resource.data.status in ['approved', 'active', 'completed'])
+      );
+    }
+  }
+}

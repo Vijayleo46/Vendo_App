@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
 import { Typography } from './common/Typography';
-import { Heart, MapPin, Zap } from 'lucide-react-native';
+import { Heart, MapPin, Zap, Clock } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeContext';
+import { formatTimeAgo } from '../utils/dateUtils';
+import { Timestamp } from 'firebase/firestore';
 
 const { width } = Dimensions.get('window');
 
@@ -19,9 +21,10 @@ interface ProductCardProps {
     description?: string;
     onPress: () => void;
     isAd?: boolean;
+    createdAt?: Timestamp | Date | number;
 }
 
-export const ProductCard = ({ title, price, image, location, type, onPress, isAd }: ProductCardProps) => {
+export const ProductCard = ({ title, price, image, location, type, onPress, isAd, createdAt }: ProductCardProps) => {
     const { theme, isDark } = useTheme();
     const displayPrice = typeof price === 'number' ? price.toLocaleString() : price;
 
@@ -32,22 +35,22 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                 onPress={onPress}
                 style={{
                     backgroundColor: theme.card,
-                    borderRadius: 20,
-                    marginBottom: 16,
+                    borderRadius: 28,
+                    marginBottom: 20,
                     borderWidth: 1,
-                    borderColor: isAd ? (isDark ? '#FBBF24' : '#FEF08A') : theme.border,
+                    borderColor: isAd ? theme.primary : theme.border,
                     overflow: 'hidden',
-                    shadowColor: isDark ? '#000' : theme.primary,
-                    shadowOffset: { width: 0, height: 10 },
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 12 },
                     shadowOpacity: isDark ? 0.3 : 0.08,
-                    shadowRadius: 15,
-                    elevation: 5
+                    shadowRadius: 16,
+                    elevation: 8
                 }}
             >
                 <View style={{ position: 'relative' }}>
                     <Image
-                        source={{ uri: image || 'https://via.placeholder.com/300x200?text=No+Image' }}
-                        style={{ width: '100%', height: 160, backgroundColor: theme.surface }}
+                        source={{ uri: image || 'https://via.placeholder.com/400x300?text=No+Image' }}
+                        style={{ width: '100%', height: 180, backgroundColor: theme.surface }}
                         resizeMode="cover"
                     />
 
@@ -101,38 +104,43 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                     </TouchableOpacity>
                 </View>
 
-                <View style={{ padding: 14 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                <View style={{ padding: 16 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <Typography
-                            style={{ color: theme.text, fontSize: 18, fontWeight: '900' }}
+                            style={{ color: theme.primary, fontSize: 22, fontWeight: '900', letterSpacing: -0.5 }}
                             numberOfLines={1}
                         >
                             {type === 'job' ? price : `₹ ${displayPrice}`}
                         </Typography>
                         {type === 'job' && (
-                            <View style={{ backgroundColor: theme.surface, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: theme.border }}>
-                                <Typography style={{ fontSize: 9, fontWeight: '800', color: theme.primary }}>HIRING</Typography>
+                            <View style={{ backgroundColor: theme.primary + '15', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: theme.primary + '30' }}>
+                                <Typography style={{ fontSize: 10, fontWeight: '900', color: theme.primary, letterSpacing: 0.5 }}>HIRING</Typography>
                             </View>
                         )}
                     </View>
 
                     <Typography
-                        style={{ color: theme.textSecondary, fontSize: 14, fontWeight: '500', marginBottom: 12, lineHeight: 20 }}
-                        numberOfLines={1}
+                        style={{ color: theme.text, fontSize: 15, fontWeight: '700', marginBottom: 16, lineHeight: 22 }}
+                        numberOfLines={2}
                     >
                         {title}
                     </Typography>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <MapPin size={12} color={theme.textTertiary} />
-                            <Typography style={{ color: theme.textTertiary, fontSize: 11, fontWeight: '600' }} numberOfLines={1}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: theme.border, paddingTop: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                            <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: theme.surface, alignItems: 'center', justifyContent: 'center' }}>
+                                <MapPin size={12} color={theme.primary} />
+                            </View>
+                            <Typography style={{ color: theme.textSecondary, fontSize: 12, fontWeight: '700' }} numberOfLines={1}>
                                 {location?.split(',')[0] || 'Kochi'}
                             </Typography>
                         </View>
-                        <Typography style={{ color: theme.textTertiary, fontSize: 10, fontWeight: '700' }}>
-                            JUST NOW
-                        </Typography>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F3F4F6', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 }}>
+                            <Clock size={10} color={theme.textTertiary} />
+                            <Typography style={{ color: theme.textTertiary, fontSize: 9, fontWeight: '800', letterSpacing: 0.3 }}>
+                                {formatTimeAgo(createdAt)}
+                            </Typography>
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>

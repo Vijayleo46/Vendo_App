@@ -5,12 +5,13 @@ import { useTheme } from '../theme/ThemeContext';
 import { Typography } from '../components/common/Typography';
 import {
     Search, Filter, Eye, MessageCircle, Edit, Trash2, ChevronLeft,
-    CheckCircle, TrendingUp, Briefcase, Package, X, Users, Calendar
+    CheckCircle, TrendingUp, Briefcase, Package, X, Users, Calendar, Clock
 } from 'lucide-react-native';
 import { listingService, Listing } from '../services/listingService';
 import { auth } from '../core/config/firebase';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
+import { formatTimeAgo } from '../utils/dateUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -184,7 +185,12 @@ export const MyListingsScreen = ({ navigation }: any) => {
                 <View style={styles.cardInfo}>
                     <Typography variant="h3" style={{ marginBottom: 4, color: theme.text }}>{item.title}</Typography>
                     <Typography variant="h2" style={{ color: theme.text, marginBottom: 8, fontWeight: '900' }}>₹{item.price}</Typography>
-
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8, opacity: 0.7 }}>
+                        <Clock size={10} color={theme.textTertiary} />
+                        <Typography style={{ color: theme.textTertiary, fontSize: 10, fontWeight: '700' }}>
+                            {formatTimeAgo(item.createdAt)}
+                        </Typography>
+                    </View>
                     <View style={styles.stats}>
                         <View style={styles.statItem}>
                             <Eye size={14} color="#6B7280" />
@@ -233,7 +239,12 @@ export const MyListingsScreen = ({ navigation }: any) => {
                     <Typography variant="bodySmall" color="#6B7280" style={{ marginBottom: 8 }}>
                         {item.companyName || 'Company'}
                     </Typography>
-
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8, opacity: 0.7 }}>
+                        <Clock size={10} color={theme.textTertiary} />
+                        <Typography style={{ color: theme.textTertiary, fontSize: 10, fontWeight: '700' }}>
+                            {formatTimeAgo(item.createdAt)}
+                        </Typography>
+                    </View>
                     <View style={styles.stats}>
                         <View style={styles.statItem}>
                             <Users size={14} color="#6B7280" />

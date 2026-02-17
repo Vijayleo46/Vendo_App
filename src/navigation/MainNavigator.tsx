@@ -77,7 +77,7 @@ const TabNavigator = () => {
     const [activeTabIndex, setActiveTabIndex] = useState(0);
     const navigation = useNavigation<any>();
 
-    const handlePostTypeSelect = (type: 'product' | 'job' | 'service') => {
+    const handlePostTypeSelect = (type: 'product' | 'job' | 'service' | 'rent') => {
         setIsPostModalVisible(false);
         if (type === 'job') {
             navigation.navigate('PostJob');

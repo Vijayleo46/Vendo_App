@@ -82,6 +82,7 @@ export const SearchScreen = ({ navigation }: any) => {
                 price={item.price}
                 image={item.images?.[0] || 'https://via.placeholder.com/150'}
                 location={item.location}
+                createdAt={item.createdAt}
                 onPress={() => navigation.navigate('ProductDetails', { product: item })}
             />
         </Animated.View>

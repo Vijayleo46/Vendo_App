@@ -96,7 +96,7 @@ export const ModernTabBar: React.FC<ModernTabBarProps> = ({
                             {isCenter && (
                                 <Text style={[
                                     styles.label,
-                                    { color: isActive ? theme.primary : theme.textTertiary, fontWeight: isActive ? '700' : '500', marginTop: 32 }
+                                    { color: isActive ? theme.primary : theme.textTertiary, fontWeight: isActive ? '700' : '500', marginTop: 22 }
                                 ]}>
                                     {tab.label}
                                 </Text>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        marginTop: -35,
+        marginTop: -20,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,

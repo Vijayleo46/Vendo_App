@@ -37,7 +37,7 @@ const Stack = createNativeStackNavigator();
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     const [isPostModalVisible, setIsPostModalVisible] = useState(false);
 
-    const handlePostTypeSelect = (type: 'product' | 'job' | 'service') => {
+    const handlePostTypeSelect = (type: 'product' | 'job' | 'service' | 'rent') => {
         setIsPostModalVisible(false);
         if (type === 'job') {
             navigation.navigate('PostJob');

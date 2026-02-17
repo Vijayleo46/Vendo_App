@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { View, ScrollView, TouchableOpacity, StatusBar, ActivityIndicator, Dimensions, RefreshControl, Image } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StatusBar, ActivityIndicator, Dimensions, RefreshControl, Image, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
 import { MotiView, AnimatePresence } from 'moti';
 import { Typography } from '../components/common/Typography';
-import { Search, MapPin, Bell, Home, Smartphone, Car, Briefcase, Settings, Mic, Star, Zap, ChevronLeft } from 'lucide-react-native';
+import { Search, MapPin, Bell, Home, Smartphone, Car, Briefcase, Settings, Mic, Star, Zap, ChevronLeft, Heart } from 'lucide-react-native';
 import { listingService, Listing } from '../services/listingService';
 import { useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProductCard } from '../components/ProductCard';
+import { AnimatedProductCard } from '../components/home/AnimatedProductCard';
 import { auth } from '../core/config/firebase';
 import { userService, UserProfile } from '../services/userService';
 import { useTheme } from '../theme/ThemeContext';
@@ -183,21 +185,33 @@ export const HomeScreen = ({ navigation }: any) => {
       );
     };
 
+    const shuffle = (array: any[]) => {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    };
+
     return {
       products: filterByCat([...myProducts, ...otherProducts]),
       jobs: filterByCat(jobs),
-      all: filterByCat(listings)
+      all: activeCategory === 'All' ? shuffle(filterByCat(listings)) : filterByCat(listings)
     };
   }, [listings, activeCategory]);
 
   const renderSectionHeader = (title: string, onSeeAll?: () => void) => (
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
-      <Typography style={{ color: theme.text, fontSize: 18, fontWeight: '900', letterSpacing: 0.5 }}>
-        {title}
-      </Typography>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 32, paddingBottom: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ width: 4, height: 18, backgroundColor: theme.primary, borderRadius: 2, marginRight: 10 }} />
+        <Typography style={{ color: theme.text, fontSize: 20, fontWeight: '900', letterSpacing: 0.5 }}>
+          {title}
+        </Typography>
+      </View>
       {onSeeAll && (
         <TouchableOpacity onPress={onSeeAll}>
-          <Typography style={{ color: theme.text, fontSize: 13, fontWeight: '700', opacity: 0.5 }}>See All</Typography>
+          <Typography style={{ color: theme.primary, fontSize: 14, fontWeight: '800' }}>See All</Typography>
         </TouchableOpacity>
       )}
     </View>
@@ -213,8 +227,14 @@ export const HomeScreen = ({ navigation }: any) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
+      <LinearGradient
+        colors={[theme.background, theme.surface, theme.background]}
+        style={[StyleSheet.absoluteFill, { opacity: isDark ? 0.3 : 0.8 }]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={theme.background} />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: theme.background }}>
+      <SafeAreaView edges={['top']}>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 16 }}>
           <Typography style={{ color: theme.text, fontSize: 28, fontWeight: '900', letterSpacing: -1 }}>
@@ -224,6 +244,9 @@ export const HomeScreen = ({ navigation }: any) => {
             <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, gap: 4 }}>
               <Star size={14} color="#FBBF24" fill="#FBBF24" />
               <Typography style={{ color: theme.text, fontSize: 13, fontWeight: '800' }}>{userProfile?.coins || 0}</Typography>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Wishlist')}>
+              <Heart size={24} color={theme.text} />
             </TouchableOpacity>
             <TouchableOpacity>
               <Bell size={24} color={theme.text} />
@@ -248,19 +271,22 @@ export const HomeScreen = ({ navigation }: any) => {
             backgroundColor: theme.card,
             marginHorizontal: 20,
             paddingHorizontal: 16,
-            height: 52,
-            borderRadius: 12,
+            paddingVertical: 14,
+            borderRadius: 16,
             borderWidth: 1,
             borderColor: theme.border,
-            marginBottom: 10
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: isDark ? 0.3 : 0.05,
+            shadowRadius: 12,
+            elevation: 10,
           }}
         >
-          <Search size={20} color={theme.textSecondary} />
-          <View style={{ flex: 1, marginLeft: 12, height: 20, justifyContent: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 12 }}>
+            <Search size={22} color={theme.primary} />
             <Typewriter texts={PLACEHOLDERS} />
           </View>
-          <View style={{ width: 1, height: 20, backgroundColor: theme.border, marginHorizontal: 10 }} />
-          <Mic size={20} color={theme.primary} />
+          <Mic size={20} color={theme.textTertiary} />
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -276,29 +302,36 @@ export const HomeScreen = ({ navigation }: any) => {
               return (
                 <AnimatedCategoryItem key={cat.id} index={Number(cat.id)}>
                   <TouchableOpacity
+                    activeOpacity={0.8}
                     onPress={() => setActiveCategory(cat.value)}
                     style={{ alignItems: 'center' }}
                   >
                     <View style={{
-                      width: 65, height: 65, borderRadius: 32.5,
-                      backgroundColor: theme.surface,
-                      alignItems: 'center', justifyContent: 'center',
-                      borderWidth: isActive ? 2 : 1, borderColor: isActive ? theme.primary : theme.border,
+                      width: 60,
+                      height: 60,
+                      borderRadius: 30,
+                      backgroundColor: theme.card,
+                      padding: 2,
                       marginBottom: 8,
-                      overflow: 'hidden',
-                      shadowColor: '#000',
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.1,
-                      shadowRadius: 4,
-                      elevation: 3
+                      shadowColor: theme.primary,
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: isActive ? 0.2 : 0.05,
+                      shadowRadius: 8,
+                      elevation: 4,
+                      borderWidth: 2,
+                      borderColor: isActive ? theme.primary : 'transparent'
                     }}>
                       <Image
                         source={{ uri: cat.image }}
-                        style={{ width: '100%', height: '100%' }}
-                        resizeMode="cover"
+                        style={{ width: '100%', height: '100%', borderRadius: 28 }}
                       />
                     </View>
-                    <Typography style={{ fontSize: 12, fontWeight: isActive ? '700' : '600', color: isActive ? theme.primary : theme.textSecondary }}>
+                    <Typography style={{
+                      fontSize: 12,
+                      fontWeight: isActive ? '800' : '600',
+                      color: isActive ? theme.primary : theme.textSecondary,
+                      letterSpacing: 0.2
+                    }}>
                       {cat.label}
                     </Typography>
                   </TouchableOpacity>
@@ -312,34 +345,13 @@ export const HomeScreen = ({ navigation }: any) => {
           <View>
             {renderSectionHeader('Recently Viewed')}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
-              {recentlyViewed.map((item) => (
-                <View key={item.id} style={{ width: 220 }}>
-                  <ProductCard
-                    title={item.title}
-                    price={item.price}
-                    image={item.images[0]}
-                    location={item.location}
-                    type={item.type}
-                    onPress={() => navigation.navigate('ProductDetails', { product: item })}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        )}
-
-        {sections.jobs.length > 0 && (activeCategory === 'All' || activeCategory === 'Jobs') && (
-          <View>
-            {renderSectionHeader('Jobs Nearby')}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
-              {sections.jobs.map((item) => (
-                <View key={item.id} style={{ width: 220 }}>
-                  <ProductCard
-                    title={item.title}
-                    price={item.price}
-                    image={item.images[0]}
-                    location={item.location}
-                    type="job"
+              {recentlyViewed.map((item, index) => (
+                <View key={item.id} style={{ width: 140 }}>
+                  <AnimatedProductCard
+                    index={index}
+                    {...item}
+                    compact={true}
+                    createdAt={item.createdAt}
                     onPress={() => navigation.navigate('ProductDetails', { product: item })}
                   />
                 </View>
@@ -350,13 +362,14 @@ export const HomeScreen = ({ navigation }: any) => {
 
         {(activeCategory === 'All' ? sections.all : sections.products).length > 0 && (
           <View>
-            {renderSectionHeader(activeCategory === 'All' ? 'Browse All' : `Browse ${activeCategory}`)}
+            {renderSectionHeader(activeCategory === 'All' ? 'Fresh Recommendations' : `Browse ${activeCategory} `)}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16 }}>
-              {(activeCategory === 'All' ? sections.all : sections.products).map((item) => (
+              {(activeCategory === 'All' ? sections.all : sections.products).map((item, index) => (
                 <View key={item.id} style={{ width: '48%' }}>
-                  <ProductCard
+                  <AnimatedProductCard
+                    index={index % 6} // Reset stagger for better flow in grid
                     {...item}
-                    image={item.images[0]}
+                    createdAt={item.createdAt}
                     onPress={() => navigation.navigate('ProductDetails', { product: item })}
                   />
                 </View>

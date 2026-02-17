@@ -5,7 +5,7 @@ import { Package, Briefcase } from 'lucide-react-native';
 
 interface PostTypeSelectorProps {
   visible: boolean;
-  onSelect: (type: 'product' | 'job' | 'service') => void;
+  onSelect: (type: 'product' | 'job' | 'service' | 'rent') => void;
   onClose: () => void;
 }
 
@@ -56,6 +56,22 @@ export const PostTypeSelector: React.FC<PostTypeSelectorProps> = ({ visible, onS
                 <View style={styles.optionText}>
                   <Typography style={styles.optionTitle}>Post a Job</Typography>
                   <Typography style={styles.optionDesc}>Hire for a position</Typography>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.option}
+                onPress={() => {
+                  onSelect('rent');
+                  onClose();
+                }}
+              >
+                <View style={[styles.iconContainer, { backgroundColor: '#E0F2FE' }]}>
+                  <Typography style={{ fontSize: 24 }}>🔑</Typography>
+                </View>
+                <View style={styles.optionText}>
+                  <Typography style={styles.optionTitle}>Rent a Product</Typography>
+                  <Typography style={styles.optionDesc}>List items for rental only</Typography>
                 </View>
               </TouchableOpacity>
 

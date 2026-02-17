@@ -35,6 +35,11 @@ export const PostScreen = ({ route, navigation }: any) => {
     const [location, setLocation] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
     const [prediction, setPrediction] = useState<PricePrediction | null>(null);
+    const postType = route?.params?.type || 'product';
+
+    // Rental Specific State
+    const [securityDeposit, setSecurityDeposit] = useState('');
+    const [minRentalDays, setMinRentalDays] = useState('1');
 
     const pickImage = async (useCamera = false) => {
         if (images.length >= 5) {
@@ -120,22 +125,26 @@ export const PostScreen = ({ route, navigation }: any) => {
             });
 
             setStatusText('Phase 3: Preparing data...');
-            const type = category === 'Jobs' ? 'job' : category === 'Services' ? 'service' : 'product';
-            const finalPrice = type === 'product' ? price.replace(/[^0-9.]/g, '') : price;
+
+            const isMonetary = postType === 'product' || postType === 'rent';
+            const finalPrice = isMonetary ? price.replace(/[^0-9.]/g, '') : price;
 
             const listingData = {
                 title: title.trim(),
                 description: description.trim(),
                 price: finalPrice,
+                rentPricePerDay: postType === 'rent' ? Number(finalPrice) : null,
+                securityDeposit: postType === 'rent' ? Number(securityDeposit.replace(/[^0-9.]/g, '')) : 0,
+                minimumRentalDays: postType === 'rent' ? Number(minRentalDays) : 1,
                 category,
-                condition: type === 'product' ? condition : 'New',
+                condition: postType === 'product' ? condition : 'New',
                 images: uploadedUrls,
                 sellerId: currentUser.uid,
                 sellerName: currentUser.displayName || currentUser.email || 'Seller',
                 location: location.trim(),
                 enableChat: details.chat,
                 showPhone: details.phone,
-                type,
+                type: postType,
                 status: 'active',
                 isBoosted,
                 views: 0,
@@ -221,8 +230,12 @@ export const PostScreen = ({ route, navigation }: any) => {
                     animate={{ opacity: 1, translateY: 0 }}
                     style={{ paddingHorizontal: 20, paddingTop: 30, paddingBottom: 20 }}
                 >
-                    <Typography style={{ fontSize: 26, fontWeight: '900', color: theme.text }}>Sell Something</Typography>
-                    <Typography style={{ color: theme.textSecondary, fontSize: 14, fontWeight: '500' }}>Add details to get best price</Typography>
+                    <Typography style={{ fontSize: 26, fontWeight: '900', color: theme.text }}>
+                        {postType === 'job' ? 'Hire Someone' : postType === 'rent' ? 'Rent My Product' : 'Sell Something'}
+                    </Typography>
+                    <Typography style={{ color: theme.textSecondary, fontSize: 14, fontWeight: '500' }}>
+                        {postType === 'rent' ? 'Set your rental terms' : 'Add details to get best price'}
+                    </Typography>
                 </MotiView>
 
                 {/* Studio Photo Section */}
@@ -254,14 +267,16 @@ export const PostScreen = ({ route, navigation }: any) => {
                         <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>AD TITLE</Typography>
                         <TextInput
                             style={[styles.premiumInput, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
-                            placeholder="What are you selling?"
+                            placeholder={postType === 'rent' ? "What are you renting out?" : "What are you selling?"}
                             value={title}
                             onChangeText={setTitle}
                         />
                     </View>
 
                     <View style={styles.inputWrapper}>
-                        <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>PRICE</Typography>
+                        <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>
+                            {postType === 'rent' ? 'RENT PER DAY' : 'PRICE'}
+                        </Typography>
                         <View style={[styles.priceInputRow, { backgroundColor: theme.card, borderColor: theme.border }]}>
                             <Typography style={[styles.currencySymbol, { color: theme.text }]}>₹</Typography>
                             <TextInput
@@ -272,11 +287,43 @@ export const PostScreen = ({ route, navigation }: any) => {
                                 onChangeText={setPrice}
                                 placeholderTextColor={theme.textTertiary}
                             />
-                            <TouchableOpacity onPress={handleAIPredict} style={styles.aiBtn}>
-                                <Wand2 size={18} color="#FFF" />
-                            </TouchableOpacity>
+                            {postType !== 'rent' && (
+                                <TouchableOpacity onPress={handleAIPredict} style={styles.aiBtn}>
+                                    <Wand2 size={18} color="#FFF" />
+                                </TouchableOpacity>
+                            )}
                         </View>
                     </View>
+
+                    {postType === 'rent' && (
+                        <>
+                            <View style={styles.inputWrapper}>
+                                <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>SECURITY DEPOSIT (OPTIONAL)</Typography>
+                                <View style={[styles.priceInputRow, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                                    <Typography style={[styles.currencySymbol, { color: theme.text }]}>₹</Typography>
+                                    <TextInput
+                                        style={[styles.priceInput, { color: theme.text }]}
+                                        placeholder="0.00"
+                                        keyboardType="numeric"
+                                        value={securityDeposit}
+                                        onChangeText={setSecurityDeposit}
+                                        placeholderTextColor={theme.textTertiary}
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={styles.inputWrapper}>
+                                <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>MINIMUM RENTAL DAYS</Typography>
+                                <TextInput
+                                    style={[styles.premiumInput, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]}
+                                    placeholder="1"
+                                    keyboardType="numeric"
+                                    value={minRentalDays}
+                                    onChangeText={setMinRentalDays}
+                                />
+                            </View>
+                        </>
+                    )}
 
                     <View style={styles.inputWrapper}>
                         <Typography style={[styles.inputLabel, { color: theme.textSecondary }]}>CATEGORY</Typography>
