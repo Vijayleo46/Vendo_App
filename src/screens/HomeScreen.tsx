@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { View, ScrollView, TouchableOpacity, StatusBar, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StatusBar, ActivityIndicator, Dimensions, RefreshControl, Image } from 'react-native';
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
 import { MotiView, AnimatePresence } from 'moti';
 import { Typography } from '../components/common/Typography';
@@ -15,14 +15,23 @@ import { useTheme } from '../theme/ThemeContext';
 const OLX_TEAL = '#002f34';
 const PLACEHOLDERS = ['cars', 'jobs', 'mobiles', 'properties', 'everything'];
 
-const CATEGORIES = [
-  { id: '1', label: 'All', value: 'All', icon: Home },
-  { id: '2', label: 'Mobiles', value: 'Mobiles', icon: Smartphone },
-  { id: '3', label: 'Cars', value: 'Vehicles', icon: Car },
-  { id: '4', label: 'Property', value: 'Real Estate', icon: Home },
-  { id: '5', label: 'Electronics', value: 'Electronics', icon: Zap },
-  { id: '6', label: 'Jobs', value: 'Jobs', icon: Briefcase },
-  { id: '7', label: 'Services', value: 'Services', icon: Settings },
+interface Category {
+  id: string;
+  label: string;
+  value: string;
+  image: string;
+}
+
+const CATEGORIES: Category[] = [
+  { id: '2', label: 'Mobiles', value: 'Mobiles', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop' },
+  { id: '3', label: 'Cars', value: 'Vehicles', image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=200&h=200&fit=crop' },
+  { id: '8', label: 'Bikes', value: 'Bikes', image: 'https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?w=200&h=200&fit=crop' },
+  { id: '4', label: 'Houses', value: 'Real Estate', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=200&h=200&fit=crop' },
+  { id: '9', label: 'Land', value: 'Land & Plots', image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=200&h=200&fit=crop' },
+  { id: '5', label: 'Electronics', value: 'Electronics', image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&h=200&fit=crop' },
+  { id: '10', label: 'Furniture', value: 'Furniture', image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=200&h=200&fit=crop' },
+  { id: '6', label: 'Jobs', value: 'Jobs', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop' },
+  { id: '7', label: 'Services', value: 'Services', image: 'https://images.unsplash.com/photo-1621905252507-b354bc2d1f6c?w=200&h=200&fit=crop' },
 ];
 
 const Typewriter = ({ texts }: { texts: string[] }) => {
@@ -104,6 +113,7 @@ export const HomeScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState(true);
 
   const [activeCategory, setActiveCategory] = useState('All');
+  const [recentlyViewed, setRecentlyViewed] = useState<Listing[]>([]);
   const [location, setLocation] = useState('Panampilly Nagar, Kochi');
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
@@ -141,6 +151,10 @@ export const HomeScreen = ({ navigation }: any) => {
       }
 
       setListings(allListings);
+
+      // Fetch recently viewed
+      const recent = await listingService.getRecentlyViewed();
+      setRecentlyViewed(recent);
     } catch (error) {
       console.error("Failed to fetch listings", error);
     } finally {
@@ -259,7 +273,6 @@ export const HomeScreen = ({ navigation }: any) => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
             {CATEGORIES.map((cat) => {
               const isActive = activeCategory === cat.value;
-              const Icon = cat.icon;
               return (
                 <AnimatedCategoryItem key={cat.id} index={Number(cat.id)}>
                   <TouchableOpacity
@@ -267,15 +280,25 @@ export const HomeScreen = ({ navigation }: any) => {
                     style={{ alignItems: 'center' }}
                   >
                     <View style={{
-                      width: 60, height: 60, borderRadius: 30,
-                      backgroundColor: isActive ? theme.primary : theme.surface,
+                      width: 65, height: 65, borderRadius: 32.5,
+                      backgroundColor: theme.surface,
                       alignItems: 'center', justifyContent: 'center',
-                      borderWidth: 1, borderColor: isActive ? theme.primary : theme.border,
-                      marginBottom: 8
+                      borderWidth: isActive ? 2 : 1, borderColor: isActive ? theme.primary : theme.border,
+                      marginBottom: 8,
+                      overflow: 'hidden',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 4,
+                      elevation: 3
                     }}>
-                      <Icon size={24} color={isActive ? '#FFF' : theme.textSecondary} />
+                      <Image
+                        source={{ uri: cat.image }}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                      />
                     </View>
-                    <Typography style={{ fontSize: 12, fontWeight: isActive ? '700' : '500', color: isActive ? theme.primary : theme.textSecondary }}>
+                    <Typography style={{ fontSize: 12, fontWeight: isActive ? '700' : '600', color: isActive ? theme.primary : theme.textSecondary }}>
                       {cat.label}
                     </Typography>
                   </TouchableOpacity>
@@ -285,12 +308,32 @@ export const HomeScreen = ({ navigation }: any) => {
           </ScrollView>
         </View>
 
+        {recentlyViewed.length > 0 && (
+          <View>
+            {renderSectionHeader('Recently Viewed')}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
+              {recentlyViewed.map((item) => (
+                <View key={item.id} style={{ width: 220 }}>
+                  <ProductCard
+                    title={item.title}
+                    price={item.price}
+                    image={item.images[0]}
+                    location={item.location}
+                    type={item.type}
+                    onPress={() => navigation.navigate('ProductDetails', { product: item })}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
         {sections.jobs.length > 0 && (activeCategory === 'All' || activeCategory === 'Jobs') && (
           <View>
             {renderSectionHeader('Jobs Nearby')}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
               {sections.jobs.map((item) => (
-                <View key={item.id} style={{ width: 200 }}>
+                <View key={item.id} style={{ width: 220 }}>
                   <ProductCard
                     title={item.title}
                     price={item.price}
@@ -305,11 +348,11 @@ export const HomeScreen = ({ navigation }: any) => {
           </View>
         )}
 
-        {sections.products.length > 0 && (activeCategory === 'All' || activeCategory !== 'Jobs') && (
+        {(activeCategory === 'All' ? sections.all : sections.products).length > 0 && (
           <View>
-            {renderSectionHeader('Browse All')}
+            {renderSectionHeader(activeCategory === 'All' ? 'Browse All' : `Browse ${activeCategory}`)}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16 }}>
-              {sections.products.map((item) => (
+              {(activeCategory === 'All' ? sections.all : sections.products).map((item) => (
                 <View key={item.id} style={{ width: '48%' }}>
                   <ProductCard
                     {...item}

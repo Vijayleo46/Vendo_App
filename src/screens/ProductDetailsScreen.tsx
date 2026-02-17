@@ -48,6 +48,8 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                 const freshData = await listingService.getListingById(item.id);
                 if (freshData) {
                     setItem(freshData);
+                    // Track recently viewed
+                    listingService.trackRecentlyViewed(item.id);
                 }
             } catch (error) {
                 console.error('Error fetching fresh listing data:', error);

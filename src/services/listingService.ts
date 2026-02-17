@@ -17,6 +17,9 @@ import {
 import { db, auth } from '../core/config/firebase';
 import { userService } from './userService';
 import { coinTransactionService } from './coinTransactionService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const RECENTLY_VIEWED_KEY = '@recently_viewed_listings';
 
 export interface Listing {
     id?: string;
@@ -611,6 +614,46 @@ export const listingService = {
             console.error('Error code:', error.code);
             console.error('Error message:', error.message);
             throw error;
+        }
+    },
+
+    // --- Recently Viewed ---
+
+    // Track recently viewed listing
+    trackRecentlyViewed: async (listingId: string) => {
+        try {
+            const stored = await AsyncStorage.getItem(RECENTLY_VIEWED_KEY);
+            let ids: string[] = stored ? JSON.parse(stored) : [];
+
+            // Remove if already exists (to move to front)
+            ids = ids.filter(id => id !== listingId);
+
+            // Add to front
+            ids.unshift(listingId);
+
+            // Limit to 10 items
+            const limitedIds = ids.slice(0, 10);
+
+            await AsyncStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(limitedIds));
+        } catch (error) {
+            console.error('Error tracking recently viewed:', error);
+        }
+    },
+
+    // Get recently viewed listings
+    getRecentlyViewed: async () => {
+        try {
+            const stored = await AsyncStorage.getItem(RECENTLY_VIEWED_KEY);
+            if (!stored) return [];
+
+            const ids: string[] = JSON.parse(stored);
+            const itemPromises = ids.map(id => listingService.getListingById(id));
+            const results = await Promise.all(itemPromises);
+
+            return results.filter(item => item !== null) as Listing[];
+        } catch (error) {
+            console.error('Error getting recently viewed:', error);
+            return [];
         }
     }
 };
