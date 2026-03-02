@@ -8,6 +8,7 @@ import { listingService } from '../services/listingService';
 import { storageService } from '../services/storageService';
 import { aiPriceService, PricePrediction } from '../services/aiPriceService';
 import { auth } from '../core/config/firebase';
+import { rentalService } from '../services/rentalService';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View as MotiView } from 'moti';
@@ -153,7 +154,22 @@ export const PostScreen = ({ route, navigation }: any) => {
             };
 
             setStatusText('Phase 4: Saving to Database...');
-            await listingService.createListing(listingData as any);
+            if (postType === 'rent') {
+                await rentalService.createProduct({
+                    title: listingData.title,
+                    description: listingData.description,
+                    category: listingData.category,
+                    rentPricePerDay: listingData.rentPricePerDay || 0,
+                    securityDeposit: listingData.securityDeposit,
+                    minimumRentalDays: listingData.minimumRentalDays,
+                    ownerId: listingData.sellerId,
+                    images: listingData.images,
+                    location: listingData.location,
+                    availabilityStatus: 'available'
+                });
+            } else {
+                await listingService.createListing(listingData as any);
+            }
 
             setSuccess(true);
             setLoading(false);
