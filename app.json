@@ -10,7 +10,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.vijay.trustmarket",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses location to show nearby products and services.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses location to show nearby products and services."
+      }
     },
     "android": {
       "package": "com.vijay.marketplace",
@@ -22,14 +26,24 @@
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
       ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Trust Market to use your location to show nearby products and services.",
+          "locationAlwaysPermission": "Allow Trust Market to use your location to show nearby products and services.",
+          "locationWhenInUsePermission": "Allow Trust Market to use your location to show nearby products and services."
+        }
+      ]
     ],
     "extra": {
       "eas": {

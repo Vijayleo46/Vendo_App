@@ -22,9 +22,10 @@ interface ProductCardProps {
     onPress: () => void;
     isAd?: boolean;
     createdAt?: Timestamp | Date | number;
+    distance?: number; // Distance in kilometers
 }
 
-export const ProductCard = ({ title, price, image, location, type, onPress, isAd, createdAt }: ProductCardProps) => {
+export const ProductCard = ({ title, price, image, location, type, onPress, isAd, createdAt, distance }: ProductCardProps) => {
     const { theme, isDark } = useTheme();
     const displayPrice = typeof price === 'number' ? price.toLocaleString() : price;
 
@@ -133,6 +134,7 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                             </View>
                             <Typography style={{ color: theme.textSecondary, fontSize: 12, fontWeight: '700' }} numberOfLines={1}>
                                 {location?.split(',')[0] || 'Kochi'}
+                                {typeof distance === 'number' && ` • ${distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}`}
                             </Typography>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F3F4F6', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 }}>

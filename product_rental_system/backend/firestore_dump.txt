@@ -1,0 +1,22 @@
+--- Firebase Data Check Start ---
+Project ID: trust-market-platform
+Fetching users...
+--- Firebase Data Check End ---
+FAILED TO FETCH DATA:
+Error: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.
+    at GoogleAuth.getApplicationDefaultAsync (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\google-auth-library\build\src\auth\googleauth.js:287:15)
+    at async GoogleAuth._GoogleAuth_determineClient (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\google-auth-library\build\src\auth\googleauth.js:834:32)
+    at async GoogleAuth.getClient (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\google-auth-library\build\src\auth\googleauth.js:698:20)
+    at async GrpcClient._getCredentials (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\google-gax\build\src\grpc.js:145:24)
+    at async GrpcClient.createStub (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\google-gax\build\src\grpc.js:318:23)
+Caused by: Error
+    at QueryUtil._getResponse (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@google-cloud\firestore\build\src\reference\query-util.js:44:23)
+    at CollectionReference._getResponse (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@google-cloud\firestore\build\src\reference\query.js:784:32)
+    at CollectionReference._get (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@google-cloud\firestore\build\src\reference\query.js:777:35)
+    at C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@google-cloud\firestore\build\src\reference\query.js:745:43
+    at C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:110:30
+    at NoopContextManager.with (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@opentelemetry\api\build\src\context\NoopContextManager.js:25:19)
+    at ContextAPI.with (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@opentelemetry\api\build\src\api\context.js:60:46)
+    at NoopTracer.startActiveSpan (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@opentelemetry\api\build\src\trace\NoopTracer.js:65:31)
+    at ProxyTracer.startActiveSpan (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@opentelemetry\api\build\src\trace\ProxyTracer.js:36:24)
+    at EnabledTraceUtil.startActiveSpan (C:\Users\vijay\Downloads\trust_market-main\trust_market-main\product_rental_system\backend\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:102:28)

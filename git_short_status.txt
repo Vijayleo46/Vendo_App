@@ -1,0 +1,10 @@
+ M package-lock.json
+ M package.json
+ M src/screens/ChatRoomScreen.tsx
+ M src/screens/ChatScreen.tsx
+ M src/services/rentalService.ts
+ M src/theme/colors.ts
+?? expo_error.txt
+?? full_expo_log.txt
+?? git_short_status.txt
+?? src/services/SpeechService.ts

@@ -18,6 +18,7 @@ import { db, auth } from '../core/config/firebase';
 import { userService } from './userService';
 import { coinTransactionService } from './coinTransactionService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { rentalService, RentalProduct } from './rentalService';
 
 const RECENTLY_VIEWED_KEY = '@recently_viewed_listings';
 
@@ -33,23 +34,13 @@ export interface Listing {
     location?: string;
     createdAt?: Timestamp;
     rating: number;
-    type: 'product' | 'job' | 'service' | 'rent';
+    type: 'product' | 'job' | 'service';
     condition?: 'New' | 'Used' | 'Refurbished';
     enableChat?: boolean;
     showPhone?: boolean;
     isBoosted?: boolean;
     boostExpiresAt?: Timestamp;
     sellerTrustScore?: number;
-
-    // Location fields for GPS-based search
-    coordinates?: {
-        latitude: number;
-        longitude: number;
-    };
-    city?: string;
-    state?: string;
-    country?: string;
-    distance?: number; // Calculated distance from user location
 
     // Job specific fields
     salaryRange?: string;
@@ -74,8 +65,7 @@ export const listingService = {
     // Helper to get collection name based on type
     getCollectionName: (type: Listing['type']) => {
         if (type === 'job') return 'jobs';
-        if (type === 'rent') return 'rentals';
-        return 'products'; // services and products go to products for now
+        return 'products'; // services and products go to products for now or add 'services'
     },
 
     // Create a new listing
@@ -126,13 +116,34 @@ export const listingService = {
             const productQuery = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(listingLimit));
             const jobQuery = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'), limit(listingLimit));
 
-            const [productSnap, jobSnap] = await Promise.all([getDocs(productQuery), getDocs(jobQuery)]);
+            const [productSnap, jobSnap, rentalProducts] = await Promise.all([
+                getDocs(productQuery),
+                getDocs(jobQuery),
+                rentalService.getProducts().catch(() => [] as RentalProduct[])
+            ]);
 
             const products = productSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing));
             const jobs = jobSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing));
 
+            // Map rental products to Listing format
+            const rentals = rentalProducts.map(rp => ({
+                id: rp.id,
+                title: rp.title,
+                description: rp.description,
+                price: `₹${rp.rentPricePerDay}/day`,
+                category: rp.category,
+                images: rp.images,
+                sellerId: rp.ownerId,
+                sellerName: 'Owner',
+                location: rp.location,
+                type: 'rent',
+                status: 'active',
+                rating: 0,
+                createdAt: Timestamp.now()
+            } as any as Listing));
+
             // Merge and sort: Boosted first, then by createdAt
-            return [...products, ...jobs]
+            return [...products, ...jobs, ...rentals]
                 .sort((a, b) => {
                     // Boosted items first
                     if (a.isBoosted && !b.isBoosted) return -1;
@@ -331,11 +342,7 @@ export const listingService = {
                     sellerName: user?.displayName || 'Leo',
                     rating: 5.0,
                     type: 'product',
-                    location: 'Kochi, Kerala',
-                    coordinates: { latitude: 9.9312, longitude: 76.2673 }, // Kochi coordinates
-                    city: 'Kochi',
-                    state: 'Kerala',
-                    country: 'India',
+                    location: 'San Francisco, CA',
                     condition: 'New',
                     enableChat: true,
                     status: 'active',
@@ -352,11 +359,7 @@ export const listingService = {
                     sellerName: user?.displayName || 'Leo',
                     rating: 5,
                     type: 'job',
-                    location: 'Thiruvananthapuram, Kerala',
-                    coordinates: { latitude: 8.5241, longitude: 76.9366 }, // Thiruvananthapuram coordinates
-                    city: 'Thiruvananthapuram',
-                    state: 'Kerala',
-                    country: 'India',
+                    location: 'Bangalore, India',
                     condition: 'New',
                     jobType: 'Full Time',
                     salaryRange: '45L - 60L',
@@ -673,157 +676,6 @@ export const listingService = {
         } catch (error) {
             console.error('Error getting recently viewed:', error);
             return [];
-        }
-    },
-
-    // --- Location-based Search Methods ---
-
-    // Search listings by location and distance
-    searchByLocation: async (
-        userLocation: { latitude: number; longitude: number },
-        radiusKm: number = 10,
-        category?: string,
-        searchQuery?: string
-    ) => {
-        try {
-            console.log(`[SERVICE] 📍 Searching within ${radiusKm}km of user location`);
-            
-            // Get all listings first
-            const allListings = await listingService.getFeaturedListings(200);
-            
-            // Filter by location if listings have coordinates
-            const nearbyListings = allListings.filter(listing => {
-                if (!listing.coordinates) {
-                    // If no coordinates, try to match by city/location string
-                    if (listing.location) {
-                        const locationLower = listing.location.toLowerCase();
-                        // Simple city matching for Kerala cities
-                        const keralaCities = ['kochi', 'thiruvananthapuram', 'kozhikode', 'thrissur', 'kollam'];
-                        return keralaCities.some(city => locationLower.includes(city));
-                    }
-                    return false;
-                }
-                
-                // Calculate distance using coordinates
-                const distance = listingService.calculateDistance(
-                    userLocation,
-                    listing.coordinates
-                );
-                
-                // Add distance to listing for display
-                listing.distance = distance;
-                
-                return distance <= radiusKm;
-            });
-
-            // Apply additional filters
-            let filteredListings = nearbyListings;
-            
-            if (category && category !== 'All') {
-                filteredListings = filteredListings.filter(l => l.category === category);
-            }
-            
-            if (searchQuery) {
-                const queryLower = searchQuery.toLowerCase();
-                filteredListings = filteredListings.filter(l => 
-                    l.title.toLowerCase().includes(queryLower) ||
-                    l.description.toLowerCase().includes(queryLower)
-                );
-            }
-
-            // Sort by distance (closest first)
-            filteredListings.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-
-            console.log(`[SERVICE] ✅ Found ${filteredListings.length} listings within ${radiusKm}km`);
-            return filteredListings;
-        } catch (error) {
-            console.error("Error searching by location: ", error);
-            throw error;
-        }
-    },
-
-    // Calculate distance between two coordinates
-    calculateDistance: (
-        coords1: { latitude: number; longitude: number },
-        coords2: { latitude: number; longitude: number }
-    ): number => {
-        const R = 6371; // Earth's radius in kilometers
-        const dLat = listingService.toRadians(coords2.latitude - coords1.latitude);
-        const dLon = listingService.toRadians(coords2.longitude - coords1.longitude);
-        
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(listingService.toRadians(coords1.latitude)) *
-                Math.cos(listingService.toRadians(coords2.latitude)) *
-                Math.sin(dLon / 2) *
-                Math.sin(dLon / 2);
-        
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
-        
-        return Math.round(distance * 100) / 100; // Round to 2 decimal places
-    },
-
-    // Helper function to convert degrees to radians
-    toRadians: (degrees: number): number => {
-        return degrees * (Math.PI / 180);
-    },
-
-    // Get listings sorted by distance from user location
-    getListingsByDistance: async (
-        userLocation: { latitude: number; longitude: number },
-        limit: number = 20
-    ) => {
-        try {
-            const allListings = await listingService.getFeaturedListings(100);
-            
-            // Add distance to each listing and filter out those without location
-            const listingsWithDistance = allListings
-                .map(listing => {
-                    if (listing.coordinates) {
-                        const distance = listingService.calculateDistance(
-                            userLocation,
-                            listing.coordinates
-                        );
-                        return { ...listing, distance };
-                    }
-                    return null;
-                })
-                .filter(listing => listing !== null)
-                .sort((a, b) => (a!.distance || 0) - (b!.distance || 0))
-                .slice(0, limit);
-
-            return listingsWithDistance as Listing[];
-        } catch (error) {
-            console.error("Error getting listings by distance: ", error);
-            throw error;
-        }
-    },
-
-    // Update listing with location coordinates
-    updateListingLocation: async (
-        listingId: string,
-        type: Listing['type'],
-        coordinates: { latitude: number; longitude: number },
-        city?: string,
-        state?: string,
-        country?: string
-    ) => {
-        try {
-            const collectionName = listingService.getCollectionName(type);
-            const listingRef = doc(db, collectionName, listingId);
-            
-            await updateDoc(listingRef, {
-                coordinates,
-                city,
-                state,
-                country
-            });
-            
-            console.log(`[SERVICE] ✅ Updated location for listing ${listingId}`);
-        } catch (error) {
-            console.error("Error updating listing location: ", error);
-            throw error;
         }
     }
 };

@@ -180,5 +180,20 @@ export const userService = {
             console.error('Error updating KYC status:', error);
             throw error;
         }
+    },
+
+    // Get pending users for verification
+    getPendingUsers: async () => {
+        try {
+            const q = query(collection(db, 'users'), where('kycStatus', '==', 'pending'));
+            const querySnapshot = await getDocs(q);
+            return querySnapshot.docs.map(doc => ({
+                uid: doc.id,
+                ...(doc.data() as any)
+            }) as UserProfile);
+        } catch (error) {
+            console.error("Error getting pending users: ", error);
+            throw error;
+        }
     }
 };

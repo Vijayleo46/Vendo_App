@@ -6,10 +6,13 @@ import { MotiView, AnimatePresence } from 'moti';
 import { Typography } from '../components/common/Typography';
 import { Search, MapPin, Bell, Home, Smartphone, Car, Briefcase, Settings, Mic, Star, Zap, ChevronLeft, Heart } from 'lucide-react-native';
 import { listingService, Listing } from '../services/listingService';
+import { locationService, LocationData } from '../services/locationService';
 import { useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProductCard } from '../components/ProductCard';
 import { AnimatedProductCard } from '../components/home/AnimatedProductCard';
+import { LocationPicker } from '../components/LocationPicker';
+import { DistanceFilter } from '../components/DistanceFilter';
 import { auth } from '../core/config/firebase';
 import { userService, UserProfile } from '../services/userService';
 import { useTheme } from '../theme/ThemeContext';
@@ -120,6 +123,11 @@ export const HomeScreen = ({ navigation }: any) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
 
+  // Location-based search states
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [selectedDistance, setSelectedDistance] = useState(10); // Default 10km radius
+  const [locationBasedSearch, setLocationBasedSearch] = useState(false);
+
   // Placeholder interval removed in favor of Typewriter component
 
   useEffect(() => {
@@ -141,6 +149,55 @@ export const HomeScreen = ({ navigation }: any) => {
       fetchUserProfile();
     }
   }, [isFocused]);
+
+  // Handle location selection
+  const handleLocationSelect = async (selectedLocation: string, coords?: { latitude: number; longitude: number }) => {
+    setLocation(selectedLocation);
+    if (coords) {
+      setUserLocation(coords);
+      setLocationBasedSearch(true);
+      // Refresh listings with location-based search
+      await fetchListingsWithLocation(coords);
+    } else {
+      setLocationBasedSearch(false);
+      // Fallback to regular search
+      await fetchListings();
+    }
+  };
+
+  // Fetch listings with location-based filtering
+  const fetchListingsWithLocation = useCallback(async (coords?: { latitude: number; longitude: number }) => {
+    try {
+      setLoading(true);
+      const locationToUse = coords || userLocation;
+      
+      if (locationToUse && locationBasedSearch) {
+        // Use location-based search
+        const nearbyListings = await listingService.searchByLocation(
+          locationToUse,
+          selectedDistance,
+          activeCategory === 'All' ? undefined : activeCategory
+        );
+        setListings(nearbyListings);
+      } else {
+        // Fallback to regular search
+        let allListings = await listingService.getFeaturedListings(60);
+        if (allListings.length === 0) {
+          await listingService.seedDemoData();
+          allListings = await listingService.getFeaturedListings(60);
+        }
+        setListings(allListings);
+      }
+
+      // Fetch recently viewed
+      const recent = await listingService.getRecentlyViewed();
+      setRecentlyViewed(recent);
+    } catch (error) {
+      console.error("Failed to fetch listings", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [userLocation, selectedDistance, activeCategory, locationBasedSearch]);
 
   const fetchListings = useCallback(async () => {
     try {
@@ -166,9 +223,21 @@ export const HomeScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (isFocused) {
-      fetchListings();
+      if (userLocation && locationBasedSearch) {
+        fetchListingsWithLocation();
+      } else {
+        fetchListings();
+      }
     }
-  }, [isFocused, fetchListings]);
+  }, [isFocused, fetchListings, fetchListingsWithLocation]);
+
+  // Handle distance filter change
+  const handleDistanceChange = (distance: number) => {
+    setSelectedDistance(distance);
+    if (userLocation && locationBasedSearch) {
+      fetchListingsWithLocation();
+    }
+  };
 
   const sections = useMemo(() => {
     const myProducts = listings.filter(l => l.sellerId === auth.currentUser?.uid && l.type !== 'job');
@@ -254,12 +323,20 @@ export const HomeScreen = ({ navigation }: any) => {
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 16, marginTop: 4, gap: 4 }}>
-          <MapPin size={16} color={theme.text} />
-          <Typography style={{ color: theme.text, fontSize: 14, fontWeight: '700' }}>
-            {location?.split(',')[0] || 'Kochi'}
-          </Typography>
-          <ChevronLeft size={14} color={theme.text} style={{ transform: [{ rotate: '-90deg' }] }} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 16, marginTop: 4 }}>
+          <LocationPicker
+            selectedLocation={location}
+            onLocationSelect={handleLocationSelect}
+            showCurrentLocation={true}
+          />
+          
+          {userLocation && locationBasedSearch && (
+            <View style={{ marginLeft: 12 }}>
+              <Typography style={{ fontSize: 10, color: theme.textSecondary, marginBottom: 4 }}>
+                Within {selectedDistance}km
+              </Typography>
+            </View>
+          )}
         </View>
 
         <TouchableOpacity
@@ -340,6 +417,17 @@ export const HomeScreen = ({ navigation }: any) => {
             })}
           </ScrollView>
         </View>
+
+        {/* Distance Filter */}
+        {userLocation && locationBasedSearch && (
+          <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
+            <DistanceFilter
+              selectedDistance={selectedDistance}
+              onDistanceSelect={handleDistanceChange}
+              userLocation={userLocation}
+            />
+          </View>
+        )}
 
         {recentlyViewed.length > 0 && (
           <View>

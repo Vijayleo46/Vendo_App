@@ -1,0 +1,4 @@
+Starting project at C:\Users\vijay\Downloads\trust_market-main\trust_market-main
+Metro is running in CI mode, reloads are disabled. Remove CI=true to enable watch mode.
+Starting Metro Bundler
+CommandError: "expo-speech" is added as a dependency in your project's package.json but it doesn't seem to be installed. Run "npm install", or the equivalent for your package manager, and try again.
