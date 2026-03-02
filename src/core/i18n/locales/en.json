@@ -1,0 +1,53 @@
+{
+    "common": {
+        "search": "Search",
+        "settings": "Settings",
+        "profile": "Profile",
+        "home": "Home",
+        "chat": "Chat",
+        "wallet": "SuperCoin Wallet",
+        "wishlist": "Saved Items",
+        "language": "Language",
+        "logout": "Sign Out",
+        "edit_profile": "Edit Profile",
+        "save": "Save",
+        "cancel": "Cancel",
+        "location": "Location",
+        "price": "Price",
+        "apply": "Apply",
+        "see_all": "See All",
+        "recently_viewed": "Recently Viewed",
+        "recommendations": "Fresh Recommendations",
+        "browse": "Browse",
+        "listings": "Listings",
+        "my_listings": "My Listings",
+        "coins": "Coins",
+        "sales": "Sales",
+        "get_verified": "Get Verified (KYC)",
+        "post": "Post"
+    },
+    "settings": {
+        "title": "Settings",
+        "account": "Account",
+        "preferences": "Preferences",
+        "notifications": "Notifications",
+        "dark_mode": "Dark Mode",
+        "language_selection": "Select Language",
+        "about": "About Vendo",
+        "help": "Help & Support"
+    },
+    "help": {
+        "title": "Help Centre",
+        "subtitle": "How can we help you today?",
+        "contact_us": "Contact Us",
+        "whatsapp": "Chat on WhatsApp",
+        "email": "Send an Email",
+        "call": "Call Support",
+        "faq": "Frequently Asked Questions",
+        "faq_1_q": "How to post an ad?",
+        "faq_1_a": "Click on the 'Post' tab in the bottom menu and fill in the details of your item.",
+        "faq_2_q": "Is my data safe?",
+        "faq_2_a": "Yes, we use industry-standard encryption to protect your personal information.",
+        "support_text": "Our support team is available 24/7 to assist you with any queries or issues."
+    }
+}

@@ -9,6 +9,7 @@ import {
     TextInput,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Typography } from '../components/common/Typography';
 import { authService } from '../services/authService';
 import { userService } from '../services/userService';
@@ -17,6 +18,7 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 
 export const LoginScreen = ({ navigation }: any) => {
     const { theme, isDark } = useTheme();
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -99,7 +101,7 @@ export const LoginScreen = ({ navigation }: any) => {
                 {/* Back Button */}
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <ArrowLeft size={24} color={isDark ? theme.text : "#333"} strokeWidth={2} />
-                    <Typography variant="bodyLarge" style={[styles.backText, { color: isDark ? theme.text : "#333" }]}>Back</Typography>
+                    <Typography variant="bodyLarge" style={[styles.backText, { color: isDark ? theme.text : "#333" }]}>{t('common.back')}</Typography>
                 </TouchableOpacity>
             </LinearGradient>
 
@@ -116,9 +118,9 @@ export const LoginScreen = ({ navigation }: any) => {
                 >
                     {/* Header */}
                     <View style={styles.header}>
-                        <Typography variant="h1" style={[styles.title, { color: theme.text }]}>Welcome Back</Typography>
+                        <Typography variant="h1" style={[styles.title, { color: theme.text }]}>{t('login.welcome')}</Typography>
                         <Typography variant="bodyMedium" style={[styles.subtitle, { color: theme.textSecondary }]}>
-                            Ready to continue your learning journey?{'\n'}Your path is right here.
+                            {t('login.subtitle')}
                         </Typography>
                     </View>
 
@@ -126,7 +128,7 @@ export const LoginScreen = ({ navigation }: any) => {
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-                            placeholder="Enter email"
+                            placeholder={t('login.email_placeholder')}
                             placeholderTextColor={theme.textTertiary}
                             value={email}
                             onChangeText={setEmail}
@@ -141,7 +143,7 @@ export const LoginScreen = ({ navigation }: any) => {
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-                            placeholder="Password"
+                            placeholder={t('login.password_placeholder')}
                             placeholderTextColor={theme.textTertiary}
                             value={password}
                             onChangeText={setPassword}
@@ -171,12 +173,12 @@ export const LoginScreen = ({ navigation }: any) => {
                                 {rememberMe && <View style={styles.checkmark} />}
                             </View>
                             <Typography variant="bodySmall" style={styles.rememberText}>
-                                Remember me
+                                {t('login.remember_me')}
                             </Typography>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
                             <Typography variant="bodySmall" style={styles.forgotText}>
-                                Forgot password?
+                                {t('login.forgot_password')}
                             </Typography>
                         </TouchableOpacity>
                     </View>
@@ -194,7 +196,7 @@ export const LoginScreen = ({ navigation }: any) => {
                             style={styles.loginGradient}
                         >
                             <Typography variant="h3" style={styles.loginText}>
-                                {loading ? 'Logging in...' : 'Log In'}
+                                {loading ? t('login.submitting') : t('login.submit')}
                             </Typography>
                         </LinearGradient>
                     </TouchableOpacity>
@@ -203,7 +205,7 @@ export const LoginScreen = ({ navigation }: any) => {
                     <View style={styles.divider}>
                         <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
                         <Typography variant="bodySmall" style={[styles.dividerText, { color: theme.textTertiary }]}>
-                            Sign in with
+                            {t('login.social_login')}
                         </Typography>
                         <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
                     </View>
@@ -224,11 +226,11 @@ export const LoginScreen = ({ navigation }: any) => {
                     {/* Sign Up Link */}
                     <View style={styles.footer}>
                         <Typography variant="bodyMedium" style={[styles.footerText, { color: theme.textSecondary }]}>
-                            Don't have an account?{' '}
+                            {t('login.footer_text')}{' '}
                         </Typography>
                         <TouchableOpacity onPress={() => navigation?.navigate('Register')}>
                             <Typography variant="bodyMedium" style={[styles.signUpText, { color: theme.primary }]}>
-                                Sign Up
+                                {t('login.sign_up')}
                             </Typography>
                         </TouchableOpacity>
                     </View>

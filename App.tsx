@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from './src/theme/ThemeContext';
 import { FixedMainNavigator } from './src/navigation/FixedMainNavigator';
+import './src/core/i18n/i18n';
 import './src/global.css';
 
 export default function App() {

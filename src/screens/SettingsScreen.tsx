@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Platform, Modal, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LANGUAGE_KEY } from '../core/i18n/i18n';
 import {
     ChevronLeft,
     Bell,
@@ -26,11 +29,20 @@ import { useTheme } from '../theme/ThemeContext';
 
 export const SettingsScreen = ({ navigation }: any) => {
     const { theme, isDark } = useTheme();
+    const { t, i18n } = useTranslation();
     const isFocused = useIsFocused();
     const [notifications, setNotifications] = useState(true);
     const [marketing, setMarketing] = useState(false);
     const [biometric, setBiometric] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [showLanguageModal, setShowLanguageModal] = useState(false);
+
+    const languages = [
+        { code: 'en', name: 'English', native: 'English' },
+        { code: 'ml', name: 'Malayalam', native: 'മലയാളം' },
+        { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
+        { code: 'ta', name: 'Tamil', native: 'தமிழ்' }
+    ];
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -71,9 +83,20 @@ export const SettingsScreen = ({ navigation }: any) => {
         }
     };
 
-    const SettingItem = ({ icon: Icon, label, value, onValueChange, onPress, type = 'toggle' }: any) => (
+    const changeLanguage = async (code: string) => {
+        try {
+            await i18n.changeLanguage(code);
+            await AsyncStorage.setItem(LANGUAGE_KEY, code);
+            setShowLanguageModal(false);
+        } catch (error) {
+            console.error('Error changing language:', error);
+            Alert.alert('Error', 'Failed to change language');
+        }
+    };
+
+    const SettingItem = ({ icon: Icon, label, value, onValueChange, onPress, type = 'toggle', rightText }: any) => (
         <TouchableOpacity
-            activeOpacity={type === 'link' ? 0.7 : 1}
+            activeOpacity={type === 'link' || type === 'select' ? 0.7 : 1}
             onPress={onPress}
             style={[styles.settingItem, { borderBottomColor: theme.border }]}
         >
@@ -83,18 +106,27 @@ export const SettingsScreen = ({ navigation }: any) => {
                 </View>
                 <Typography style={[styles.settingLabel, { color: theme.text }]}>{label}</Typography>
             </View>
-            {type === 'toggle' ? (
-                <Switch
-                    value={value}
-                    onValueChange={onValueChange}
-                    trackColor={{ false: '#E2E8F0', true: theme.primary }}
-                    thumbColor="#FFF"
-                />
-            ) : (
-                <ChevronRight size={20} color={theme.textTertiary} />
-            )}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {rightText && (
+                    <Typography style={[styles.rightText, { color: theme.textTertiary, marginRight: 8 }]}>
+                        {rightText}
+                    </Typography>
+                )}
+                {type === 'toggle' ? (
+                    <Switch
+                        value={value}
+                        onValueChange={onValueChange}
+                        trackColor={{ false: '#E2E8F0', true: theme.primary }}
+                        thumbColor="#FFF"
+                    />
+                ) : (
+                    <ChevronRight size={20} color={theme.textTertiary} />
+                )}
+            </View>
         </TouchableOpacity>
     );
+
+    const currentLanguageName = languages.find(l => l.code === i18n.language)?.native || 'English';
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -102,11 +134,24 @@ export const SettingsScreen = ({ navigation }: any) => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#F1F5F9' }]}>
                     <ChevronLeft size={24} color={theme.text} strokeWidth={2.5} />
                 </TouchableOpacity>
-                <Typography variant="h1" style={[styles.title, { color: theme.text }]}>Settings</Typography>
+                <Typography variant="h1" style={[styles.title, { color: theme.text }]}>
+                    {t('settings.title')}
+                </Typography>
             </SafeAreaView>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                <Typography style={[styles.sectionTitle, { color: theme.textSecondary }]}>NOTIFICATIONS</Typography>
+                <Typography style={[styles.sectionTitle, { color: theme.textSecondary }]}>{t('settings.preferences')}</Typography>
+                <View style={[styles.sectionBox, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                    <SettingItem
+                        icon={Globe}
+                        label={t('common.language')}
+                        type="select"
+                        rightText={currentLanguageName}
+                        onPress={() => setShowLanguageModal(true)}
+                    />
+                </View>
+
+                <Typography style={[styles.sectionTitle, { color: theme.textSecondary }]}>{t('settings.notifications')}</Typography>
                 <View style={[styles.sectionBox, { backgroundColor: theme.card, borderColor: theme.border }]}>
                     <SettingItem
                         icon={Bell}
@@ -144,9 +189,9 @@ export const SettingsScreen = ({ navigation }: any) => {
                 <View style={[styles.sectionBox, { backgroundColor: theme.card, borderColor: theme.border }]}>
                     <SettingItem
                         icon={HelpCircle}
-                        label="Help Center"
+                        label={t('settings.help')}
                         type="link"
-                        onPress={() => { }}
+                        onPress={() => navigation.navigate('HelpCenter')}
                     />
                     <View style={[styles.divider, { backgroundColor: theme.border }]} />
                     <SettingItem
@@ -193,6 +238,53 @@ export const SettingsScreen = ({ navigation }: any) => {
                     <Typography style={[styles.footerText, { color: theme.textTertiary, opacity: 0.6 }]}>Made with ❤️ for Vendo Users</Typography>
                 </View>
             </ScrollView>
+
+            <Modal
+                visible={showLanguageModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowLanguageModal(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+                        <Typography variant="h2" style={[styles.modalTitle, { color: theme.text }]}>
+                            {t('settings.language_selection')}
+                        </Typography>
+                        <FlatList
+                            data={languages}
+                            keyExtractor={(item) => item.code}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={[
+                                        styles.languageItem,
+                                        { borderBottomColor: theme.border },
+                                        i18n.language === item.code && { backgroundColor: theme.primary + '10' }
+                                    ]}
+                                    onPress={() => changeLanguage(item.code)}
+                                >
+                                    <View>
+                                        <Typography style={[styles.languageNative, { color: theme.text }]}>
+                                            {item.native}
+                                        </Typography>
+                                        <Typography style={[styles.languageName, { color: theme.textTertiary }]}>
+                                            {item.name}
+                                        </Typography>
+                                    </View>
+                                    {i18n.language === item.code && (
+                                        <View style={[styles.activeDot, { backgroundColor: theme.primary }]} />
+                                    )}
+                                </TouchableOpacity>
+                            )}
+                        />
+                        <TouchableOpacity
+                            style={[styles.closeBtn, { backgroundColor: theme.primary }]}
+                            onPress={() => setShowLanguageModal(false)}
+                        >
+                            <Typography style={styles.closeBtnText}>{t('common.cancel')}</Typography>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -299,4 +391,57 @@ const styles = StyleSheet.create({
         color: '#CBD5E1',
         marginTop: 4,
     },
+    rightText: {
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+    },
+    modalContent: {
+        width: '100%',
+        maxHeight: '80%',
+        borderRadius: 24,
+        padding: 24,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    languageItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+    },
+    languageNative: {
+        fontSize: 18,
+        fontWeight: '600',
+    },
+    languageName: {
+        fontSize: 12,
+    },
+    activeDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+    },
+    closeBtn: {
+        marginTop: 20,
+        padding: 16,
+        borderRadius: 16,
+        alignItems: 'center',
+    },
+    closeBtnText: {
+        color: '#FFF',
+        fontWeight: '700',
+        fontSize: 16,
+    }
 });

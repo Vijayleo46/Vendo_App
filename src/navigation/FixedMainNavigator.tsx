@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { PostTypeSelector } from '../components/post/PostTypeSelector';
 import { Home, Search, Plus, MessageCircle, User } from 'lucide-react-native';
 import { ModernTabBar } from '../components/common/ModernTabBar';
@@ -26,6 +27,7 @@ import { LandingScreen } from '../screens/LandingScreen';
 import { ImageViewerScreen } from '../screens/ImageViewerScreen';
 import { WalletScreen } from '../screens/WalletScreen';
 import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
+import { HelpCenterScreen } from '../screens/HelpCenterScreen';
 
 import { authService } from '../services/authService';
 import { SettingsScreen } from '../screens/SettingsScreen';
@@ -35,6 +37,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
+    const { t } = useTranslation();
     const [isPostModalVisible, setIsPostModalVisible] = useState(false);
 
     const handlePostTypeSelect = (type: 'product' | 'job' | 'service' | 'rent') => {
@@ -49,7 +52,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     const tabs = [
         {
             name: 'HomeTab',
-            label: 'Home',
+            label: t('common.home'),
             icon: Home,
             onPress: () => {
                 console.log('🏠 Navigating to Home');
@@ -58,7 +61,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
         },
         {
             name: 'SearchTab',
-            label: 'Search',
+            label: t('common.search'),
             icon: Search,
             onPress: () => {
                 console.log('🔍 Navigating to Search');
@@ -67,7 +70,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
         },
         {
             name: 'PostTab',
-            label: 'Post',
+            label: t('common.post') || 'Post',
             icon: Plus,
             onPress: () => {
                 console.log('➕ Opening Post Options');
@@ -76,7 +79,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
         },
         {
             name: 'ChatTab',
-            label: 'Chat',
+            label: t('common.chat'),
             icon: MessageCircle,
             onPress: () => {
                 console.log('💬 Navigating to Chat');
@@ -85,7 +88,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
         },
         {
             name: 'ProfileTab',
-            label: 'Profile',
+            label: t('common.profile'),
             icon: User,
             onPress: () => {
                 console.log('👤 Navigating to Profile');
@@ -119,6 +122,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
 };
 
 const TabNavigator = () => {
+    const { t } = useTranslation();
     return (
         <Tab.Navigator
             screenOptions={{
@@ -130,27 +134,27 @@ const TabNavigator = () => {
             <Tab.Screen
                 name="HomeTab"
                 component={HomeScreen}
-                options={{ title: 'Home' }}
+                options={{ title: t('common.home') }}
             />
             <Tab.Screen
                 name="SearchTab"
                 component={SearchScreen}
-                options={{ title: 'Search' }}
+                options={{ title: t('common.search') }}
             />
             <Tab.Screen
                 name="PostTab"
                 component={PostScreen}
-                options={{ title: 'Post' }}
+                options={{ title: t('common.post') || 'Post' }}
             />
             <Tab.Screen
                 name="ChatTab"
                 component={ChatScreen}
-                options={{ title: 'Chat' }}
+                options={{ title: t('common.chat') }}
             />
             <Tab.Screen
                 name="ProfileTab"
                 component={ProfileScreen}
-                options={{ title: 'Profile' }}
+                options={{ title: t('common.profile') }}
             />
         </Tab.Navigator>
     );
@@ -245,6 +249,11 @@ export const FixedMainNavigator = () => {
                         <Stack.Screen
                             name="Wallet"
                             component={WalletScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="HelpCenter"
+                            component={HelpCenterScreen}
                             options={{ headerShown: false }}
                         />
                     </>

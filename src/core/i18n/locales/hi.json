@@ -1,0 +1,29 @@
+{
+    "common": {
+        "search": "खोजें",
+        "settings": "सेटिंग्स",
+        "profile": "प्रोफ़ाइल",
+        "home": "होम",
+        "chat": "चैट",
+        "wallet": "वॉलेट",
+        "wishlist": "विशलिस्ट",
+        "language": "भाषा",
+        "logout": "लॉग आउट",
+        "edit_profile": "प्रोफ़ाइल संपादित करें",
+        "save": "सहेजें",
+        "cancel": "रद्द करें",
+        "location": "स्थान",
+        "price": "कीमत",
+        "apply": "लागू करें"
+    },
+    "settings": {
+        "title": "सेटिंग्स",
+        "account": "खाता",
+        "preferences": "वरीयताएँ",
+        "notifications": "सूचनाएं",
+        "dark_mode": "डार्क मोड",
+        "language_selection": "भाषा चुनें",
+        "about": "वेंडो के बारे में",
+        "help": "सहायता और सुझाव"
+    }
+}

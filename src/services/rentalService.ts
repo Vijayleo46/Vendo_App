@@ -2,7 +2,10 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 
 // Use local IP for real device testing, or 10.0.2.2 for Android emulator
-const BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api';
+const PC_IP = '10.106.156.137'; // Your PC's local IP address
+const BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' :
+    Platform.OS === 'web' ? 'http://localhost:5000/api' :
+        `http://${PC_IP}:5000/api`;
 
 export interface RentalProduct {
     id?: string;
@@ -90,7 +93,3 @@ export const rentalService = {
         }
     }
 };
-阻
-阻
-阻
-阻

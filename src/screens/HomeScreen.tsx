@@ -5,6 +5,7 @@ import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withDelay, with
 import { MotiView, AnimatePresence } from 'moti';
 import { Typography } from '../components/common/Typography';
 import { Search, MapPin, Bell, Home, Smartphone, Car, Briefcase, Settings, Mic, Star, Zap, ChevronLeft, Heart } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { listingService, Listing } from '../services/listingService';
 import { locationService, LocationData } from '../services/locationService';
 import { useIsFocused } from '@react-navigation/native';
@@ -113,6 +114,7 @@ const AnimatedCategoryItem = ({ index, children }: { index: number; children: Re
 
 export const HomeScreen = ({ navigation }: any) => {
   const { theme, isDark } = useTheme();
+  const { t } = useTranslation();
   const isFocused = useIsFocused();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -170,7 +172,7 @@ export const HomeScreen = ({ navigation }: any) => {
     try {
       setLoading(true);
       const locationToUse = coords || userLocation;
-      
+
       if (locationToUse && locationBasedSearch) {
         // Use location-based search
         const nearbyListings = await listingService.searchByLocation(
@@ -280,7 +282,7 @@ export const HomeScreen = ({ navigation }: any) => {
       </View>
       {onSeeAll && (
         <TouchableOpacity onPress={onSeeAll}>
-          <Typography style={{ color: theme.primary, fontSize: 14, fontWeight: '800' }}>See All</Typography>
+          <Typography style={{ color: theme.primary, fontSize: 14, fontWeight: '800' }}>{t('common.see_all') || 'See All'}</Typography>
         </TouchableOpacity>
       )}
     </View>
@@ -332,7 +334,7 @@ export const HomeScreen = ({ navigation }: any) => {
             onLocationSelect={handleLocationSelect}
             showCurrentLocation={true}
           />
-          
+
           {userLocation && locationBasedSearch && (
             <View style={{ marginLeft: 12 }}>
               <Typography style={{ fontSize: 10, color: theme.textSecondary, marginBottom: 4 }}>
@@ -434,7 +436,7 @@ export const HomeScreen = ({ navigation }: any) => {
 
         {recentlyViewed.length > 0 && (
           <View>
-            {renderSectionHeader('Recently Viewed')}
+            {renderSectionHeader(t('common.recently_viewed') || 'Recently Viewed')}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}>
               {recentlyViewed.map((item, index) => (
                 <View key={item.id} style={{ width: 140 }}>
@@ -453,7 +455,7 @@ export const HomeScreen = ({ navigation }: any) => {
 
         {(activeCategory === 'All' ? sections.all : sections.products).length > 0 && (
           <View>
-            {renderSectionHeader(activeCategory === 'All' ? 'Fresh Recommendations' : `Browse ${activeCategory} `)}
+            {renderSectionHeader(activeCategory === 'All' ? (t('common.recommendations') || 'Fresh Recommendations') : `${t('common.browse') || 'Browse'} ${activeCategory} `)}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16 }}>
               {(activeCategory === 'All' ? sections.all : sections.products).map((item, index) => (
                 <View key={item.id} style={{ width: '48%' }}>

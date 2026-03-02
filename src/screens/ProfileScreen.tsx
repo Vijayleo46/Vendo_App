@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
 import Animated, { FadeInUp, FadeInRight } from 'react-native-reanimated';
 import { useTheme } from '../theme/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { Typography } from '../components/common/Typography';
 import { Button } from '../components/common/Button';
 import {
@@ -31,6 +32,7 @@ const { width } = Dimensions.get('window');
 
 export const ProfileScreen = ({ navigation, route }: any) => {
     const { theme, spacing, isDark, toggleTheme } = useTheme();
+    const { t } = useTranslation();
     const isFocused = useIsFocused();
     const user = auth.currentUser;
     const targetUserId = route?.params?.userId || user?.uid;
@@ -141,7 +143,7 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                             </TouchableOpacity>
                         )}
                         <Typography variant="h1" numberOfLines={1} style={{ fontSize: 24, fontWeight: '700', color: theme.text, flex: 1 }}>
-                            {isOwnProfile ? 'Profile' : displayName}
+                            {isOwnProfile ? t('common.profile') : displayName}
                         </Typography>
                     </View>
                     {isOwnProfile && (
@@ -205,17 +207,17 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                 <Animated.View entering={FadeInUp.delay(300)} style={[styles.statsBar, { backgroundColor: theme.surface }]}>
                     <View style={styles.statItem}>
                         <Typography variant="h3" style={{ color: theme.text }}>{userListingCount}</Typography>
-                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>Listings</Typography>
+                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>{t('common.listings') || 'Listings'}</Typography>
                     </View>
                     <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
                     <View style={styles.statItem}>
                         <Typography variant="h3" style={{ color: theme.text }}>{userProfile?.coins || 0}</Typography>
-                        <Typography variant="bodySmall" style={{ color: '#F59E0B', fontWeight: '700' }}>Coins</Typography>
+                        <Typography variant="bodySmall" style={{ color: '#F59E0B', fontWeight: '700' }}>{t('common.coins') || 'Coins'}</Typography>
                     </View>
                     <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
                     <View style={styles.statItem}>
                         <Typography variant="h3" style={{ color: theme.text }}>{salesCount}</Typography>
-                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>Sales</Typography>
+                        <Typography variant="bodySmall" style={{ color: theme.textSecondary }}>{t('common.sales') || 'Sales'}</Typography>
                     </View>
                 </Animated.View>
 
@@ -264,14 +266,14 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                         <MenuItem
                             index={0}
                             icon={<User size={20} color={isDark ? theme.primary : "#1F2937"} />}
-                            label="Edit Profile"
+                            label={t('common.edit_profile')}
                             onPress={() => navigation.navigate('EditProfile')}
                         />
                     )}
                     <MenuItem
                         index={1}
                         icon={<ShoppingBag size={20} color={isDark ? theme.primary : "#1F2937"} />}
-                        label={isOwnProfile ? "My Listings" : `${displayName.split(' ')[0]}'s Listings`}
+                        label={isOwnProfile ? t('common.my_listings') || "My Listings" : `${displayName.split(' ')[0]}'s ${t('common.listings') || 'Listings'}`}
                         onPress={() => navigation.navigate('MyListings', { userId: targetUserId })}
                     />
 
@@ -280,13 +282,13 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                             <MenuItem
                                 index={2}
                                 icon={<Heart size={20} color={isDark ? theme.primary : "#1F2937"} />}
-                                label="Saved Items"
+                                label={t('common.wishlist')}
                                 onPress={() => navigation.navigate('Wishlist')}
                             />
                             <MenuItem
                                 index={3}
                                 icon={<Wallet size={20} color="#F59E0B" />}
-                                label="SuperCoin Wallet"
+                                label={t('common.wallet')}
                                 onPress={() => navigation.navigate('Wallet')}
                             />
                         </>
@@ -299,7 +301,7 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                         <MenuItem
                             index={3}
                             icon={<Moon size={20} color={isDark ? theme.primary : "#1F2937"} />}
-                            label="Dark Mode"
+                            label={t('settings.dark_mode')}
                             rightElement={
                                 <Switch
                                     value={isDark}
@@ -312,7 +314,7 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                         <MenuItem
                             index={4}
                             icon={<ShieldCheck size={20} color={isDark ? theme.primary : "#1F2937"} />}
-                            label="Get Verified (KYC)"
+                            label={t('common.get_verified') || "Get Verified (KYC)"}
                             onPress={() => navigation.navigate('KYC')}
                         />
                         {userProfile?.isAdmin && (
@@ -339,7 +341,7 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                             }}
                         >
                             <LogOut size={20} color="#EF4444" />
-                            <Typography variant="bodyMedium" style={{ marginLeft: 12, fontWeight: '700', color: '#EF4444' }}>Sign Out</Typography>
+                            <Typography variant="bodyMedium" style={{ marginLeft: 12, fontWeight: '700', color: '#EF4444' }}>{t('common.logout')}</Typography>
                         </TouchableOpacity>
                     </Animated.View>
                 )}

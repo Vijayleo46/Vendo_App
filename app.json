@@ -43,7 +43,8 @@
           "locationAlwaysPermission": "Allow Trust Market to use your location to show nearby products and services.",
           "locationWhenInUsePermission": "Allow Trust Market to use your location to show nearby products and services."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "extra": {
       "eas": {
