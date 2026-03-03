@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc, updateDoc, increment, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../core/config/firebase';
 import { coinTransactionService } from './coinTransactionService';
 
@@ -25,10 +25,59 @@ export interface UserProfile {
         marketing: boolean;
         biometric: boolean;
     };
+    privacy?: {
+        profileVisible: boolean;
+        showOnlineStatus: boolean;
+        showLastSeen: boolean;
+        allowMessagesFromNonFollowers: boolean;
+        readReceipts: boolean;
+        showPhoneNumber: boolean;
+        blockedUsers: string[];
+        twoStepEnabled: boolean;
+    };
     isAdmin?: boolean;
 }
 
 export const userService = {
+    // ... existing methods
+
+    async blockUser(currentUserId: string, targetUserId: string) {
+        const userRef = doc(db, 'users', currentUserId);
+        await updateDoc(userRef, {
+            'privacy.blockedUsers': arrayUnion(targetUserId)
+        });
+    },
+
+    async unblockUser(currentUserId: string, targetUserId: string) {
+        const userRef = doc(db, 'users', currentUserId);
+        await updateDoc(userRef, {
+            'privacy.blockedUsers': arrayRemove(targetUserId)
+        });
+    },
+
+    async updateTwoStepStatus(userId: string, enabled: boolean) {
+        const userRef = doc(db, 'users', userId);
+        await updateDoc(userRef, {
+            'privacy.twoStepEnabled': enabled
+        });
+    },
+
+    async requestAccountData(userId: string, email: string) {
+        try {
+            const requestRef = collection(db, 'dataRequests');
+            await setDoc(doc(requestRef), {
+                userId,
+                email,
+                requestedAt: new Date(),
+                status: 'pending'
+            });
+            console.log(`✅ Data request logged for ${userId}`);
+            return true;
+        } catch (error) {
+            console.error('Error logging data request:', error);
+            throw error;
+        }
+    },
     // Get total user count
     getUserCount: async () => {
         try {
@@ -89,6 +138,18 @@ export const userService = {
             console.log('✅ Settings saved to backend');
         } catch (error) {
             console.error("Error updating settings: ", error);
+            throw error;
+        }
+    },
+
+    // Update privacy settings
+    updatePrivacySettings: async (uid: string, privacy: UserProfile['privacy']) => {
+        try {
+            const userRef = doc(db, 'users', uid);
+            await setDoc(userRef, { privacy }, { merge: true });
+            console.log('✅ Privacy settings saved to backend');
+        } catch (error) {
+            console.error("Error updating privacy settings: ", error);
             throw error;
         }
     },

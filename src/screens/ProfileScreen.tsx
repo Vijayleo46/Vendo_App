@@ -21,7 +21,8 @@ import {
     User,
     Star,
     Grid,
-    Wallet
+    Wallet,
+    UserX
 } from 'lucide-react-native';
 import { authService } from '../services/authService';
 import { auth } from '../core/config/firebase';
@@ -31,6 +32,7 @@ import { userService } from '../services/userService';
 const { width } = Dimensions.get('window');
 
 export const ProfileScreen = ({ navigation, route }: any) => {
+    // ... remaining imports/params
     const { theme, spacing, isDark, toggleTheme } = useTheme();
     const { t } = useTranslation();
     const isFocused = useIsFocused();
@@ -42,14 +44,16 @@ export const ProfileScreen = ({ navigation, route }: any) => {
     const [salesCount, setSalesCount] = useState(0);
     const [userProfile, setUserProfile] = useState<any>(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [isBlocked, setIsBlocked] = useState(false);
 
     const fetchUserData = async () => {
         if (!user) return;
         try {
             console.log('=== SYNCING DATA WITH BACKEND ===');
-            const [listings, profile] = await Promise.all([
+            const [listings, profile, myProfile] = await Promise.all([
                 listingService.getListingsByUser(targetUserId),
-                userService.getProfile(targetUserId)
+                userService.getProfile(targetUserId),
+                userService.getProfile(user.uid)
             ]);
 
             setUserListingCount(listings.length);
@@ -58,11 +62,47 @@ export const ProfileScreen = ({ navigation, route }: any) => {
 
             if (profile) {
                 setUserProfile(profile);
-                console.log('✅ Local Cache Updated');
+            }
+
+            if (myProfile?.privacy?.blockedUsers?.includes(targetUserId)) {
+                setIsBlocked(true);
+            } else {
+                setIsBlocked(false);
             }
         } catch (error) {
             console.error('❌ Sync Error:', error);
         }
+    };
+
+    const handleBlockUser = () => {
+        if (!user || isOwnProfile) return;
+
+        Alert.alert(
+            isBlocked ? 'Unblock User' : 'Block User',
+            `Are you sure you want to ${isBlocked ? 'unblock' : 'block'} ${displayName}?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: isBlocked ? 'Unblock' : 'Block',
+                    style: isBlocked ? 'default' : 'destructive',
+                    onPress: async () => {
+                        try {
+                            if (isBlocked) {
+                                await userService.unblockUser(user.uid, targetUserId);
+                                setIsBlocked(false);
+                                Alert.alert('Success', 'User unblocked.');
+                            } else {
+                                await userService.blockUser(user.uid, targetUserId);
+                                setIsBlocked(true);
+                                Alert.alert('Blocked', 'User has been blocked. You will no longer see their listings.');
+                            }
+                        } catch (e) {
+                            Alert.alert('Error', 'Action failed.');
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     useEffect(() => {
@@ -81,8 +121,8 @@ export const ProfileScreen = ({ navigation, route }: any) => {
     const email = userProfile?.email || (isOwnProfile ? user?.email : null) || '';
     const photoURL = userProfile?.photoURL || (isOwnProfile ? user?.photoURL : null) || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=200&auto=format&fit=crop';
     const phone = userProfile?.phone || '';
-    const location = userProfile?.location || '';
-    const bio = userProfile?.bio || '';
+    const locationValue = userProfile?.location || '';
+    const bioValue = userProfile?.bio || '';
 
     const handleSyncCoins = async () => {
         if (!targetUserId) return;
@@ -105,7 +145,10 @@ export const ProfileScreen = ({ navigation, route }: any) => {
         }
     };
 
+    // ... remaining helper functions
+
     const MenuItem = ({ icon, label, rightElement, onPress, index }: any) => (
+        // ... menuItem implementation
         <Animated.View entering={FadeInRight.delay(500 + index * 100)}>
             <TouchableOpacity
                 style={[styles.menuItem, { backgroundColor: theme.surface }]}
@@ -146,6 +189,14 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                             {isOwnProfile ? t('common.profile') : displayName}
                         </Typography>
                     </View>
+                    {!isOwnProfile && (
+                        <TouchableOpacity
+                            style={[styles.settingsBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#FEE2E2' }]}
+                            onPress={handleBlockUser}
+                        >
+                            <UserX size={22} color={isBlocked ? theme.textTertiary : "#EF4444"} strokeWidth={2} />
+                        </TouchableOpacity>
+                    )}
                     {isOwnProfile && (
                         <TouchableOpacity
                             style={[styles.settingsBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#FFF' }]}
@@ -188,18 +239,32 @@ export const ProfileScreen = ({ navigation, route }: any) => {
                     </TouchableOpacity>
 
                     <View style={styles.userInfo}>
-                        <Typography variant="h2" style={{ textAlign: 'center', color: theme.text }}>{displayName}</Typography>
-                        <Typography variant="bodySmall" color={theme.textSecondary} style={{ textAlign: 'center' }}>{email}</Typography>
-                        {location && (
+                        <Typography variant="h2" style={{ textAlign: 'center', color: theme.text }}>
+                            {(!isOwnProfile && userProfile?.privacy?.profileVisible === false) ? 'Private User' : displayName}
+                        </Typography>
+                        <Typography variant="bodySmall" color={theme.textSecondary} style={{ textAlign: 'center' }}>
+                            {(!isOwnProfile && userProfile?.privacy?.profileVisible === false) ? '••••@••••.•••' : email}
+                        </Typography>
+                        {locationValue && (isOwnProfile || userProfile?.privacy?.profileVisible !== false) ? (
                             <Typography variant="bodySmall" style={{ textAlign: 'center', marginTop: 4, color: theme.primary }}>
-                                📍 {location}
+                                📍 {locationValue as string}
                             </Typography>
-                        )}
-                        {bio && (
+                        ) : null}
+                        {bioValue && (isOwnProfile || userProfile?.privacy?.profileVisible !== false) ? (
                             <Typography variant="bodySmall" style={{ textAlign: 'center', marginTop: 8, paddingHorizontal: 20, color: theme.textSecondary }}>
-                                {bio}
+                                {bioValue as string}
                             </Typography>
-                        )}
+                        ) : null}
+                        {!isOwnProfile && userProfile?.privacy?.showPhoneNumber && phone ? (
+                            <Typography variant="bodySmall" style={{ textAlign: 'center', marginTop: 8, fontWeight: '700', color: theme.primary }}>
+                                📞 {phone}
+                            </Typography>
+                        ) : null}
+                        {isOwnProfile && phone ? (
+                            <Typography variant="bodySmall" style={{ textAlign: 'center', marginTop: 8, color: theme.textTertiary }}>
+                                📞 {phone} (Private)
+                            </Typography>
+                        ) : null}
                     </View>
                 </Animated.View>
 

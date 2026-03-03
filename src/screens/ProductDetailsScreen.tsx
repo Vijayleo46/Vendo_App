@@ -15,6 +15,7 @@ import {
     MessageCircle,
     ChevronRight,
     Zap,
+    UserX,
 } from 'lucide-react-native';
 import { listingService } from '../services/listingService';
 import { chatService } from '../services/chatService';
@@ -39,6 +40,8 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
     const [loading, setLoading] = useState(!product);
     const [chatLoading, setChatLoading] = useState(false);
     const [userCoins, setUserCoins] = useState(0);
+    const [sellerProfile, setSellerProfile] = useState<any>(null);
+    const [isBlocked, setIsBlocked] = useState(false);
 
     // Fetch fresh data from backend
     useEffect(() => {
@@ -86,7 +89,28 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
             }
         };
         fetchCoins();
-    }, [checkWishlist]);
+
+        const checkSellerPrivacy = async () => {
+            if (item?.sellerId) {
+                try {
+                    const profile = await userService.getProfile(item.sellerId);
+                    setSellerProfile(profile);
+                } catch (e) { }
+            }
+        };
+        checkSellerPrivacy();
+
+        const checkBlockedStatus = async () => {
+            const user = auth.currentUser;
+            if (user && item?.sellerId) {
+                try {
+                    const profile = await userService.getProfile(user.uid);
+                    setIsBlocked(profile?.privacy?.blockedUsers?.includes(item.sellerId) || false);
+                } catch (e) { }
+            }
+        };
+        checkBlockedStatus();
+    }, [checkWishlist, item?.sellerId]);
 
     const toggleWishlist = async () => {
         const user = auth.currentUser;
@@ -167,6 +191,46 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
         } finally {
             setChatLoading(false);
         }
+    };
+
+    const handleBlockUser = () => {
+        const user = auth.currentUser;
+        if (!user) {
+            Alert.alert('Login Required', 'Please login to block users.');
+            return;
+        }
+
+        if (user.uid === item.sellerId) {
+            Alert.alert('Error', "You can't block yourself.");
+            return;
+        }
+
+        Alert.alert(
+            isBlocked ? 'Unblock User' : 'Block User',
+            `Are you sure you want to ${isBlocked ? 'unblock' : 'block'} ${sellerDisplayName}?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: isBlocked ? 'Unblock' : 'Block',
+                    style: isBlocked ? 'default' : 'destructive',
+                    onPress: async () => {
+                        try {
+                            if (isBlocked) {
+                                await userService.unblockUser(user.uid, item.sellerId);
+                                setIsBlocked(false);
+                                Alert.alert('Success', 'User unblocked.');
+                            } else {
+                                await userService.blockUser(user.uid, item.sellerId);
+                                setIsBlocked(true);
+                                Alert.alert('Blocked', 'User has been blocked. You will no longer see their listings.');
+                            }
+                        } catch (e) {
+                            Alert.alert('Error', 'Action failed.');
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const handleReportListing = () => {
@@ -454,7 +518,10 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                     </View>
 
                     <Typography style={[styles.sectionLabel, { color: theme.text }]}>Sold By</Typography>
-                    <TouchableOpacity style={[styles.sellerRow, { backgroundColor: theme.surface }]}>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('UserProfile', { userId: item.sellerId })}
+                        style={[styles.sellerRow, { backgroundColor: theme.surface }]}
+                    >
                         {item.sellerAvatar ? (
                             <Image source={{ uri: item.sellerAvatar }} style={styles.avatar} />
                         ) : (
@@ -469,6 +536,11 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                                 <Typography style={styles.sellerRating}>{item.rating || 'New Seller'}</Typography>
                             </View>
                             <Typography style={[styles.memberSince, { color: theme.textSecondary }]}>Member since 2024</Typography>
+                            {sellerProfile?.privacy?.showPhoneNumber && (item.contactPhone || sellerProfile.phone) ? (
+                                <Typography style={[styles.memberSince, { color: theme.primary, marginTop: 4, fontWeight: '700' }]}>
+                                    📞 {item.contactPhone || sellerProfile.phone}
+                                </Typography>
+                            ) : null}
                         </View>
                         <ChevronRight size={20} color="#94A3B8" />
                     </TouchableOpacity>
@@ -503,14 +575,28 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                     </View>
                 </View>
 
-                {/* 7. Report Button (New Feature) */}
-                <TouchableOpacity
-                    onPress={handleReportListing}
-                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 20, marginBottom: 80, gap: 8 }}
-                >
-                    <Flag size={16} color="#EF4444" />
-                    <Typography style={{ fontSize: 14, fontWeight: '600', color: '#EF4444' }}>Report this ad</Typography>
-                </TouchableOpacity>
+                {/* 7. Action Buttons (Report/Block) */}
+                <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 24, paddingVertical: 20, marginBottom: 80 }}>
+                    <TouchableOpacity
+                        onPress={handleReportListing}
+                        style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+                    >
+                        <Flag size={16} color="#EF4444" />
+                        <Typography style={{ fontSize: 14, fontWeight: '600', color: '#EF4444' }}>Report this ad</Typography>
+                    </TouchableOpacity>
+
+                    <View style={{ width: 1, height: 16, backgroundColor: theme.border, alignSelf: 'center' }} />
+
+                    <TouchableOpacity
+                        onPress={handleBlockUser}
+                        style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+                    >
+                        <UserX size={16} color="#EF4444" />
+                        <Typography style={{ fontSize: 14, fontWeight: '600', color: '#EF4444' }}>
+                            {isBlocked ? 'Unblock user' : 'Block user'}
+                        </Typography>
+                    </TouchableOpacity>
+                </View>
 
             </ScrollView>
 

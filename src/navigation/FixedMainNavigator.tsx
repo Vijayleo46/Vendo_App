@@ -28,6 +28,10 @@ import { ImageViewerScreen } from '../screens/ImageViewerScreen';
 import { WalletScreen } from '../screens/WalletScreen';
 import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
 import { HelpCenterScreen } from '../screens/HelpCenterScreen';
+import { PrivacySettingsScreen } from '../screens/PrivacySettingsScreen';
+import { BlockedUsersScreen } from '../screens/BlockedUsersScreen';
+import { TwoStepVerificationScreen } from '../screens/TwoStepVerificationScreen';
+import { AboutScreen } from '../screens/AboutScreen';
 
 import { authService } from '../services/authService';
 import { SettingsScreen } from '../screens/SettingsScreen';
@@ -254,6 +258,26 @@ export const FixedMainNavigator = () => {
                         <Stack.Screen
                             name="HelpCenter"
                             component={HelpCenterScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="PrivacySettings"
+                            component={PrivacySettingsScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="BlockedUsers"
+                            component={BlockedUsersScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="TwoStepVerification"
+                            component={TwoStepVerificationScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="About"
+                            component={AboutScreen}
                             options={{ headerShown: false }}
                         />
                     </>

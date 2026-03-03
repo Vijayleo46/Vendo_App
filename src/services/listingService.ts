@@ -79,6 +79,23 @@ export const listingService = {
         return 'products'; // services and products go to products for now
     },
 
+    // Helper to filter listings from blocked users
+    filterBlockedListings: async (listings: Listing[]) => {
+        const user = auth.currentUser;
+        if (!user) return listings;
+
+        try {
+            const profile = await userService.getProfile(user.uid);
+            const blockedUsers = profile?.privacy?.blockedUsers || [];
+            if (blockedUsers.length === 0) return listings;
+
+            return listings.filter(l => !blockedUsers.includes(l.sellerId));
+        } catch (e) {
+            console.error('[SERVICE] Error filtering blocked listings:', e);
+            return listings;
+        }
+    },
+
     // Create a new listing
     createListing: async (listing: Omit<Listing, 'id' | 'createdAt'>) => {
         console.log(`[SERVICE] 📝 Creating ${listing.type}: "${listing.title}"`);
@@ -154,7 +171,7 @@ export const listingService = {
             } as any as Listing));
 
             // Merge and sort: Boosted first, then by createdAt
-            return [...products, ...jobs, ...rentals]
+            const merged = [...products, ...jobs, ...rentals]
                 .sort((a, b) => {
                     // Boosted items first
                     if (a.isBoosted && !b.isBoosted) return -1;
@@ -166,6 +183,8 @@ export const listingService = {
                     return timeB - timeA;
                 })
                 .slice(0, listingLimit);
+
+            return await listingService.filterBlockedListings(merged);
         } catch (error) {
             console.error("Error fetching featured listings: ", error);
             return [];
@@ -182,7 +201,8 @@ export const listingService = {
                 orderBy('createdAt', 'desc')
             );
             const querySnapshot = await getDocs(q);
-            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing));
+            const listings = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing));
+            return await listingService.filterBlockedListings(listings);
         } catch (error) {
             console.error("Error fetching category listings: ", error);
             throw error;
@@ -251,7 +271,7 @@ export const listingService = {
                 return timeB - timeA;
             });
 
-            return results;
+            return await listingService.filterBlockedListings(results);
         } catch (error) {
             console.error("Error searching listings: ", error);
             throw error;
@@ -298,10 +318,12 @@ export const listingService = {
 
             const [pSnap, jSnap] = await Promise.all([getDocs(pQuery), getDocs(jQuery)]);
 
-            return [
+            const listings = [
                 ...pSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing)),
                 ...jSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Listing))
             ].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, listingLimit);
+
+            return await listingService.filterBlockedListings(listings);
         } catch (error) {
             console.error("Error fetching trending listings: ", error);
             return listingService.getFeaturedListings(listingLimit);
@@ -318,10 +340,12 @@ export const listingService = {
                 limit(listingLimit + 1)
             );
             const querySnapshot = await getDocs(q);
-            return querySnapshot.docs
+            const listings = querySnapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() } as Listing))
                 .filter(item => item.id !== currentId)
                 .slice(0, listingLimit);
+
+            return await listingService.filterBlockedListings(listings);
         } catch (error) {
             console.error("Error fetching similar listings: ", error);
             return [];
@@ -709,10 +733,10 @@ export const listingService = {
     ) => {
         try {
             console.log(`[SERVICE] 📍 Searching within ${radiusKm}km of user location`);
-            
+
             // Get all listings first
             const allListings = await listingService.getFeaturedListings(200);
-            
+
             // Filter by location if listings have coordinates
             const nearbyListings = allListings.filter(listing => {
                 if (!listing.coordinates) {
@@ -725,29 +749,29 @@ export const listingService = {
                     }
                     return false;
                 }
-                
+
                 // Calculate distance using coordinates
                 const distance = listingService.calculateDistance(
                     userLocation,
                     listing.coordinates
                 );
-                
+
                 // Add distance to listing for display
                 listing.distance = distance;
-                
+
                 return distance <= radiusKm;
             });
 
             // Apply additional filters
             let filteredListings = nearbyListings;
-            
+
             if (category && category !== 'All') {
                 filteredListings = filteredListings.filter(l => l.category === category);
             }
-            
+
             if (searchQuery) {
                 const queryLower = searchQuery.toLowerCase();
-                filteredListings = filteredListings.filter(l => 
+                filteredListings = filteredListings.filter(l =>
                     l.title.toLowerCase().includes(queryLower) ||
                     l.description.toLowerCase().includes(queryLower)
                 );
@@ -772,17 +796,17 @@ export const listingService = {
         const R = 6371; // Earth's radius in kilometers
         const dLat = listingService.toRadians(coords2.latitude - coords1.latitude);
         const dLon = listingService.toRadians(coords2.longitude - coords1.longitude);
-        
+
         const a =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(listingService.toRadians(coords1.latitude)) *
-                Math.cos(listingService.toRadians(coords2.latitude)) *
-                Math.sin(dLon / 2) *
-                Math.sin(dLon / 2);
-        
+            Math.cos(listingService.toRadians(coords2.latitude)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c;
-        
+
         return Math.round(distance * 100) / 100; // Round to 2 decimal places
     },
 
@@ -798,7 +822,7 @@ export const listingService = {
     ) => {
         try {
             const allListings = await listingService.getFeaturedListings(100);
-            
+
             // Add distance to each listing and filter out those without location
             const listingsWithDistance = allListings
                 .map(listing => {
@@ -834,14 +858,14 @@ export const listingService = {
         try {
             const collectionName = listingService.getCollectionName(type);
             const listingRef = doc(db, collectionName, listingId);
-            
+
             await updateDoc(listingRef, {
                 coordinates,
                 city,
                 state,
                 country
             });
-            
+
             console.log(`[SERVICE] ✅ Updated location for listing ${listingId}`);
         } catch (error) {
             console.error("Error updating listing location: ", error);

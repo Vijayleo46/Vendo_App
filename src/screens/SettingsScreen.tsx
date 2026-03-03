@@ -180,7 +180,7 @@ export const SettingsScreen = ({ navigation }: any) => {
                         icon={Shield}
                         label="Account Privacy"
                         type="link"
-                        onPress={() => { }}
+                        onPress={() => navigation.navigate('PrivacySettings')}
                     />
                     <View style={[styles.divider, { backgroundColor: theme.border }]} />
                     <SettingItem
@@ -204,7 +204,7 @@ export const SettingsScreen = ({ navigation }: any) => {
                         icon={Info}
                         label="About Vendo"
                         type="link"
-                        onPress={() => { }}
+                        onPress={() => navigation.navigate('About')}
                     />
                     <View style={[styles.divider, { backgroundColor: theme.border }]} />
                     <SettingItem
