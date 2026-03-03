@@ -7,6 +7,12 @@ import en from './locales/en.json';
 import ml from './locales/ml.json';
 import hi from './locales/hi.json';
 import ta from './locales/ta.json';
+import es from './locales/es.json';
+import fr from './locales/fr.json';
+import ar from './locales/ar.json';
+import zh from './locales/zh.json';
+import ja from './locales/ja.json';
+import ru from './locales/ru.json';
 
 const LANGUAGE_KEY = '@app_language';
 
@@ -15,6 +21,12 @@ const resources = {
     ml: { translation: ml },
     hi: { translation: hi },
     ta: { translation: ta },
+    es: { translation: es },
+    fr: { translation: fr },
+    ar: { translation: ar },
+    zh: { translation: zh },
+    ja: { translation: ja },
+    ru: { translation: ru },
 };
 
 const initI18n = async () => {

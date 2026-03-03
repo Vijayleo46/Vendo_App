@@ -1,0 +1,53 @@
+{
+    "common": {
+        "search": "Buscar",
+        "settings": "Ajustes",
+        "profile": "Perfil",
+        "home": "Inicio",
+        "chat": "Chat",
+        "wallet": "Billetera SuperCoin",
+        "wishlist": "Artículos guardados",
+        "language": "Idioma",
+        "logout": "Cerrar sesión",
+        "edit_profile": "Editar perfil",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "location": "Ubicación",
+        "price": "Precio",
+        "apply": "Aplicar",
+        "see_all": "Ver todo",
+        "recently_viewed": "Visto recientemente",
+        "recommendations": "Recomendaciones nuevas",
+        "browse": "Explorar",
+        "listings": "Anuncios",
+        "my_listings": "Mis anuncios",
+        "coins": "Monedas",
+        "sales": "Ventas",
+        "get_verified": "Verificarse (KYC)",
+        "post": "Publicar"
+    },
+    "settings": {
+        "title": "Ajustes",
+        "account": "Cuenta",
+        "preferences": "Preferencias",
+        "notifications": "Notificaciones",
+        "dark_mode": "Modo oscuro",
+        "language_selection": "Seleccionar idioma",
+        "about": "Acerca de Vendo",
+        "help": "Ayuda y soporte"
+    },
+    "help": {
+        "title": "Centro de ayuda",
+        "subtitle": "¿Cómo podemos ayudarte hoy?",
+        "contact_us": "Contáctanos",
+        "whatsapp": "Chatea en WhatsApp",
+        "email": "Enviar un correo electrónico",
+        "call": "Llamar a soporte",
+        "faq": "Preguntas frecuentes",
+        "faq_1_q": "¿Cómo publicar un anuncio?",
+        "faq_1_a": "Haz clic en la pestaña 'Publicar' en el menú inferior y completa los detalles de tu artículo.",
+        "faq_2_q": "¿Mis datos están seguros?",
+        "faq_2_a": "Sí, utilizamos cifrado estándar de la industria para proteger tu información personal.",
+        "support_text": "Nuestro equipo de soporte está disponible las 24 horas, los 7 días de la semana para ayudarte con cualquier consulta o problema."
+    }
+}

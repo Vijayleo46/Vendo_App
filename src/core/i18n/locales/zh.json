@@ -1,0 +1,53 @@
+{
+    "common": {
+        "search": "搜索",
+        "settings": "设置",
+        "profile": "个人资料",
+        "home": "首页",
+        "chat": "聊天",
+        "wallet": "超级币钱包",
+        "wishlist": "已收藏项目",
+        "language": "语言",
+        "logout": "退出登录",
+        "edit_profile": "编辑个人资料",
+        "save": "保存",
+        "cancel": "取消",
+        "location": "地点",
+        "price": "价格",
+        "apply": "应用",
+        "see_all": "查看全部",
+        "recently_viewed": "最近浏览",
+        "recommendations": "新鲜推荐",
+        "browse": "浏览",
+        "listings": "列表",
+        "my_listings": "我的列表",
+        "coins": "金币",
+        "sales": "销售",
+        "get_verified": "获取验证 (KYC)",
+        "post": "发布"
+    },
+    "settings": {
+        "title": "设置",
+        "account": "账户",
+        "preferences": "偏好设置",
+        "notifications": "通知",
+        "dark_mode": "深色模式",
+        "language_selection": "选择语言",
+        "about": "关于 Vendo",
+        "help": "帮助与支持"
+    },
+    "help": {
+        "title": "帮助中心",
+        "subtitle": "我们今天能帮您什么？",
+        "contact_us": "联系我们",
+        "whatsapp": "在 WhatsApp 上聊天",
+        "email": "发送电子邮件",
+        "call": "拨打技术支持",
+        "faq": "常见问题",
+        "faq_1_q": "如何发布广告？",
+        "faq_1_a": "点击底部菜单中的“发布”选项卡，并填写您的物品详情。",
+        "faq_2_q": "我的数据安全吗？",
+        "faq_2_a": "是的，我们使用行业标准的加密技术来保护您的个人信息。",
+        "support_text": "我们的支持团队 24/7 全天候为您提供帮助，解决任何疑问或问题。"
+    }
+}

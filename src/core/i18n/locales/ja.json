@@ -1,0 +1,53 @@
+{
+    "common": {
+        "search": "検索",
+        "settings": "設定",
+        "profile": "プロフィール",
+        "home": "ホーム",
+        "chat": "チャット",
+        "wallet": "スーパーコインウォレット",
+        "wishlist": "保存済み",
+        "language": "言語",
+        "logout": "ログアウト",
+        "edit_profile": "プロフィールを編集",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "location": "場所",
+        "price": "価格",
+        "apply": "適用",
+        "see_all": "すべて見る",
+        "recently_viewed": "最近チェックした項目",
+        "recommendations": "おすすめ",
+        "browse": "閲覧",
+        "listings": "出品一覧",
+        "my_listings": "自分の出品",
+        "coins": "コイン",
+        "sales": "売上",
+        "get_verified": "本人確認 (KYC)",
+        "post": "出品する"
+    },
+    "settings": {
+        "title": "設定",
+        "account": "アカウント",
+        "preferences": "設定",
+        "notifications": "通知",
+        "dark_mode": "ダークモード",
+        "language_selection": "言語を選択",
+        "about": "Vendoについて",
+        "help": "ヘルプとサポート"
+    },
+    "help": {
+        "title": "ヘルプセンター",
+        "subtitle": "どのようなお手伝いが必要ですか？",
+        "contact_us": "お問い合わせ",
+        "whatsapp": "WhatsAppでチャット",
+        "email": "メールを送信",
+        "call": "サポートに電話",
+        "faq": "よくある質問",
+        "faq_1_q": "広告を掲載するにはどうすればよいですか？",
+        "faq_1_a": "下のメニューの「出品」タブをクリックして、アイテムの詳細を入力してください。",
+        "faq_2_q": "データは安全ですか？",
+        "faq_2_a": "はい、業界標準の暗号化を使用して個人情報を保護しています。",
+        "support_text": "サポートチームが24時間体制で、ご質問や問題に対応いたします。"
+    }
+}

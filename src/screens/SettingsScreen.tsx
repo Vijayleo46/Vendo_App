@@ -41,7 +41,13 @@ export const SettingsScreen = ({ navigation }: any) => {
         { code: 'en', name: 'English', native: 'English' },
         { code: 'ml', name: 'Malayalam', native: 'മലയാളം' },
         { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
-        { code: 'ta', name: 'Tamil', native: 'தமிழ்' }
+        { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
+        { code: 'es', name: 'Spanish', native: 'Español' },
+        { code: 'fr', name: 'French', native: 'Français' },
+        { code: 'ar', name: 'Arabic', native: 'العربية' },
+        { code: 'zh', name: 'Chinese', native: '中文' },
+        { code: 'ja', name: 'Japanese', native: '日本語' },
+        { code: 'ru', name: 'Russian', native: 'Русский' }
     ];
 
     useEffect(() => {

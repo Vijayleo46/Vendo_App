@@ -1,0 +1,53 @@
+{
+    "common": {
+        "search": "Rechercher",
+        "settings": "Paramètres",
+        "profile": "Profil",
+        "home": "Accueil",
+        "chat": "Chat",
+        "wallet": "Portefeuille SuperCoin",
+        "wishlist": "Articles enregistrés",
+        "language": "Langue",
+        "logout": "Se déconnecter",
+        "edit_profile": "Modifier le profil",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "location": "Emplacement",
+        "price": "Prix",
+        "apply": "Appliquer",
+        "see_all": "Tout voir",
+        "recently_viewed": "Vus récemment",
+        "recommendations": "Nouvelles recommandations",
+        "browse": "Parcourir",
+        "listings": "Annonces",
+        "my_listings": "Mes annonces",
+        "coins": "Pièces",
+        "sales": "Ventes",
+        "get_verified": "Se faire vérifier (KYC)",
+        "post": "Publier"
+    },
+    "settings": {
+        "title": "Paramètres",
+        "account": "Compte",
+        "preferences": "Préférences",
+        "notifications": "Notifications",
+        "dark_mode": "Mode sombre",
+        "language_selection": "Choisir la langue",
+        "about": "À propos de Vendo",
+        "help": "Aide et support"
+    },
+    "help": {
+        "title": "Centre d'aide",
+        "subtitle": "Comment pouvons-nous vous aider aujourd'hui ?",
+        "contact_us": "Contactez-nous",
+        "whatsapp": "Chatter sur WhatsApp",
+        "email": "Envoyer un e-mail",
+        "call": "Appeler le support",
+        "faq": "Foire aux questions",
+        "faq_1_q": "Comment publier une annonce ?",
+        "faq_1_a": "Cliquez sur l'onglet 'Publier' dans le menu du bas et remplissez les détails de votre article.",
+        "faq_2_q": "Mes données sont-elles en sécurité ?",
+        "faq_2_a": "Oui, nous utilisons un cryptage standard de l'industrie pour protéger vos informations personnelles.",
+        "support_text": "Notre équipe de support est disponible 24h/24 et 7j/7 pour vous aider avec toutes vos questions ou problèmes."
+    }
+}
