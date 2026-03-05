@@ -3,9 +3,9 @@ import { Platform } from 'react-native';
 
 // Use local IP for real device testing, or 10.0.2.2 for Android emulator
 const PC_IP = '10.106.156.137'; // Your PC's local IP address
-const BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' :
-    Platform.OS === 'web' ? 'http://localhost:5000/api' :
-        `http://${PC_IP}:5000/api`;
+const BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5001/api' :
+    Platform.OS === 'web' ? 'http://localhost:5001/api' :
+        `http://${PC_IP}:5001/api`;
 
 export interface RentalProduct {
     id?: string;

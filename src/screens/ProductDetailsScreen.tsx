@@ -3,21 +3,9 @@ import { View, Image, TouchableOpacity, Dimensions, ScrollView, Alert, StatusBar
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView } from 'moti';
 import { Typography } from '../components/common/Typography';
-import {
-    Heart,
-    Share2,
-    MapPin,
-    ArrowLeft,
-    Star,
-    Calendar,
-    ShieldCheck,
-    Flag,
-    MessageCircle,
-    ChevronRight,
-    Zap,
-    UserX,
-} from 'lucide-react-native';
+import { Share2, Heart, ArrowLeft, MapPin, Star, MessageSquare, MessageCircle, Info, Shield, Clock, Calendar, ShieldCheck, Flag, ChevronRight, Zap, UserX } from 'lucide-react-native';
 import { listingService } from '../services/listingService';
+import { rentalService } from '../services/rentalService';
 import { chatService } from '../services/chatService';
 import { auth, db } from '../core/config/firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -111,6 +99,74 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
         };
         checkBlockedStatus();
     }, [checkWishlist, item?.sellerId]);
+
+    const handleChat = async () => {
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                Alert.alert("Login Required", "Please login to chat with the seller.");
+                return;
+            }
+
+            const chatId = await chatService.getOrCreateChat(
+                user.uid,
+                item.sellerId,
+                user.displayName || 'Buyer',
+                item.sellerName || 'Seller',
+                item.type || 'product',
+                item.id,
+                item.title
+            );
+
+            navigation.navigate('ChatRoom', {
+                chatId,
+                otherName: item.sellerName || 'Seller',
+                otherAvatar: item.sellerAvatar || 'https://i.pravatar.cc/150?u=' + item.sellerId,
+                productImage: item.images?.[0],
+                productPrice: item.price,
+                productTitle: item.title,
+                productId: item.id
+            });
+        } catch (error) {
+            console.error('Error opening chat:', error);
+            Alert.alert("Error", "Could not open chat room.");
+        }
+    };
+
+    const handleBookNow = async () => {
+        Alert.alert(
+            "Book Rental",
+            `Do you want to request a booking for "${item.title}" at ₹${item.price}/day?`,
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Book Now",
+                    onPress: async () => {
+                        try {
+                            const user = auth.currentUser;
+                            if (!user) return;
+
+                            // Start date today, end date tomorrow (simplified for now)
+                            const startDate = new Date();
+                            const endDate = new Date();
+                            endDate.setDate(startDate.getDate() + (item.minimumRentalDays || 1));
+
+                            await rentalService.bookProduct({
+                                productId: item.id,
+                                renterId: user.uid,
+                                startDate,
+                                endDate
+                            });
+
+                            Alert.alert("Success", "Booking request sent! The owner will contact you in chat.");
+                        } catch (error) {
+                            Alert.alert("Error", "Failed to send booking request.");
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     const toggleWishlist = async () => {
         const user = auth.currentUser;
@@ -370,32 +426,85 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
 
                     <Typography style={[styles.titleText, { color: theme.text }]}>{item.title}</Typography>
 
+
+
                     {/* Redeem Coins Offer */}
-                    {userCoins > 0 && (
-                        <View style={styles.discountCard}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
-                                    <Star size={14} color="#F59E0B" fill="#F59E0B" />
-                                    <Typography style={styles.discountTitle}>REDEEM COINS</Typography>
-                                </View>
-                                <Typography style={styles.discountDesc}>
-                                    {userCoins >= 150
-                                        ? "You can use 150 coins to get ₹50 OFF!"
-                                        : `You have ${userCoins} coins. Earn more to get ₹50 OFF!`}
-                                </Typography>
+                    {item.type !== 'rent' && (
+                        <View style={[styles.coinOfferContainer, { backgroundColor: theme.surface }]}>
+                            <View style={styles.coinHeader}>
+                                <Star size={20} color="#FBBF24" fill="#FBBF24" />
+                                <Typography style={[styles.coinTitle, { color: theme.text }]}>Redeem Coins Offer</Typography>
                             </View>
-                            <TouchableOpacity
-                                style={[styles.redeemBtn, userCoins < 150 && { opacity: 0.5 }]}
-                                disabled={userCoins < 150}
-                                onPress={() => {
-                                    Alert.alert("Redeem Coins", "This will deduct 150 coins from your balance for a ₹50 discount. Confirm with seller in chat!", [
-                                        { text: "Cancel", style: "cancel" },
-                                        { text: "Confirm", onPress: () => Alert.alert("Success", "Offer sent to seller!") }
-                                    ]);
-                                }}
-                            >
-                                <Typography style={styles.redeemBtnText}>Redeem</Typography>
-                            </TouchableOpacity>
+                            <View style={styles.offerContent}>
+                                <View style={styles.offerBadge}>
+                                    <Typography style={styles.offerBadgeText}>150 SC = ₹50 OFF</Typography>
+                                </View>
+                                <Typography style={[styles.offerDesc, { color: theme.textSecondary }]}>
+                                    Use 150 SuperCoins to get ₹50 off on this product
+                                </Typography>
+                                <TouchableOpacity
+                                    style={[styles.redeemBtn, userCoins < 150 && { opacity: 0.5 }]}
+                                    disabled={userCoins < 150}
+                                    onPress={() => {
+                                        Alert.alert(
+                                            "Redeem Coins",
+                                            "This will deduct 150 coins from your balance for a ₹50 discount. An automated offer will be sent to the seller in chat. Proceed?",
+                                            [
+                                                { text: "Cancel", style: "cancel" },
+                                                {
+                                                    text: "Confirm",
+                                                    onPress: async () => {
+                                                        try {
+                                                            const user = auth.currentUser;
+                                                            if (!user) return;
+
+                                                            // 1. Deduct Coins
+                                                            await userService.updateCoins(user.uid, -150, "Redeemed for ₹50 Product Discount", {
+                                                                listingId: item.id,
+                                                                listingTitle: item.title
+                                                            });
+
+                                                            // 2. Notify Seller via Chat
+                                                            const chatId = await chatService.getOrCreateChat(
+                                                                user.uid,
+                                                                item.sellerId,
+                                                                user.displayName || 'Buyer',
+                                                                item.sellerName || 'Seller',
+                                                                item.type || 'product',
+                                                                item.id,
+                                                                item.title
+                                                            );
+
+                                                            const offerMessage = `Hi ${item.sellerName || 'Seller'}, I've redeemed 150 SuperCoins for a ₹50 discount on your listing "${item.title}". Please adjust the price for me!`;
+                                                            await chatService.sendMessage(chatId, user.uid, offerMessage);
+
+                                                            // 3. Update local state and feedback
+                                                            setUserCoins(prev => prev - 150);
+                                                            Alert.alert("Success", "150 SuperCoins deducted and offer sent to seller in chat!");
+
+                                                            // 4. Navigate to Chat (Optional but helpful)
+                                                            navigation.navigate('ChatRoom', {
+                                                                chatId,
+                                                                otherName: item.sellerName || 'Seller',
+                                                                otherAvatar: item.sellerAvatar || 'https://i.pravatar.cc/150?u=' + item.sellerId,
+                                                                productImage: item.images?.[0],
+                                                                productPrice: item.price,
+                                                                productTitle: item.title,
+                                                                productId: item.id
+                                                            });
+                                                        } catch (error) {
+                                                            console.error('Error redeeming coins:', error);
+                                                            Alert.alert("Error", "Failed to redeem coins. Please try again.");
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        );
+                                    }}
+                                >
+                                    <Typography style={styles.redeemBtnText}>Redeem</Typography>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
 
@@ -602,12 +711,16 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
 
             {/* Sticky Bottom Actions */}
             <View style={[styles.bottomBar, { backgroundColor: theme.background, borderTopColor: theme.border }]}>
-                <View>
+                <View style={{ flexDirection: 'row', gap: 12 }}>
                     <TouchableOpacity
                         onPress={handleChatWithSeller}
                         disabled={chatLoading}
                         activeOpacity={0.8}
-                        style={[styles.chatButton, { backgroundColor: isDark ? theme.surface : '#002f34', opacity: chatLoading ? 0.7 : 1 }]}
+                        style={[styles.chatButton, {
+                            flex: item.type === 'rent' ? 1 : 1,
+                            backgroundColor: isDark ? theme.surface : '#002f34',
+                            opacity: chatLoading ? 0.7 : 1
+                        }]}
                     >
                         {chatLoading ? (
                             <ActivityIndicator color="#FFFFFF" />
@@ -615,11 +728,22 @@ export const ProductDetailsScreen = ({ route, navigation }: any) => {
                             <>
                                 <MessageCircle size={24} color="#FFFFFF" strokeWidth={2.5} />
                                 <Typography style={styles.chatButtonText}>
-                                    {item.type === 'job' ? 'Chat with Recruiter' : 'Chat with Seller'}
+                                    {item.type === 'job' ? 'Chat' : 'Chat'}
                                 </Typography>
                             </>
                         )}
                     </TouchableOpacity>
+
+                    {item.type === 'rent' && (
+                        <TouchableOpacity
+                            onPress={handleBookNow}
+                            activeOpacity={0.8}
+                            style={[styles.chatButton, { flex: 1.5, backgroundColor: theme.primary }]}
+                        >
+                            <Calendar size={24} color="#FFFFFF" strokeWidth={2.5} />
+                            <Typography style={styles.chatButtonText}>Book Now</Typography>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
         </View>
@@ -992,38 +1116,95 @@ const styles = StyleSheet.create({
         color: '#92400E',
         flex: 1,
     },
-    discountCard: {
+    footer: {
+        flexDirection: 'row',
+        padding: 16,
+        gap: 12,
+        borderTopWidth: 1,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+    },
+    chatBtn: {
+        flex: 1,
+        flexDirection: 'row',
+        height: 56,
+        borderRadius: 16,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    chatBtnText: {
+        fontSize: 16,
+        fontWeight: '800',
+    },
+    buyBtn: {
+        flex: 2,
+        height: 56,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+    },
+    buyBtnText: {
+        color: '#FFF',
+        fontSize: 18,
+        fontWeight: '900',
+    },
+    coinOfferContainer: {
+        margin: 20,
+        padding: 16,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(245, 158, 11, 0.2)',
+    },
+    coinHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F0FDFA',
-        padding: 12,
-        borderRadius: 12,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: '#CCFBF1',
+        gap: 8,
+        marginBottom: 12,
     },
-    discountTitle: {
+    coinTitle: {
+        fontSize: 16,
+        fontWeight: '800',
+    },
+    offerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    offerBadge: {
+        backgroundColor: '#FBBF24',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+    },
+    offerBadgeText: {
+        color: '#000',
         fontSize: 10,
         fontWeight: '900',
-        color: '#0F766E',
-        marginLeft: 6,
-        letterSpacing: 0.5,
     },
-    discountDesc: {
-        fontSize: 12,
-        color: '#134E48',
+    offerDesc: {
+        flex: 1,
+        fontSize: 13,
         fontWeight: '500',
     },
     redeemBtn: {
         backgroundColor: '#0F766E',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
-        marginLeft: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 12,
     },
     redeemBtnText: {
         color: '#FFF',
-        fontSize: 12,
-        fontWeight: '700',
+        fontSize: 13,
+        fontWeight: '800',
     },
 });

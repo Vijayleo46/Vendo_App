@@ -242,8 +242,8 @@ export const HomeScreen = ({ navigation }: any) => {
   };
 
   const sections = useMemo(() => {
-    const myProducts = listings.filter(l => l.sellerId === auth.currentUser?.uid && l.type !== 'job');
-    const otherProducts = listings.filter(l => l.sellerId !== auth.currentUser?.uid && l.type !== 'job');
+    const allProducts = listings.filter(l => l.type === 'product' || l.type === 'rent');
+    const rentals = listings.filter(l => l.type === 'rent');
     const jobs = listings.filter(l => l.type === 'job');
 
     const filterByCat = (items: Listing[]) => {
@@ -266,7 +266,8 @@ export const HomeScreen = ({ navigation }: any) => {
     };
 
     return {
-      products: filterByCat([...myProducts, ...otherProducts]),
+      products: filterByCat(allProducts),
+      rentals: filterByCat(rentals),
       jobs: filterByCat(jobs),
       all: activeCategory === 'All' ? shuffle(filterByCat(listings)) : filterByCat(listings)
     };
@@ -453,11 +454,11 @@ export const HomeScreen = ({ navigation }: any) => {
           </View>
         )}
 
-        {(activeCategory === 'All' ? sections.all : sections.products).length > 0 && (
+        {(activeCategory === 'All' ? sections.all : (activeCategory === 'Jobs' ? sections.jobs : sections.products)).length > 0 && (
           <View>
             {renderSectionHeader(activeCategory === 'All' ? (t('common.recommendations') || 'Fresh Recommendations') : `${t('common.browse') || 'Browse'} ${activeCategory} `)}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16 }}>
-              {(activeCategory === 'All' ? sections.all : sections.products).map((item, index) => (
+              {(activeCategory === 'All' ? sections.all : (activeCategory === 'Jobs' ? sections.jobs : sections.products)).map((item, index) => (
                 <View key={item.id} style={{ width: '48%' }}>
                   <AnimatedProductCard
                     index={index % 6} // Reset stagger for better flow in grid

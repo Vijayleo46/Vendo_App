@@ -1,20 +1,41 @@
 const express = require('express');
-const admin = require('firebase-admin');
 const cors = require('cors');
 require('dotenv').config();
+const { initializeApp } = require('firebase/app');
+const {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    updateDoc,
+    doc,
+    getDoc,
+    deleteDoc,
+    serverTimestamp,
+    Timestamp
+} = require('firebase/firestore');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Initialize Firebase Admin
-// Note: In production, use service account credentials
-if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.applicationDefault()
-    });
-}
-const db = admin.firestore();
+// Firebase configuration (from frontend config)
+const firebaseConfig = {
+    apiKey: "AIzaSyAO6Nyba91WjGvy-Rs-SKvmiWzpflQ7W3U",
+    authDomain: "trust-market-platform.firebaseapp.com",
+    projectId: "trust-market-platform",
+    storageBucket: "trust-market-platform.firebasestorage.app",
+    messagingSenderId: "516223323976",
+    appId: "1:516223323976:web:834ff2d8590b770d0b2d7d",
+    measurementId: "G-XPPC9C94C9"
+};
+
+// Initialize Firebase
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
 // --- PRODUCT ROUTES ---
 
@@ -37,15 +58,17 @@ app.post('/api/products/create', async (req, res) => {
             ownerId,
             images: images || [],
             location,
+            type: 'rent',
             availabilityStatus: 'available',
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: serverTimestamp(),
             totalViews: 0,
             rating: 0
         };
 
-        const docRef = await db.collection('products').add(newProduct);
+        const docRef = await addDoc(collection(db, 'rentals'), newProduct);
         res.status(201).send({ productId: docRef.id, ...newProduct });
     } catch (error) {
+        console.error('SERVER ERROR (POST /api/products/create):', error);
         res.status(500).send({ error: error.message });
     }
 });
@@ -53,22 +76,25 @@ app.post('/api/products/create', async (req, res) => {
 // Get All Products (with filters)
 app.get('/api/products', async (req, res) => {
     try {
-        let query = db.collection('products');
+        let q = collection(db, 'rentals');
+        const constraints = [];
 
         const { category, minPrice, maxPrice, sortBy } = req.query;
 
-        if (category) query = query.where('category', '==', category);
-        if (minPrice) query = query.where('rentPricePerDay', '>=', Number(minPrice));
-        if (maxPrice) query = query.where('rentPricePerDay', '<=', Number(maxPrice));
+        if (category) constraints.push(where('category', '==', category));
+        if (minPrice) constraints.push(where('rentPricePerDay', '>=', Number(minPrice)));
+        if (maxPrice) constraints.push(where('rentPricePerDay', '<=', Number(maxPrice)));
 
-        if (sortBy === 'price_asc') query = query.orderBy('rentPricePerDay', 'asc');
-        else if (sortBy === 'price_desc') query = query.orderBy('rentPricePerDay', 'desc');
-        else query = query.orderBy('createdAt', 'desc');
+        if (sortBy === 'price_asc') constraints.push(orderBy('rentPricePerDay', 'asc'));
+        else if (sortBy === 'price_desc') constraints.push(orderBy('rentPricePerDay', 'desc'));
+        else constraints.push(orderBy('createdAt', 'desc'));
 
-        const snapshot = await query.get();
+        const finalQuery = query(q, ...constraints);
+        const snapshot = await getDocs(finalQuery);
         const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         res.send(products);
     } catch (error) {
+        console.error('SERVER ERROR (GET /api/products):', error);
         res.status(500).send({ error: error.message });
     }
 });
@@ -78,7 +104,7 @@ app.put('/api/products/update/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
-        await db.collection('products').doc(id).update(updates);
+        await updateDoc(doc(db, 'rentals', id), updates);
         res.send({ message: 'Product updated successfully' });
     } catch (error) {
         res.status(500).send({ error: error.message });
@@ -89,7 +115,7 @@ app.put('/api/products/update/:id', async (req, res) => {
 app.delete('/api/products/delete/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        await db.collection('products').doc(id).delete();
+        await deleteDoc(doc(db, 'rentals', id));
         res.send({ message: 'Product deleted successfully' });
     } catch (error) {
         res.status(500).send({ error: error.message });
@@ -111,10 +137,12 @@ app.post('/api/rent/book', async (req, res) => {
         }
 
         // 1. Check for conflicting bookings
-        const conflictsSnapshot = await db.collection('rent_orders')
-            .where('productId', '==', productId)
-            .where('status', 'in', ['approved', 'active'])
-            .get();
+        const q = query(
+            collection(db, 'rent_orders'),
+            where('productId', '==', productId),
+            where('status', 'in', ['approved', 'active'])
+        );
+        const conflictsSnapshot = await getDocs(q);
 
         const hasConflict = conflictsSnapshot.docs.some(doc => {
             const booking = doc.data();
@@ -129,8 +157,8 @@ app.post('/api/rent/book', async (req, res) => {
         }
 
         // 2. Get product details to calculate cost
-        const productSnap = await db.collection('products').doc(productId).get();
-        if (!productSnap.exists) {
+        const productSnap = await getDoc(doc(db, 'rentals', productId));
+        if (!productSnap.exists()) {
             return res.status(404).send({ error: 'Product not found' });
         }
         const product = productSnap.data();
@@ -142,18 +170,19 @@ app.post('/api/rent/book', async (req, res) => {
             productId,
             ownerId: product.ownerId,
             renterId,
-            startDate: admin.firestore.Timestamp.fromDate(start),
-            endDate: admin.firestore.Timestamp.fromDate(end),
+            startDate: Timestamp.fromDate(start),
+            endDate: Timestamp.fromDate(end),
             totalDays,
             totalAmount,
             status: 'pending',
             paymentStatus: 'pending',
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
+            createdAt: serverTimestamp()
         };
 
-        const orderRef = await db.collection('rent_orders').add(newOrder);
+        const orderRef = await addDoc(collection(db, 'rent_orders'), newOrder);
         res.status(201).send({ orderId: orderRef.id, ...newOrder });
     } catch (error) {
+        console.error('SERVER ERROR (POST /api/rent/book):', error);
         res.status(500).send({ error: error.message });
     }
 });
@@ -163,17 +192,22 @@ app.get('/api/rent/my-bookings', async (req, res) => {
     try {
         const { userId, role } = req.query; // role: 'renter' or 'owner'
 
-        let query = db.collection('rent_orders');
-        if (role === 'owner') {
-            query = query.where('ownerId', '==', userId);
-        } else {
-            query = query.where('renterId', '==', userId);
-        }
+        let q = collection(db, 'rent_orders');
+        const constraints = [];
 
-        const snapshot = await query.orderBy('createdAt', 'desc').get();
+        if (role === 'owner') {
+            constraints.push(where('ownerId', '==', userId));
+        } else {
+            constraints.push(where('renterId', '==', userId));
+        }
+        constraints.push(orderBy('createdAt', 'desc'));
+
+        const finalQuery = query(q, ...constraints);
+        const snapshot = await getDocs(finalQuery);
         const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         res.send(bookings);
     } catch (error) {
+        console.error('SERVER ERROR (GET /api/rent/my-bookings):', error);
         res.status(500).send({ error: error.message });
     }
 });
@@ -188,9 +222,9 @@ app.put('/api/rent/status/:orderId', async (req, res) => {
             return res.status(400).send({ error: 'Invalid status' });
         }
 
-        await db.collection('rent_orders').doc(orderId).update({
+        await updateDoc(doc(db, 'rent_orders', orderId), {
             status,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            updatedAt: serverTimestamp()
         });
 
         res.send({ message: `Booking ${status} successfully` });
@@ -199,5 +233,6 @@ app.put('/api/rent/status/:orderId', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

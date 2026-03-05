@@ -118,6 +118,11 @@ export const ProductCard = ({ title, price, image, location, type, onPress, isAd
                                 <Typography style={{ fontSize: 10, fontWeight: '900', color: theme.primary, letterSpacing: 0.5 }}>HIRING</Typography>
                             </View>
                         )}
+                        {type === 'rent' && (
+                            <View style={{ backgroundColor: '#10B98115', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: '#10B98130' }}>
+                                <Typography style={{ fontSize: 10, fontWeight: '900', color: '#10B981', letterSpacing: 0.5 }}>RENT</Typography>
+                            </View>
+                        )}
                     </View>
 
                     <Typography
